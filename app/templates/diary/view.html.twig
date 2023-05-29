@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ form_name }} {% endblock %}
+
+
+{% block body %}
+    <h2>{{ form_name }}</h2>
+    <div class="diary-date">
+        {{ diary.dateString }} ({{ diary.dateYoubi }})
+    </div>
+    <div class="diary-text">
+        {{ diary.textHtml | raw }}
+    </div>
+    <a class="btn btn-primary btn-sm" href="{{ path('edit_diary',
+        {
+            date: diary.dateString
+        }) }}">
+        編集
+    </a>
+    <a class="btn btn-primary btn-sm" href="{{ path('app_diary') }}">
+        一覧へ
+    </a>
+
+    <style>
+        .diary-date {
+            font-size:1.1rem;
+            font-weight:bold;
+        }
+    </style>
+{% endblock %}
