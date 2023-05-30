@@ -42,13 +42,14 @@ class DiaryController extends AbstractController
         if($form->isSubmitted() && $form->isValid())
         {
             $diary = $form->getData();
+            $startedWritingAt = $diary->getStartedWritingAt();
             $dDiary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $diary->getDateString())]);
             if($dDiary)
             {
                 $text = $dDiary->getText().
-                    "<br><br>---------- ".date('↓ Y-n-j H:i:s 記入')." ----------<br>".
+                    "<hr><strong>".$startedWritingAt." 記入開始"."</strong><br>".
                     $diary->getText().
-                    "<br>---------- ".date('↑ Y-n-j H:i:s 記入')." ----------<br>";
+                    "<br>".date('↑ n/j H:i 記入終了')."<hr>";
                 $dDiary->setText($text);
                 $diary = $dDiary;
             }

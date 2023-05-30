@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
@@ -35,6 +36,10 @@ class DiaryType extends AbstractType
                         'rows' => '18'
                     ],
                 ]
+            )
+            ->add(
+                'startedWritingAt',
+                HiddenType::class,
             )
             ->add(
                 'save',

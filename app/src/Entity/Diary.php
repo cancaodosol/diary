@@ -53,12 +53,14 @@ class Diary
      */
     private $modifiedOn;
 
+    private $startedWritingAt;
 
     public function __construct()
     {
         $this->setUserId(1);
         $this->setDiv('diary');
         $this->setDate(new \DateTime('now'));
+        $this->setStartedWritingAt();
         $this->setModifiedOn();
     }
 
@@ -141,6 +143,16 @@ class Diary
         $this->text = $text;
 
         return $this;
+    }
+
+    public function getStartedWritingAt(): ?string
+    {
+        return $this->startedWritingAt;
+    }
+
+    public function setStartedWritingAt($startedWritingAt = null): void
+    {
+        $this->startedWritingAt = $startedWritingAt == null ? (new \DateTime('now'))->format('n/j H:i') : $startedWritingAt;
     }
 
     public function getCreatedOn(): ?\DateTimeInterface
