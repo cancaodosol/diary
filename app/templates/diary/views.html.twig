@@ -6,13 +6,19 @@
 {% block body %}
     <h2>{{ form_name }}</h2>
     {% for diary in diaries %}
-        <div class="diary-date">
+        <div class="diary-date text-center">
             {{ diary.dateString }} ({{ diary.dateYoubi }})
             <a class="btn btn-primary btn-sm" href="{{ path('edit_diary',
                 {
                     date: diary.dateString
                 }) }}">
-                編集
+                書く
+            </a>
+            <a class="btn btn-primary btn-sm" href="{{ path('view_diary',
+                {
+                    date: diary.dateString
+                }) }}">
+                見る
             </a>
         </div>
         <div class="diary-text">
@@ -24,8 +30,9 @@
 
     <style>
         .diary-date {
-            font-size:1.1rem;
+            font-size:1.3rem;
             font-weight:bold;
+            margin-top:40px;
         }
         .diary-footer {
             margin-bottom:20px;
