@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
 use App\Entity\Diary;
-
+use App\Entity\DiaryCompact;
 use App\Form\DiaryType;
 
 class DiaryController extends AbstractController
@@ -20,7 +20,6 @@ class DiaryController extends AbstractController
      */
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
-
         $diaries = $doctrine->getRepository(Diary::class)
             ->findBy([], ["date" => "DESC"]);
 
@@ -67,6 +66,8 @@ class DiaryController extends AbstractController
             $entityManager = $doctrine->getManager();
             $entityManager->persist($diary);
             $entityManager->flush();
+            $this->updateDiaryCompact($doctrine, $diary);
+
             return $this->redirectToRoute('view_diary', [
                 'date' => $diary->getDateString()
             ]);
@@ -84,11 +85,14 @@ class DiaryController extends AbstractController
     public function editDiary(Request $request, ManagerRegistry $doctrine, string $date): Response
     {
         $date = $this->transferDate($date);
-        $diary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);;
+        $diary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);
         if(!$diary)
         {
             $diary = new Diary();
         }
+        $diary->setTitle(".");
+        $diary->setStartedAt(".");
+        $diary->setFinishedAt(".");
 
         $form = $this->createForm(DiaryType::class, $diary);
         $form->handleRequest($request);
@@ -98,6 +102,7 @@ class DiaryController extends AbstractController
             $entityManager = $doctrine->getManager();
             $entityManager->persist($diary);
             $entityManager->flush();
+            $this->updateDiaryCompact($doctrine, $diary);
             return $this->redirectToRoute('view_diary', [
                 'date' => $diary->getDateString()
             ]);
@@ -107,6 +112,36 @@ class DiaryController extends AbstractController
             'form_name' => '',
             'form' => $form,
         ]);
+    }
+
+    private function updateDiaryCompact(ManagerRegistry $doctrine, Diary $diary)
+    {
+        $diaryC = $doctrine->getRepository(DiaryCompact::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $diary->getDateString())]);
+        if(!$diaryC)
+        {
+            $diaryC = new DiaryCompact();
+        }
+
+        // strongタグの文字列を抽出する
+        // 参考：https://qiita.com/kanaxx/items/daca1c57e48e0a8d674a
+        $strongs = "";
+        $pattern = '@<strong>(.*)</strong>@';
+        if( preg_match_all($pattern, $diary->getText(), $result) ){
+            var_dump($result);
+            foreach($result[1] as $strong)
+            {
+                $strongs = $strongs."<br>".$strong;
+            }
+        }else{
+            $strongs = 'No match' . PHP_EOL;
+        }
+        $diaryC->setDiaryId($diary->getId());
+        $diaryC->setDate($diary->getDate());
+        $diaryC->setText($strongs);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($diaryC);
+        $entityManager->flush();
     }
 
     /**
