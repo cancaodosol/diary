@@ -39,7 +39,7 @@
                         <a class="text-muted" href="#">Subscribe</a>
                     -->
                     </div>
-                    <a href="{{ path('app_diary') }}">
+                    <a href="{{ path('app_diary') }}" style="text-decoration: none;">
                         <div class="col-8 text-center">
                             <span class="blog-header-logo text-dark">Diary</span>
                         </div>
@@ -51,9 +51,32 @@
                     </div>
                 </div>
             </header>
+            <div class="btn-bar text-center mt-3 mb-3">
+                <a class="btn btn-primary btn-sm" href="{{ path('app_diary') }}">
+                    一覧へ
+                </a>
+                <a class="btn btn-primary btn-sm" href="{{ path('app_diary_compact') }}">
+                    一覧へ（コンパクト版）
+                </a>
+                <a class="btn btn-primary btn-sm" href="{{ path('new_diary') }}">
+                    新しく書く
+                </a>
+            </div>
             <main role="main">
                 {% block body %}{% endblock %}
             </main>
+            <hr>
+            <div class="btn-bar text-center mt-3 mb-3">
+                <a class="btn btn-primary btn-sm" href="{{ path('app_diary') }}">
+                    一覧へ
+                </a>
+                <a class="btn btn-primary btn-sm" href="{{ path('app_diary_compact') }}">
+                    一覧へ（コンパクト版）
+                </a>
+                <a class="btn btn-primary btn-sm" href="{{ path('new_diary') }}">
+                    新しく書く
+                </a>
+            </div>
         </div>
     </body>
 </html>

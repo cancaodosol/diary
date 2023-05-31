@@ -8,14 +8,5 @@
 
 {% block body %}
     <h2>{{ form_name }}</h2>
-
-    <a class="btn btn-primary btn-sm mb-2" href="{{ path('app_diary') }}">
-        一覧へ
-    </a>
-
     {{ form(form) }}
-
-    <a class="btn btn-primary btn-sm" href="{{ path('app_diary') }}">
-        一覧へ
-    </a>
 {% endblock %}
