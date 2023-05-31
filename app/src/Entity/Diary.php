@@ -53,14 +53,18 @@ class Diary
      */
     private $modifiedOn;
 
-    private $startedWritingAt;
+    private $title;
+
+    private $startedAt;
+
+    private $finishedAt;
 
     public function __construct()
     {
         $this->setUserId(1);
         $this->setDiv('diary');
         $this->setDate(new \DateTime('now'));
-        $this->setStartedWritingAt();
+        $this->setStartedAt();
         $this->setModifiedOn();
     }
 
@@ -145,14 +149,42 @@ class Diary
         return $this;
     }
 
-    public function getStartedWritingAt(): ?string
+    public function getTitle(): ?string
     {
-        return $this->startedWritingAt;
+        return $this->title;
     }
 
-    public function setStartedWritingAt($startedWritingAt = null): void
+    public function setTitle(string $title): self
     {
-        $this->startedWritingAt = $startedWritingAt == null ? (new \DateTime('now'))->format('n/j H:i') : $startedWritingAt;
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getStartedAt(): ?string
+    {
+        return $this->startedAt;
+    }
+
+    public function setStartedAt($startedAt = null): void
+    {
+        $this->startedAt = $startedAt == null ? (new \DateTime('now'))->format('H:i') : $startedAt;
+    }
+
+    public function getFinishedAt(): ?string
+    {
+        return $this->finishedAt;
+    }
+
+    public function setFinishedAt($finishedAt): void
+    {
+        $this->finishedAt = $finishedAt;
+    }
+
+    public function getStartedAndFinishedAt(): string
+    {
+        if(!$this->finishedAt) return $this->startedAt." - ".date('H:i');
+        return $this->startedAt." - ".$this->finishedAt;
     }
 
     public function getCreatedOn(): ?\DateTimeInterface

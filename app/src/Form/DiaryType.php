@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
@@ -15,16 +16,23 @@ class DiaryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add(
-            'date',
-            DateType::class,
-            [
-                'label' => '日付',
-                'required' => true,
-                'widget' => 'single_text',
-                'format' => 'yyyy-MM-dd',
-            ]
-        )
+            ->add(
+                'date',
+                DateType::class,
+                [
+                    'label' => '日付',
+                    'required' => true,
+                    'widget' => 'single_text',
+                    'format' => 'yyyy-MM-dd',
+                ]
+            )
+            ->add(
+                'title',
+                TextType::class,
+                [
+                    'label' => 'タイトル',
+                ],
+            )
             ->add(
                 'text',
                 TextareaType::class,
@@ -38,8 +46,20 @@ class DiaryType extends AbstractType
                 ]
             )
             ->add(
-                'startedWritingAt',
-                HiddenType::class,
+                'startedAt',
+                TextType::class,
+                [
+                    'label' => '開始時刻',
+                    'required' => true,
+                ],
+            )
+            ->add(
+                'finishedAt',
+                TextType::class,
+                [
+                    'label' => '終了時刻',
+                    'required' => false,
+                ],
             )
             ->add(
                 'save',
@@ -47,8 +67,7 @@ class DiaryType extends AbstractType
                 [
                     'label' => '保存',
                 ]
-                );
-        ;
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver): void
