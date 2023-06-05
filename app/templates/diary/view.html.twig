@@ -7,6 +7,12 @@
     <h2>{{ form_name }}</h2>
     <div class="diary-date">
         {{ diary.dateString }} ({{ diary.dateYoubi }})
+        <a class="btn btn-primary btn-sm" href="{{ path('edit_diary',
+            {
+                date: diary.dateString
+            }) }}">
+            編集
+        </a>
         <hr>
     </div>
     <div class="diary-text">
