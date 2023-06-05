@@ -43,22 +43,20 @@ class DiaryController extends AbstractController
             $diary = $form->getData();
 
             // 同日の行動記録の末尾に、追記する。
-            $title = "<hr><strong>".$diary->getStartedAndFinishedAt()."　".$diary->getTitle()."</strong>";
+            $title = "<strong>".$diary->getStartedAndFinishedAt()."　".$diary->getTitle()."</strong>";
             $dDiary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $diary->getDateString())]);
             if($dDiary)
             {
                 $text = $dDiary->getText().
-                    $title."<br>".
-                    $diary->getText().
-                    "<hr>";
+                    "\r\n\r\n<hr>\r\n".$title."\r\n\r\n".
+                    $diary->getText()."\r\n";
                 $dDiary->setText($text);
                 $diary = $dDiary;
             }
             else
             {
-                $text = $title."<br>".
-                    $diary->getText().
-                    "<hr>";
+                $text = $title."\r\n\r\n".
+                    $diary->getText()."\r\n";
                 $diary->setText($text);
             }
 
