@@ -66,9 +66,7 @@ class DiaryController extends AbstractController
             $entityManager->flush();
             $this->updateDiaryCompact($doctrine, $diary);
 
-            return $this->redirectToRoute('view_diary', [
-                'date' => $diary->getDateString()
-            ]);
+            return $this->redirectToRoute('app_diary_compact');
         }
 
         return $this->renderForm('./new.html.twig', [
