@@ -139,9 +139,19 @@ class Diary
 
     public function getTextHtml(): ?string
     {
-        return nl2br($this->text);
-    }
+        $textHtml = $this->text;
 
+        # 改行コードの前に、<br />を追記。
+        $textHtml = nl2br($textHtml);
+
+        # TODO [code][/code]内の<br />を除去
+
+        # [code][/code]の置換
+        $textHtml = str_replace('[code]', '<script type="text/plain" class="language-php line-numbers">', $textHtml);
+        $textHtml = str_replace('[/code]', '</script>', $textHtml);
+
+        return $textHtml;
+    }
     public function setText(string $text): self
     {
         $this->text = $text;
