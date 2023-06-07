@@ -147,8 +147,8 @@ class Diary
         # TODO [code][/code]内の<br />を除去
 
         # [code][/code]の置換
-        $textHtml = str_replace('[code]', '<script type="text/plain" class="language-php line-numbers">', $textHtml);
-        $textHtml = str_replace('[/code]', '</script>', $textHtml);
+        $textHtml = str_replace('[code]', '<div class="code-text" style="font-size:0.7rem;"><script type="text/plain" class="language-php line-numbers">', $textHtml);
+        $textHtml = str_replace('[/code]', '</script></div>', $textHtml);
 
         return $textHtml;
     }
