@@ -32,6 +32,37 @@
             .blog-header-logo:hover {
                 text-decoration: none;
             }
+
+            {# https://web-camp.io/magazine/archives/96794 #}
+            .box {
+                position:relative;
+                background:#f2f2f2; /*背景色の指定*/
+                padding:10px;
+            }
+            .box:before {
+                content:"";
+                position:absolute;
+                top:0;
+                left:0;
+                width:20px; /*左上カギカッコの横の長さ*/
+                height:15px; /*左上カギカッコの縦の長さ*/
+                border-left:#333333 1px solid; /*左上カギカッコの縦の色、太さ、線の種類*/
+                border-top:#333333 1px solid; /*左上カギカッコの横の色、太さ、線の種類*/
+            }
+            .box:after {
+                content:"";
+                position:absolute;
+                bottom:0;
+                right:0;
+                width:20px; /*右下カギカッコの横の長さ*/
+                height:15px; /*右下カギカッコの縦の長さ*/
+                border-right:#333333 1px solid; /*右下カギカッコの指定*/
+                border-bottom:#333333 1px solid; /*左上カギカッコの指定*/
+            }
+            .box p {
+                margin:0;
+                padding:0;
+            }
         </style>
     </head>
     <body>
