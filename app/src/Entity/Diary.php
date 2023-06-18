@@ -154,6 +154,12 @@ class Diary
         $textHtml = str_replace('[引用]', '<div class="box"><p>', $textHtml);
         $textHtml = str_replace('[/引用]', '</p></div>', $textHtml);
 
+        # Youtubu埋め込みを横幅100％対応
+        $youtubeIframStart = '<iframe width="560" height="315" src="https://www.youtube.com';
+        $youtubeIframEnd = 'allowfullscreen></iframe>';
+        $textHtml = str_replace($youtubeIframStart, '<div class="youtube-wrap"><div class="youtube">'.$youtubeIframStart, $textHtml);
+        $textHtml = str_replace($youtubeIframEnd, $youtubeIframEnd.'</div></div>', $textHtml);
+
         return $textHtml;
     }
     public function setText(string $text): self
