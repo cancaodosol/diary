@@ -38,7 +38,7 @@ class DiaryType extends AbstractType
                 TextareaType::class,
                 [
                     'label' => '行動記録',
-                    'required' => true,
+                    'required' => false,
                     'attr' => 
                     [
                         'rows' => '18'

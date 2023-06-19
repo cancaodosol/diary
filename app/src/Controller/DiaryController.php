@@ -30,6 +30,20 @@ class DiaryController extends AbstractController
     }
 
     /**
+     * @Route("/diary_r", name="app_diary_r")
+     */
+    public function index_r(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $diaries = $doctrine->getRepository(Diary::class)
+            ->findBy([], ["date" => "ASC"]);
+
+        return $this->render('diary/views.html.twig', [
+            'form_name' => '',
+            'diaries' => $diaries,
+        ]);
+    }
+
+    /**
      * @Route("/diary/new", name="new_diary")
      */
     public function newDiary(Request $request, ManagerRegistry $doctrine): Response
@@ -48,15 +62,13 @@ class DiaryController extends AbstractController
             if($dDiary)
             {
                 $text = $dDiary->getText().
-                    "\r\n\r\n<hr>\r\n".$title."\r\n\r\n".
-                    $diary->getText()."\r\n";
+                    "\r\n\r\n<hr>\r\n".$this->_createTitleText($title, $diary->getText());
                 $dDiary->setText($text);
                 $diary = $dDiary;
             }
             else
             {
-                $text = $title."\r\n\r\n".
-                    $diary->getText()."\r\n";
+                $text = $this->_createTitleText($title, $diary->getText());
                 $diary->setText($text);
             }
 
@@ -73,6 +85,20 @@ class DiaryController extends AbstractController
             'form_name' => '',
             'form' => $form,
         ]);
+    }
+
+    private function _createTitleText(string $title, $text): string
+    {
+        $result = '';
+        if(trim($text))
+        {
+            $result = $title."\r\n\r\n".$text."\r\n";
+        }
+        else
+        {
+            $result = $title."\r\n";
+        }
+        return $result;
     }
 
     /**

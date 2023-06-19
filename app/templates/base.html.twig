@@ -97,6 +97,14 @@
                     新しく書く
                 </a>
             </div>
+            <div class="btn-bar text-center mt-3 mb-3">
+                <a class="btn btn-outline-primary btn-sm" href="{{ path('app_diary_r') }}">
+                    一覧へ(R)
+                </a>
+                <a class="btn btn-outline-primary btn-sm" href="{{ path('app_diary_compact_r') }}">
+                    一覧へ（コンパクト版(R)）
+                </a>
+            </div>
             <main role="main">
                 {% block body %}{% endblock %}
             </main>

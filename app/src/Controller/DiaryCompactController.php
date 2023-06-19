@@ -24,4 +24,18 @@ class DiaryCompactController extends AbstractController
             'diaries' => $diaries,
         ]);
     }
+
+    /**
+     * @Route("/diaryc_r", name="app_diary_compact_r")
+     */
+    public function index_r(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $diaries = $doctrine->getRepository(DiaryCompact::class)
+            ->findBy([], ["date" => "ASC"]);
+
+        return $this->render('diary/views.html.twig', [
+            'form_name' => '',
+            'diaries' => $diaries,
+        ]);
+    }
 }
