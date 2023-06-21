@@ -1,0 +1,30 @@
+{% extends 'base_view.html.twig' %}
+
+{% block contents %}
+    <h2>{{ form_name }}</h2>
+    {% for note in notes %}
+        <div class="diary-date text-center">
+            {{ note.dateString }} ({{ note.dateYoubi }})
+            <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',
+                {
+                    id: note.id
+                }) }}">
+                書く
+            </a>
+            <a class="btn btn-primary btn-sm" href="{{ path('view_unitary',
+                {
+                    id: note.id
+                }) }}">
+                見る
+            </a>
+            <hr>
+        </div>
+        <div class="diary-text">
+            {{ note.textHtml | raw }}
+        </div>
+        <div class="diary-footer">
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block style %}{% endblock %}

@@ -105,6 +105,19 @@
                     一覧へ（コンパクト版(R)）
                 </a>
             </div>
+            <div class="btn-bar text-center mt-3 mb-3">
+                <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary') }}">
+                    All
+                </a>
+                {% for tag in tags %}
+                    <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: tag.name }) }}">
+                        {{ tag.name }}
+                    </a>
+                {% endfor %}
+                <a class="btn btn-outline-warning btn-sm" href="{{ path('new_unitary') }}">
+                    新しく書く
+                </a>
+            </div>
             <main role="main">
                 {% block body %}{% endblock %}
             </main>

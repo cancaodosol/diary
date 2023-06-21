@@ -1,0 +1,27 @@
+{% extends 'base_view.html.twig' %}
+
+{% block contents %}
+    <div class="diary-date">
+        {{ note.dateString }} ({{ note.dateYoubi }})
+        <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',
+            {
+                id: note.id
+            }) }}">
+            編集
+        </a>
+        <hr>
+    </div>
+    <div class="diary-text">
+        {{ note.textHtml | raw }}
+    </div>
+    <div class="diary-footer">
+        <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',
+            {
+                id: note.id
+            }) }}">
+            編集
+        </a>
+    </div>
+{% endblock %}
+
+{% block style %}{% endblock %}

@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 use App\Entity\Diary;
 use App\Entity\DiaryCompact;
+use App\Entity\NoteTags;
 use App\Form\DiaryType;
 
 class DiaryController extends AbstractController
@@ -23,8 +24,11 @@ class DiaryController extends AbstractController
         $diaries = $doctrine->getRepository(Diary::class)
             ->findBy([], ["date" => "DESC"]);
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->render('diary/views.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'diaries' => $diaries,
         ]);
     }
@@ -37,8 +41,11 @@ class DiaryController extends AbstractController
         $diaries = $doctrine->getRepository(Diary::class)
             ->findBy([], ["date" => "ASC"]);
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->render('diary/views.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'diaries' => $diaries,
         ]);
     }
@@ -81,8 +88,11 @@ class DiaryController extends AbstractController
             return $this->redirectToRoute('app_diary_compact');
         }
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'form' => $form,
         ]);
     }
@@ -130,8 +140,11 @@ class DiaryController extends AbstractController
             ]);
         }
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'form' => $form,
         ]);
     }
@@ -191,8 +204,11 @@ class DiaryController extends AbstractController
             ]);
         }
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->renderForm('./diary/view.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'diary' => $diary,
         ]);
     }

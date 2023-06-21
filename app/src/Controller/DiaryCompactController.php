@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
+use App\Entity\NoteTags;
+
 class DiaryCompactController extends AbstractController
 {
     /**
@@ -19,8 +21,11 @@ class DiaryCompactController extends AbstractController
         $diaries = $doctrine->getRepository(DiaryCompact::class)
             ->findBy([], ["date" => "DESC"]);
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->render('diary/views.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'diaries' => $diaries,
         ]);
     }
@@ -33,8 +38,11 @@ class DiaryCompactController extends AbstractController
         $diaries = $doctrine->getRepository(DiaryCompact::class)
             ->findBy([], ["date" => "ASC"]);
 
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
         return $this->render('diary/views.html.twig', [
             'form_name' => '',
+            'tags' => $tags,
             'diaries' => $diaries,
         ]);
     }
