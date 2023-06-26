@@ -23,7 +23,15 @@ class UnitaryNoteController extends AbstractController
         {
             $tag = $doctrine->getRepository(NoteTags::class)
                 ->findOneBy(["name" => $tagName]);
-            $notes = $tag->getUnitaryNotes();
+            $notesInterator = $tag->getUnitaryNotes()->getIterator();
+            $notesInterator->uasort(function($pA , $pB){
+                    if($pA->getDate() < $pB->getDate()) return 1;
+                    if($pA->getDate() > $pB->getDate()) return -1;
+                    if($pA->getTitle() < $pB->getTitle()) return 1;
+                    if($pA->getTitle() > $pB->getTitle()) return -1;
+                    return 0;
+                });
+            $notes = iterator_to_array($notesInterator, false);
         }
         else
         {
@@ -75,7 +83,9 @@ class UnitaryNoteController extends AbstractController
             $entityManager->persist($note);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_unitary', ["tagname" => $note->getTags()[0]->getName()]);
+            // 更新後は、同じタグ情報で新規登録画面へ。
+            $note->clearItem();
+            $form = $this->createForm(UnitaryNoteType::class, $note);
         }
 
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();

@@ -37,6 +37,11 @@ class UnitaryNote
     private $date;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $title;
+
+    /**
      * @ORM\Column(name="`text`", type="text", length=65532)
      */
     private $text;
@@ -63,6 +68,16 @@ class UnitaryNote
         $this->setDate(new \DateTime('now'));
         $this->setModifiedOn();
         $this->tags = new ArrayCollection();
+    }
+
+    public function clearItem(): void
+    {
+        $this->id = null;
+        $this->setDiv('');
+        $this->setTitle('');
+        $this->setText('');
+        $this->createdOn = null;
+        $this->modifiedOn = null;
     }
 
     public function getId(): ?int
@@ -113,6 +128,18 @@ class UnitaryNote
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
 
         return $this;
     }

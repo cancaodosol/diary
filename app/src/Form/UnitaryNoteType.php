@@ -48,6 +48,13 @@ class UnitaryNoteType extends AbstractType
                 ]
             )
             ->add(
+                'title',
+                TextType::class,
+                [
+                    'label' => 'タイトル',
+                ],
+            )
+            ->add(
                 'text',
                 TextareaType::class,
                 [
