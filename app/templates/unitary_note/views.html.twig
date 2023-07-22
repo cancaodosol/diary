@@ -5,8 +5,19 @@
     {% for note in notes %}
         <hr>
         <div class="unitary-date">
-            [　{{ note.dateString }} ({{ note.dateYoubi }})
-            <a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
+            [　{{ note.dateString }} ({{ note.dateYoubi }})　]
+        </div>
+        <div class="unitary-title">
+            {{ note.title }}
+            {% for tag in note.tags %}
+                <span class="badge bg-primary">{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+        <div class="diary-text">
+            {{ note.textHtml | raw }}
+        </div>
+        <div class="unitary-footer">
+            [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
                 {
                     id: note.id
                 }) }}">
@@ -18,14 +29,6 @@
                 }) }}">
                 見る
             </a>]
-        </div>
-        <div class="unitary-title">
-            {{ note.title }}
-        </div>
-        <div class="diary-text">
-            {{ note.textHtml | raw }}
-        </div>
-        <div class="diary-footer">
         </div>
     {% endfor %}
 {% endblock %}
@@ -39,5 +42,8 @@
         font-size:1.1rem;
         font-weight:bold;
         margin-bottom:20px;
+    }
+    .unitary-footer {
+        text-align:right;
     }
 {% endblock %}

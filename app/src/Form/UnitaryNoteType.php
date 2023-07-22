@@ -27,6 +27,7 @@ class UnitaryNoteType extends AbstractType
             ->add(
                 'tags',
                 EntityType::class, [
+                    'label' => 'タグ',
                     'choice_label' => 'name',
                     'class' => NoteTags::class,
                     'query_builder' => function (NoteTagsRepository $er): QueryBuilder {
@@ -34,7 +35,8 @@ class UnitaryNoteType extends AbstractType
                             ->orderBy('u.name', 'ASC');
                     },
                     'multiple' => true,
-                    'expanded' => true,                
+                    'expanded' => true,
+                    'attr' => ['style' => 'display: flex;'],
                 ]
             )
             ->add(
