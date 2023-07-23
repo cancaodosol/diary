@@ -82,9 +82,20 @@ class UnitaryNoteController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/unitary/compact", name="app_unitary_compact")
+     */
+    public function index_compact(ManagerRegistry $doctrine): Response
+    {
+        $notes = $doctrine->getRepository(UnitaryNote::class)
+            ->findBy([], ["date" => "ASC"]);
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
+        return $this->render('unitary_note/views_compact.html.twig', [
             'form_name' => '',
             'tags' => $tags,
-            'notes' => $notes,
+            'note_units' => $this->createNoteUnits($notes),
         ]);
     }
 
