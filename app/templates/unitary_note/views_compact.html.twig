@@ -4,7 +4,13 @@
     <h2>{{ form_name }}</h2>
     {% for note_unit in note_units %}
         <div class="unitary-date text-center">
-            {{ note_unit.date }}
+            {{ note_unit.dateWithYoubi }}
+            <a class="btn btn-link btn-sm" href="{{ path('app_unitary_date',
+                {
+                    date: note_unit.date
+                }) }}">
+                [ 見る ]
+            </a>
         </div>
         <hr>
         <div class="unitary-text">
