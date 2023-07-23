@@ -7,13 +7,19 @@
             <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.preDate }) }}">
                 ＜＜ 
             </a>　
-            {{ note_unit.dateWithYoubi }} 
+            {{ note_unit.dateWithYoubi }}
+            [<a class="btn btn-link btn-sm" href="{{ path('new_unitary',
+                {
+                    date: note_unit.date
+                }) }}">
+                書く
+            </a>
             <a class="btn btn-link btn-sm" href="{{ path('app_unitary_date',
                 {
                     date: note_unit.date
                 }) }}">
-                [ 見る ]
-            </a>
+                見る
+            </a>]
             <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.nextDate }) }}">
                 ＞＞
             </a>

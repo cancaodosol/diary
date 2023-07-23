@@ -117,11 +117,15 @@ class UnitaryNoteController extends AbstractController
     }
 
     /**
-     * @Route("/unitary/new", name="new_unitary")
+     * @Route("/unitary/new/{date}", name="new_unitary")
      */
-    public function newUnitary(Request $request, ManagerRegistry $doctrine): Response
+    public function newUnitary(Request $request, ManagerRegistry $doctrine, string $date=''): Response
     {
         $note = new UnitaryNote();
+        if($date != '')
+        {
+            $note->setDate(DateTime::createFromFormat('Y-m-d', $date));
+        }
 
         $form = $this->createForm(UnitaryNoteType::class, $note);
         $form->handleRequest($request);
