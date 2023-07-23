@@ -17,7 +17,7 @@ use App\Form\UnitaryNoteType;
 class UnitaryNoteController extends AbstractController
 {
     /**
-     * @Route("/unitary_v/{tagName}", name="app_unitary")
+     * @Route("/unitary/t/{tagName}", name="app_unitary")
      */
     public function index(ManagerRegistry $doctrine, string $tagName=''): Response
     {
@@ -51,7 +51,7 @@ class UnitaryNoteController extends AbstractController
     }
 
     /**
-     * @Route("/unitary_v/d/{date}", name="app_unitary_date")
+     * @Route("/unitary/d/{date}", name="app_unitary_date")
      */
     public function index_diary(ManagerRegistry $doctrine, string $date): Response
     {
