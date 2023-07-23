@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\NoteTags;
 use App\Entity\UnitaryNote;
+use App\Entity\Diary;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -147,5 +148,60 @@ class UnitaryNoteController extends AbstractController
             'tags' => $tags,
             'note' => $note,
         ]);
+    }
+
+    /**
+     * @Route("/unitary/transfer", name="transfer_unitary")
+     */
+    public function transferUnitary(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $diaries = $doctrine->getRepository(Diary::class)
+            ->findBy([], ["date" => "DESC"]);
+        
+        foreach($diaries as $diary){
+            $notes = [];
+            $units = explode('<hr>', $diary->getText());
+            foreach($units as $unit)
+            {
+                $pattern = '@<strong>(.*)</strong>@';
+                $title = '';
+                $text = '';
+                if( preg_match_all($pattern, $unit, $result) ){
+                    $title_html = $result[0][0];
+                    $title = $result[1][0];
+                    $nowHour = (int)substr($title, 0, 2);
+                    $text = str_replace($title_html, '', $unit);
+                }
+                $text = trim($text);
+                $note = New UnitaryNote();
+                $note->setDate($diary->getDate());
+                $note->setTitle($title);
+                $note->setText($text);
+                $notes[] = $note;
+            }
+
+            $preHour = 0;
+            $plus24hours = false;
+            foreach($notes as $note){
+                $title = $note->getTitle();
+
+                // すでに同じタイトルのものがあった場合は、
+                $dbNote = $doctrine->getRepository(UnitaryNote::class)->findOneBy(['title' => $title, 'date' => $note->getDate()]);
+                if($dbNote) continue;
+
+                $nowHour = (int)substr($title, 0, 2);
+                if($plus24hours == false && $nowHour < $preHour) $plus24hours = true;
+                if($plus24hours == true){
+                    $title = str_replace(substr($title, 0, 3), sprintf("%'.02d:", $nowHour + 24), $title);
+                }
+                if($title != $note->getTitle()) $note->setTitle($title);
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($note);
+                $entityManager->flush();
+                $preHour = $nowHour;
+            }
+        }
+
+        return $this->redirectToRoute('app_unitary');
     }
 }
