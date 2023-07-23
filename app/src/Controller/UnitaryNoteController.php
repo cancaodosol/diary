@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\NoteTags;
 use App\Entity\UnitaryNote;
 use App\Entity\Diary;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +39,33 @@ class UnitaryNoteController extends AbstractController
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
                 ->findBy([], ["date" => "DESC"]);
+        }
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
+        return $this->render('unitary_note/views.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'notes' => $notes,
+        ]);
+    }
+
+    /**
+     * @Route("/unitary_v/d/{date}", name="app_unitary_date")
+     */
+    public function index_diary(ManagerRegistry $doctrine, string $date): Response
+    {
+        $date = $this->transferDate($date);
+        $notes = $doctrine->getRepository(UnitaryNote::class)->findBy(
+            ['date' => DateTime::createFromFormat('Y-m-d', $date)],
+            ["title" => "ASC"]);
+        
+        if(count($notes) == 0)
+        {
+            $notes = [];
+            $note = new UnitaryNote();
+            $note->setDate(DateTime::createFromFormat('Y-m-d', $date));
+            $notes[] = $note;
         }
 
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();
@@ -86,9 +114,9 @@ class UnitaryNoteController extends AbstractController
             $entityManager->persist($note);
             $entityManager->flush();
 
-            // 更新後は、同じタグ情報で新規登録画面へ。
-            $note->clearItem();
-            $form = $this->createForm(UnitaryNoteType::class, $note);
+            return $this->redirectToRoute('app_unitary_date', [
+                'date' => $note->getDateString()
+            ]);
         }
 
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();
@@ -120,8 +148,8 @@ class UnitaryNoteController extends AbstractController
             $entityManager = $doctrine->getManager();
             $entityManager->persist($note);
             $entityManager->flush();
-            return $this->redirectToRoute('view_unitary', [
-                'id' => $note->getId()
+            return $this->redirectToRoute('app_unitary_date', [
+                'date' => $note->getDateString()
             ]);
         }
 
@@ -207,5 +235,23 @@ class UnitaryNoteController extends AbstractController
         }
 
         return $this->redirectToRoute('app_unitary');
+    }
+
+    /** 
+    特定の日付文字列が来た場合は、変換して返す。today, yesterday
+    **/
+    private function transferDate(string $date): string
+    {
+        switch ($date) {
+            case 'today':
+                return date('Y-m-d');
+                break;
+            case 'yesterday':
+                return date('Y-m-d', strtotime("-1 days"));
+                break;
+            default:
+                return $date;
+                break;
+            }
     }
 }
