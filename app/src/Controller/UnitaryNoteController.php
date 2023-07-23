@@ -78,6 +78,8 @@ class UnitaryNoteController extends AbstractController
         if($form->isSubmitted() && $form->isValid())
         {
             $note = $form->getData();
+            $title = $note->getStartedAndFinishedAt()."　".$note->getTitle();
+            $note->setTitle($title);
 
             // 更新処理
             $entityManager = $doctrine->getManager();
@@ -107,6 +109,8 @@ class UnitaryNoteController extends AbstractController
         {
             $note = new UnitaryNote('');
         }
+        $note->setStartedAt(".");
+        $note->setFinishedAt(".");
 
         $form = $this->createForm(UnitaryNoteType::class, $note);
         $form->handleRequest($request);

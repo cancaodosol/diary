@@ -25,21 +25,6 @@ class UnitaryNoteType extends AbstractType
     {
         $builder
             ->add(
-                'tags',
-                EntityType::class, [
-                    'label' => 'タグ',
-                    'choice_label' => 'name',
-                    'class' => NoteTags::class,
-                    'query_builder' => function (NoteTagsRepository $er): QueryBuilder {
-                        return $er->createQueryBuilder('u')
-                            ->orderBy('u.name', 'ASC');
-                    },
-                    'multiple' => true,
-                    'expanded' => true,
-                    'attr' => ['style' => 'display: flex;'],
-                ]
-            )
-            ->add(
                 'date',
                 DateType::class,
                 [
@@ -57,6 +42,21 @@ class UnitaryNoteType extends AbstractType
                 ],
             )
             ->add(
+                'tags',
+                EntityType::class, [
+                    'label' => 'タグ',
+                    'choice_label' => 'name',
+                    'class' => NoteTags::class,
+                    'query_builder' => function (NoteTagsRepository $er): QueryBuilder {
+                        return $er->createQueryBuilder('u')
+                            ->orderBy('u.name', 'ASC');
+                    },
+                    'multiple' => true,
+                    'expanded' => true,
+                    'attr' => ['style' => 'display: flex;'],
+                ]
+            )
+            ->add(
                 'text',
                 TextareaType::class,
                 [
@@ -67,6 +67,22 @@ class UnitaryNoteType extends AbstractType
                         'rows' => '18'
                     ],
                 ]
+            )
+            ->add(
+                'startedAt',
+                TextType::class,
+                [
+                    'label' => '開始時刻',
+                    'required' => true,
+                ],
+            )
+            ->add(
+                'finishedAt',
+                TextType::class,
+                [
+                    'label' => '終了時刻',
+                    'required' => false,
+                ],
             )
             ->add(
                 'save',

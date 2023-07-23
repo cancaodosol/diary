@@ -61,12 +61,17 @@ class UnitaryNote
      */
     private $tags;
 
+    private $startedAt;
+
+    private $finishedAt;
+
     public function __construct()
     {
         $this->setUserId(1);
         $this->setDiv('');
         $this->setDate(new \DateTime('now'));
         $this->setModifiedOn();
+        $this->setStartedAt();
         $this->tags = new ArrayCollection();
     }
 
@@ -159,6 +164,32 @@ class UnitaryNote
         $this->text = $text;
 
         return $this;
+    }
+
+    public function getStartedAt(): ?string
+    {
+        return $this->startedAt;
+    }
+
+    public function setStartedAt($startedAt = null): void
+    {
+        $this->startedAt = $startedAt == null ? (new \DateTime('now'))->format('H:i') : $startedAt;
+    }
+
+    public function getFinishedAt(): ?string
+    {
+        return $this->finishedAt;
+    }
+
+    public function setFinishedAt($finishedAt): void
+    {
+        $this->finishedAt = $finishedAt;
+    }
+
+    public function getStartedAndFinishedAt(): string
+    {
+        if(!$this->finishedAt) return $this->startedAt." - ".date('H:i');
+        return $this->startedAt." - ".$this->finishedAt;
     }
 
     public function getCreatedOn(): ?\DateTimeInterface
