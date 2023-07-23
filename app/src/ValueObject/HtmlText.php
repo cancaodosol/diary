@@ -6,9 +6,9 @@ class HtmlText
 {
     private $text;
 
-    public function __construct(string $text)
+    public function __construct(?string $text)
     {
-        $this->text = $text;
+        $this->text = $text == null ? '' : $text;
     }
 
     public function getTextHtml(): ?string

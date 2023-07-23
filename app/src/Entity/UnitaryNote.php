@@ -42,7 +42,7 @@ class UnitaryNote
     private $title;
 
     /**
-     * @ORM\Column(name="`text`", type="text", length=65532)
+     * @ORM\Column(name="`text`", type="text", length=65532, nullable=true)
      */
     private $text;
 
@@ -70,6 +70,7 @@ class UnitaryNote
         $this->setUserId(1);
         $this->setDiv('');
         $this->setDate(new \DateTime('now'));
+        $this->setText('');
         $this->setModifiedOn();
         $this->setStartedAt();
         $this->tags = new ArrayCollection();
@@ -178,7 +179,7 @@ class UnitaryNote
         return (new HtmlText($this->text))->getTextHtml();
     }
 
-    public function setText(string $text): self
+    public function setText(?string $text): self
     {
         $this->text = $text;
 
