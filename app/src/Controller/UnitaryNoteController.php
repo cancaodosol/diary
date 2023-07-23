@@ -88,7 +88,7 @@ class UnitaryNoteController extends AbstractController
     public function index_compact(ManagerRegistry $doctrine): Response
     {
         $notes = $doctrine->getRepository(UnitaryNote::class)
-            ->findBy([], ["date" => "ASC"]);
+            ->findBy([], ["date" => "DESC", "title" => "ASC"]);
 
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();
 
