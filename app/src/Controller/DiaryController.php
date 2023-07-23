@@ -21,6 +21,8 @@ class DiaryController extends AbstractController
      */
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        return $this->redirectToRoute('app_unitary', []);
+
         $diaries = $doctrine->getRepository(Diary::class)
             ->findBy([], ["date" => "DESC"]);
 
