@@ -113,8 +113,15 @@ class UnitaryNoteTest extends TestCase
 
         $noteUnits = $this->createNoteUnits($notes);
         $this->assertTrue(count($noteUnits) == 2);
+    }
 
-        print_r($noteUnits);
+    public function testDate()
+    {
+        $nowDate = '2010-09-18';
+        $preDate = date('Y-m-d', strtotime($nowDate.' -1 days'));
+        $nextDate = date('Y-m-d', strtotime($nowDate.' +1 days'));
+        print($preDate);
+        print($nextDate);
     }
 
     private function createNoteUnits($notes)

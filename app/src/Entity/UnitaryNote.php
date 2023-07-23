@@ -137,6 +137,18 @@ class UnitaryNote
         return $date .' ('. $yobi.')';
     }
 
+    public function getPreDateString(): ?string
+    {
+        $nowDate = $this->getDateString();
+        return date('Y-m-d', strtotime($nowDate.' -1 days'));
+    }
+
+    public function getNextDateString(): ?string
+    {
+        $nowDate = $this->getDateString();
+        return date('Y-m-d', strtotime($nowDate.' +1 days'));
+    }
+
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;

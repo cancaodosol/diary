@@ -285,6 +285,8 @@ class UnitaryNoteController extends AbstractController
         $unit = [
             'date' => $preDate,
             'dateWithYoubi' => $notes[0]->getDateStringWithYoubi(),
+            'preDate' => $notes[0]->getPreDateString(),
+            'nextDate' => $notes[0]->getNextDateString(),
             'notes' => []
         ];
         foreach($notes as $note)
@@ -302,6 +304,8 @@ class UnitaryNoteController extends AbstractController
                 $newUnit = [
                     'date' => $nowDate,
                     'dateWithYoubi' => $note->getDateStringWithYoubi(),
+                    'preDate' => $note->getPreDateString(),
+                    'nextDate' => $note->getNextDateString(),
                     'notes' => []
                 ];
 

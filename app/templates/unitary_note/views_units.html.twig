@@ -4,12 +4,18 @@
     <h2>{{ form_name }}</h2>
     {% for note_unit in note_units %}
         <div class="unitary-date text-center">
+            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.preDate }) }}">
+                ＜＜ 
+            </a>　
             {{ note_unit.dateWithYoubi }} 
             <a class="btn btn-link btn-sm" href="{{ path('app_unitary_date',
                 {
                     date: note_unit.date
                 }) }}">
                 [ 見る ]
+            </a>
+            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.nextDate }) }}">
+                ＞＞
             </a>
         </div>
         {% for note in note_unit.notes %}
@@ -38,6 +44,15 @@
                 </a>]
             </div>
         {% endfor %}
+        <div class="btn-bar text-center mt-3 mb-5">
+            <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.preDate }) }}">
+                ＜＜ １日戻る
+            </a>
+            　
+            <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.nextDate }) }}">
+                １日進む ＞＞
+            </a>
+        </div>
     {% endfor %}
 {% endblock %}
 
