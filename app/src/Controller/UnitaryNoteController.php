@@ -21,6 +21,7 @@ class UnitaryNoteController extends AbstractController
      */
     public function index(ManagerRegistry $doctrine, string $tagName=''): Response
     {
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
         if($tagName)
         {
             $tag = $doctrine->getRepository(NoteTags::class)
@@ -34,20 +35,24 @@ class UnitaryNoteController extends AbstractController
                     return 0;
                 });
             $notes = iterator_to_array($notesInterator, false);
+
+            return $this->render('unitary_note/views.html.twig', [
+                'form_name' => '',
+                'tags' => $tags,
+                'notes' => $notes,
+            ]);
         }
         else
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
                 ->findBy([], ["date" => "DESC"]);
+
+            return $this->render('unitary_note/views_units.html.twig', [
+                'form_name' => '',
+                'tags' => $tags,
+                'note_units' => $this->createNoteUnits($notes),
+            ]);
         }
-
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
-
-        return $this->render('unitary_note/views.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'notes' => $notes,
-        ]);
     }
 
     /**
@@ -70,7 +75,13 @@ class UnitaryNoteController extends AbstractController
 
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();
 
-        return $this->render('unitary_note/views.html.twig', [
+        return $this->render('unitary_note/views_units.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'note_units' => $this->createNoteUnits($notes),
+        ]);
+    }
+
             'form_name' => '',
             'tags' => $tags,
             'notes' => $notes,
@@ -253,5 +264,38 @@ class UnitaryNoteController extends AbstractController
                 return $date;
                 break;
             }
+    }
+
+    private function createNoteUnits($notes)
+    {
+        $noteUnits = [];
+        if(count($notes) == 0) return $noteUnits;
+        $preDate = $notes[0]->getDateStringWithYoubi();
+        $unit = [
+            'date' => $preDate,
+            'notes' => []
+        ];
+        foreach($notes as $note)
+        {
+            if($preDate == $note->getDateStringWithYoubi())
+            {
+                $unit['notes'][] = $note;
+            }
+            else
+            {
+                $noteUnits[] = $unit;
+
+                $nowDate = $note->getDateStringWithYoubi();
+                $newUnit = [];
+                $newUnit['date'] = $nowDate;
+                $newUnit['notes'] = [];
+
+                $unit = $newUnit;
+                $preDate = $nowDate;
+                $unit['notes'][] = $note;
+            }
+        }
+        $noteUnits[] = $unit;
+        return $noteUnits;
     }
 }

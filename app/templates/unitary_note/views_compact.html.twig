@@ -1,0 +1,49 @@
+{% extends 'base_view.html.twig' %}
+
+{% block contents %}
+    <h2>{{ form_name }}</h2>
+    {% for note_unit in note_units %}
+        <div class="unitary-date text-center">
+            {{ note_unit.date }}
+        </div>
+        <hr>
+        <div class="unitary-text">
+        {% for note in note_unit.notes %}
+                {{ note.title }}
+                {% for tag in note.tags %}
+                    <span class="badge bg-primary">{{ tag.name }}</span>
+                {% endfor %}
+                [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
+                    {
+                        id: note.id
+                    }) }}">
+                    書く
+                </a>
+                <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
+                    {
+                        id: note.id
+                    }) }}">
+                    見る
+                </a>]
+                <br/>
+        {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block style %}
+    .unitary-date {
+        font-size:1.1rem;
+        font-weight:bold;
+        margin-bottom:20px;
+    }
+    .unitary-title {
+        font-size:1.1rem;
+        font-weight:bold;
+        margin-bottom:20px;
+    }
+    .unitary-text {
+        overflow-wrap: break-word;
+        margin-bottom:40px;
+    }
+{% endblock %}

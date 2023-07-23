@@ -130,6 +130,13 @@ class UnitaryNote
         return $jd->getYoubi();
     }
 
+    public function getDateStringWithYoubi(): ?string
+    {
+        $date = $this->getDateString();
+        $yobi = $this->getDateYoubi();
+        return $date .' ('. $yobi.')';
+    }
+
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
