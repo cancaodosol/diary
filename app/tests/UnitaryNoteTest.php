@@ -120,8 +120,8 @@ class UnitaryNoteTest extends TestCase
         $nowDate = '2010-09-18';
         $preDate = date('Y-m-d', strtotime($nowDate.' -1 days'));
         $nextDate = date('Y-m-d', strtotime($nowDate.' +1 days'));
-        print($preDate);
-        print($nextDate);
+        $this->assertEquals($preDate, '2010-09-17');
+        $this->assertEquals($nextDate, '2010-09-19');
     }
 
     private function createNoteUnits($notes)
@@ -155,5 +155,15 @@ class UnitaryNoteTest extends TestCase
         }
         $noteUnits[] = $unit;
         return $noteUnits;
+    }
+
+    public function testDateAndStartedAt()
+    {
+        $date = new DateTime('2023-06-24 03:04:05');
+        $note1 = new UnitaryNote();
+        $note1->setDateAndStartedAt($date);
+
+        $this->assertEquals($note1->getStartedAt(),'27:04');
+        $this->assertEquals($note1->getDateString(),'2023-6-23');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use App\Repository\UnitaryNoteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -69,10 +70,9 @@ class UnitaryNote
     {
         $this->setUserId(1);
         $this->setDiv('');
-        $this->setDate(new \DateTime('now'));
+        $this->setDateAndStartedAt(new \DateTime('now'));
         $this->setText('');
         $this->setModifiedOn();
-        $this->setStartedAt();
         $this->tags = new ArrayCollection();
     }
 
@@ -196,6 +196,29 @@ class UnitaryNote
         $this->startedAt = $startedAt == null ? (new \DateTime('now'))->format('H:i') : $startedAt;
     }
 
+    public function setDateAndStartedAt(\DateTimeInterface $date): void
+    {
+        $hours = (int)$date->format('H');
+        $day = $date->format('Y-m-d');
+        if($hours < 5)
+        {
+            $day = date('Y-m-d', strtotime($day.' -1 days'));
+        }
+        $this->setDate(new DateTime($day));
+        $this->setStartedAt($this->createTimeAt($date));
+    }
+
+    public function createTimeAt(\DateTimeInterface $date): string
+    {
+        $hours = (int)$date->format('H');
+        $minutes = (int)$date->format('i');
+        if($hours < 5)
+        {
+            $hours += 24;
+        }
+        return sprintf("%'.02d:%'.02d", $hours, $minutes);
+    }
+
     public function getFinishedAt(): ?string
     {
         return $this->finishedAt;
@@ -208,7 +231,10 @@ class UnitaryNote
 
     public function getStartedAndFinishedAt(): string
     {
-        if(!$this->finishedAt) return $this->startedAt." - ".date('H:i');
+        if(!$this->finishedAt)
+        {
+            return $this->startedAt." - ".$this->createTimeAt(new \DateTime('now'));
+        }
         return $this->startedAt." - ".$this->finishedAt;
     }
 
