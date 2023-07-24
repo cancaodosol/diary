@@ -9,6 +9,18 @@
             }) }}">
             編集
         </a>
+        <a class="btn btn-primary btn-sm" href="{{ path('new_unitary',
+            {
+                date: note.dateString
+            }) }}">
+            追加
+        </a>
+        <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date',
+            {
+                date: note.dateString
+            }) }}">
+            今日へ
+        </a>
         <hr>
     </div>
     <div class="diary-text">
@@ -20,6 +32,18 @@
                 id: note.id
             }) }}">
             編集
+        </a>
+        <a class="btn btn-primary btn-sm" href="{{ path('new_unitary',
+            {
+                date: note.dateString
+            }) }}">
+            追加
+        </a>
+        <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date',
+            {
+                date: note.dateString
+            }) }}">
+            今日へ
         </a>
     </div>
 {% endblock %}
