@@ -18,3 +18,6 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash \
 
 RUN git config --global user.email "atagohan@yahoo.co.jp" \ 
     && git config --global user.name "Hideyuki Matsui"
+
+RUN mkdir /var/www/diary/public/uploads \
+    && chmod go+w /var/www/diary/public/uploads
