@@ -1,0 +1,11 @@
+fm_elfinder:
+    instances:
+        default:
+            connector:
+                roots:
+                    uploads:
+                        # 参考：https://www.maruzen-p.jp/news/41
+                        driver: LocalFileSystem   # ローカルファイルシステムを利用
+                        path: uploads             # アップロードディレクトリ、この場合、SymfonyのDocumentRoot以下の「uploads」ディレクトリという意味です
+                        upload_allow: ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf']   # アップロードを許可するファイルの種類
+                        upload_max_size: 7M       # アップロードできる1ファイルのサイズ
