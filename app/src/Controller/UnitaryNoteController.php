@@ -45,7 +45,7 @@ class UnitaryNoteController extends AbstractController
         else
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
-                ->findBy([], ["date" => "DESC"]);
+                ->findBy([], ["date" => "DESC", "title" => "ASC"]);
 
             return $this->render('unitary_note/views_units.html.twig', [
                 'form_name' => '',
