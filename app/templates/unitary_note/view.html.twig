@@ -2,7 +2,7 @@
 
 {% block contents %}
     <div class="diary-date">
-        {{ note.dateString }} ({{ note.dateYoubi }})
+        {{ note.dateString }} ({{ note.dateYoubi }})　{{ note.title }}
         <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',
             {
                 id: note.id
