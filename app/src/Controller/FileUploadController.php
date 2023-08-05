@@ -27,8 +27,6 @@ class FileUploadController extends AbstractController
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
         {
-            $newForm = $this->createForm(FileUploadType::class);
-
             $file1 = $form->get('file1')->getData();
             if($file1)
             {
@@ -44,8 +42,8 @@ class FileUploadController extends AbstractController
             {
                 $url = $this->uploadFiles($file3, $slugger);
             }
-
-            $form = $newForm;
+            
+            return $this->redirectToRoute('show_upload_files');
         }
 
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();
