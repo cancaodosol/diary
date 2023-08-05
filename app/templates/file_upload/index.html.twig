@@ -22,7 +22,7 @@
             <div class="mb-3 col-md-2">
                 <img src="{{file}}" style="width: 100%; max-width: 150px;"/>
                 <textarea class="form-control" rows="1" style="font-size:0.5rem;">&lt;img src=&quot;{{file}}&quot; style=&quot;width: 100%; max-width: 540px;&quot;/&gt;</textarea>
-                <button class="btn btn-outline-primary mt-1" onclick="copyToClipboard(this)">Copy URL</button>
+                <button class="btn btn-outline-primary mt-3" onclick="copyToClipboard(this)">Copy URL</button>
             </div>
         {% endfor %}
     </div>
@@ -40,11 +40,29 @@
         // 選択しているテキストをクリップボードにコピーする
         document.execCommand("Copy");
 
+        // 選択を解除する
+        deleteSelect();
+
         // まとめる
         if(textareaEle.id != 'summary-area')
         {
             sumEle = document.getElementById('summary-area')
             sumEle.value = sumEle.value + "\n\n" + copyTarget.value
+        }
+    }
+
+    // 選択を解除
+    function deleteSelect() {
+        if (window.getSelection)
+        {
+            var selection = window.getSelection();
+            selection.collapse(document.body, 0);
+        }
+        else
+        {
+            var selection = document.selection.createRange();
+            selection.setEndPoint("EndToStart", selection);
+            selection.select();
         }
     }
 </script>
