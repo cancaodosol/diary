@@ -13,6 +13,10 @@
     <a class="btn btn-outline-danger btn-sm mb-3" href="{{ path('upload_files') }}">
         ファイルアップロード
     </a>
+    <div class="row mb-5">
+        <textarea id="summary-area" class="form-control" rows="15" style="font-size:0.5rem;"></textarea>
+        <button class="btn btn-outline-primary mt-1" onclick="copyToClipboard(this)">Copy Text</button>
+    </div>
     <div class="row">
         {% for file in files %}
             <div class="mb-3 col-md-2">
@@ -36,8 +40,12 @@
         // 選択しているテキストをクリップボードにコピーする
         document.execCommand("Copy");
 
-        // コピーをお知らせする
-        alert("コピーできました！ : " + copyTarget.value);
+        // まとめる
+        if(textareaEle.id != 'summary-area')
+        {
+            sumEle = document.getElementById('summary-area')
+            sumEle.value = sumEle.value + "\n\n" + copyTarget.value
+        }
     }
 </script>
 {% endblock %}
