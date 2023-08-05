@@ -17,8 +17,8 @@
         {% for file in files %}
             <div class="mb-3 col-md-2">
                 <img src="{{file}}" style="width: 100%; max-width: 150px;"/>
-                <textarea class="form-control" rows="1" style="font-size: 0.5rem;">&lt;img src=&quot;{{file}}&quot; style=&quot;width: 100%; max-width: 540px;&quot;/&gt;</textarea>
-                <button class="btn btn-outline-primary" onclick="copyToClipboard(this)">Copy URL</button>
+                <textarea class="form-control" rows="1" hidden>&lt;img src=&quot;{{file}}&quot; style=&quot;width: 100%; max-width: 540px;&quot;/&gt;</textarea>
+                <button class="btn btn-outline-primary mt-1" onclick="copyToClipboard(this)">Copy URL</button>
             </div>
         {% endfor %}
     </div>
