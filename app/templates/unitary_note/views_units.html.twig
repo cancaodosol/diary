@@ -29,7 +29,12 @@
             <div class="unitary-title">
                 {{ note.title }}
                 {% for tag in note.tags %}
-                    <span class="badge bg-primary">{{ tag.name }}</span>
+                    <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
+                        {
+                            tagName: tag.name
+                        }) }}">
+                        {{ tag.name }}
+                    </a>
                 {% endfor %}
             </div>
             <div class="unitary-text">
@@ -79,5 +84,8 @@
     .unitary-footer {
         margin-bottom:40px;
         text-align:right;
+    }
+    .note-tags {
+        text-decoration: none;
     }
 {% endblock %}

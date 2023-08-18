@@ -15,22 +15,20 @@
         <hr>
         <div class="unitary-text">
         {% for note in note_unit.notes %}
-                {{ note.title }}
-                {% for tag in note.tags %}
-                    <span class="badge bg-primary">{{ tag.name }}</span>
-                {% endfor %}
-                [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
+                ・<a class="note-title" href="{{ path('view_unitary',
                     {
                         id: note.id
                     }) }}">
-                    書く
+                    {{ note.title }}
                 </a>
-                <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
-                    {
-                        id: note.id
-                    }) }}">
-                    見る
-                </a>]
+                {% for tag in note.tags %}
+                    <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
+                        {
+                            tagName: tag.name
+                        }) }}">
+                        {{ tag.name }}
+                    </a>
+                {% endfor %}
                 <br/>
         {% endfor %}
         </div>
@@ -51,5 +49,12 @@
     .unitary-text {
         overflow-wrap: break-word;
         margin-bottom:40px;
+    }
+    .note-title {
+        text-decoration: none;
+        color: black;
+    }
+    .note-tags {
+        text-decoration: none;
     }
 {% endblock %}
