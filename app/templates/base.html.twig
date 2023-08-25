@@ -118,6 +118,20 @@
                     </a>
                 {% endfor %}
             </div>
+            <div class="btn-bar text-center mt-3 mb-3">
+                <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-1week'}) }}">
+                    １週間前
+                </a>
+                <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-2weeks'}) }}">
+                    ２週間前
+                </a>
+                <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-1month'}) }}">
+                    １ヶ月前
+                </a>
+                <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-2months'}) }}">
+                    ２ヶ月前
+                </a>
+            </div>
             <main role="main">
                 {% block body %}{% endblock %}
             </main>

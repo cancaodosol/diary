@@ -275,6 +275,27 @@ class UnitaryNoteController extends AbstractController
             case 'yesterday':
                 return date('Y-m-d', strtotime("-1 days"));
                 break;
+            case '-1week':
+                return date('Y-m-d', strtotime("-7 days"));
+                break;
+            case '-10days':
+                return date('Y-m-d', strtotime("-10 days"));
+                break;
+            case '-2weeks':
+                return date('Y-m-d', strtotime("-14 days"));
+                break;
+            case '-1month':
+                return date('Y-m-d', strtotime("-1 months"));
+                break;
+            case '-2months':
+                return date('Y-m-d', strtotime("-2 months"));
+                break;
+            case '-3months':
+                return date('Y-m-d', strtotime("-3 months"));
+                break;
+            case '-100days':
+                return date('Y-m-d', strtotime("-100 days"));
+                break;
             default:
                 return $date;
                 break;
