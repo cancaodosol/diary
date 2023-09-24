@@ -15,12 +15,6 @@
             }) }}">
             追加
         </a>
-        <a class="btn btn-primary btn-sm" href="{{ path('view_raw_unitary',
-            {
-                id: note.id
-            }) }}">
-            Raw
-        </a>
         <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date',
             {
                 date: note.dateString
@@ -30,7 +24,7 @@
         <hr>
     </div>
     <div class="diary-text">
-        {{ note.textHtml | raw }}
+        {{ note.text | raw }}
     </div>
     <div class="diary-footer">
         <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',

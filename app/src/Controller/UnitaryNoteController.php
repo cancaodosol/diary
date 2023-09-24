@@ -209,6 +209,26 @@ class UnitaryNoteController extends AbstractController
     }
 
     /**
+     * @Route("/unitary/view_raw/{id}", name="view_raw_unitary")
+     */
+    public function viewRawUnitary(Request $request, ManagerRegistry $doctrine, int $id): Response
+    {
+        $note = $doctrine->getRepository(UnitaryNote::class)->findOneBy(['id' => $id]);
+        if(!$note)
+        {
+            $note = new UnitaryNote('');
+        }
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
+        return $this->renderForm('unitary_note/view_raw.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'note' => $note,
+        ]);
+    }
+
+    /**
      * @Route("/unitary/transfer", name="transfer_unitary")
      */
     public function transferUnitary(Request $request, ManagerRegistry $doctrine): Response
