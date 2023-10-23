@@ -39,6 +39,21 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         }
     }
 
+    public function findRecently(\DateTimeInterface $date)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u
+            FROM App\Entity\UnitaryNote u
+            WHERE u.date >= :date
+            ORDER BY u.date DESC, u.title ASC'
+        )->setParameter('date', $date);
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
+
 //    /**
 //     * @return UnitaryNote[] Returns an array of UnitaryNote objects
 //     */

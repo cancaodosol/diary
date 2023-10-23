@@ -22,30 +22,16 @@ class UnitaryNoteController extends AbstractController
     public function index(ManagerRegistry $doctrine, string $tagName=''): Response
     {
         $tags = $doctrine->getRepository(NoteTags::class)->findAll();
-        if($tagName)
-        {
-            $tag = $doctrine->getRepository(NoteTags::class)
-                ->findOneBy(["name" => $tagName]);
-            $notesInterator = $tag->getUnitaryNotes()->getIterator();
-            $notesInterator->uasort(function($pA , $pB){
-                    if($pA->getDate() < $pB->getDate()) return 1;
-                    if($pA->getDate() > $pB->getDate()) return -1;
-                    if($pA->getTitle() < $pB->getTitle()) return 1;
-                    if($pA->getTitle() > $pB->getTitle()) return -1;
-                    return 0;
-                });
-            $notes = iterator_to_array($notesInterator, false);
 
-            return $this->render('unitary_note/views.html.twig', [
-                'form_name' => '',
-                'tags' => $tags,
-                'notes' => $notes,
-            ]);
+        if($tagName == '')
+        {
+            return $this->redirectToRoute('app_unitary',['tagName' => 'All']);
         }
-        else
+
+        if($tagName == 'All')
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
-                ->findBy([], ["date" => "DESC", "title" => "ASC"]);
+                ->findRecently((new \DateTime('now'))->modify('-1 months'));
 
             return $this->render('unitary_note/views_units.html.twig', [
                 'form_name' => '',
@@ -53,6 +39,36 @@ class UnitaryNoteController extends AbstractController
                 'note_units' => $this->createNoteUnits($notes),
             ]);
         }
+
+        if($tagName == 'Full')
+        {
+            $notes = $doctrine->getRepository(UnitaryNote::class)
+            ->findBy([], ["date" => "DESC", "title" => "ASC"]);
+
+            return $this->render('unitary_note/views_units.html.twig', [
+                'form_name' => '',
+                'tags' => $tags,
+                'note_units' => $this->createNoteUnits($notes),
+            ]);
+        }
+
+        $tag = $doctrine->getRepository(NoteTags::class)
+            ->findOneBy(["name" => $tagName]);
+        $notesInterator = $tag->getUnitaryNotes()->getIterator();
+        $notesInterator->uasort(function($pA , $pB){
+                if($pA->getDate() < $pB->getDate()) return 1;
+                if($pA->getDate() > $pB->getDate()) return -1;
+                if($pA->getTitle() < $pB->getTitle()) return 1;
+                if($pA->getTitle() > $pB->getTitle()) return -1;
+                return 0;
+            });
+        $notes = iterator_to_array($notesInterator, false);
+
+        return $this->render('unitary_note/views.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'notes' => $notes,
+        ]);
     }
 
     /**
