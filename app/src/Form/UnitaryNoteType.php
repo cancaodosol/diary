@@ -53,7 +53,7 @@ class UnitaryNoteType extends AbstractType
                     },
                     'multiple' => true,
                     'expanded' => true,
-                    'attr' => ['style' => 'display: flex;'],
+                    'attr' => ['style' => 'display: flex; flex-wrap: wrap;'],
                 ]
             )
             ->add(
