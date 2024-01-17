@@ -17,15 +17,15 @@ use App\Form\UnitaryNoteType;
 class UnitaryNoteController extends AbstractController
 {
     /**
-     * @Route("/unitary/t/{tagName}", name="app_unitary")
+     * @Route("/unitary/t/{tagName}/{mode}", name="app_unitary")
      */
-    public function index(ManagerRegistry $doctrine, string $tagName=''): Response
+    public function index(ManagerRegistry $doctrine, string $tagName='', string $mode=''): Response
     {
         $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
 
         if($tagName == '')
         {
-            return $this->redirectToRoute('app_unitary',['tagName' => 'All']);
+            return $this->redirectToRoute('app_unitary',['tagName' => 'All', 'mode' => $mode]);
         }
 
         if($tagName == 'All')
@@ -64,11 +64,22 @@ class UnitaryNoteController extends AbstractController
             });
         $notes = iterator_to_array($notesInterator, false);
 
-        return $this->render('unitary_note/views.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'notes' => $notes,
-        ]);
+        if($mode == "card")
+        {
+            return $this->render('unitary_note/views_cards.html.twig', [
+                'form_name' => '',
+                'tags' => $tags,
+                'thisTag' => $tagName,
+                'notes' => $notes,
+            ]);
+        } else {
+            return $this->render('unitary_note/views.html.twig', [
+                'form_name' => '',
+                'tags' => $tags,
+                'thisTag' => $tagName,
+                'notes' => $notes,
+            ]);
+        }
     }
 
     /**

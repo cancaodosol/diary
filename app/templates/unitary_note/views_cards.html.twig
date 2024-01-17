@@ -1,0 +1,79 @@
+{% extends 'base_view.html.twig' %}
+
+{% block contents_wide %}
+    <h2>{{ form_name }}</h2>
+    <div>
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag, mode: '' }) }}">
+            << 一覧形式で表示
+        </a>
+    </div>
+    <div class="note-cards-box">
+    {% for note in notes %}
+        <div class="note-card">
+            <div class="note-title">
+                {{ note.titleWithoutDate }}
+            </div>
+            <div class="note-text">
+                {{ note.textHtml | raw }}
+            </div>
+            <div class="note-footer">
+                {{ note.dateString }} ({{ note.dateYoubi }}) {{ note.titleDate }}
+                [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
+                    {
+                        id: note.id
+                    }) }}">
+                    ✏️
+                </a>
+                <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
+                    {
+                        id: note.id
+                    }) }}">
+                    👀
+                </a>]
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block style %}
+    .note-title {
+        font-size:1rem;
+        font-weight:bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .note-footer {
+        text-align:right;
+    }
+    .note-tags {
+        text-decoration: none;
+    }
+    .note-cards-box {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .note-card {
+        width: 315px;
+        padding: 15px;
+        margin: 5px;
+        border: solid #003366;
+        border-radius: 10px;
+        color: #003399;
+    }
+    .note-text {
+        height: 180px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin: 10px 0 10px 0;
+    }
+    .tags-box {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .tags-box a {
+        margin-right: 3px;
+    }
+{% endblock %}

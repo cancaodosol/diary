@@ -132,9 +132,18 @@
                     ２ヶ月前
                 </a>
             </div>
+        </div>
+        <div class="container">
             <main role="main">
                 {% block body %}{% endblock %}
             </main>
+        </div>
+        <div class="">
+            <main role="main2">
+                {% block body_wide %}{% endblock %}
+            </main>
+        </div>
+        <div class="container">
             <hr>
             <div class="btn-bar text-center mt-3 mb-3">
                 <a class="btn btn-primary btn-sm" href="{{ path('app_unitary') }}">

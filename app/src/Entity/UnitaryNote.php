@@ -162,6 +162,16 @@ class UnitaryNote
         return $this->title;
     }
 
+    public function getTitleWithoutDate(): ?string
+    {
+        return substr($this->title, 16);
+    }
+
+    public function getTitleDate(): ?string
+    {
+        return substr($this->title, 0, 13);
+    }
+
     public function setTitle(string $title): self
     {
         $this->title = $title;
