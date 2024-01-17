@@ -8,10 +8,12 @@
         </a>
     </div>
     <div class="note-cards-box">
+    {% set no = notes|length %}
     {% for note in notes %}
         <div class="note-card">
             <div class="note-title">
-                {{ note.titleWithoutDate }}
+                #{{ no }}: {{ note.titleWithoutDate }}
+                {% set no = no - 1 %}
             </div>
             <div class="note-text">
                 {{ note.textHtml | raw }}
