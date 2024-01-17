@@ -38,14 +38,12 @@
 
 {% block style %}
     .note-title {
-        font-size:1rem;
+        font-size:0.8rem;
         font-weight:bold;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-    }
-    .note-footer {
-        text-align:right;
+        border-bottom: 1px solid #003366;
     }
     .note-tags {
         text-decoration: none;
@@ -53,17 +51,19 @@
     .note-cards-box {
         display: flex;
         flex-wrap: wrap;
+        align-items: center;
     }
     .note-card {
-        width: 315px;
-        padding: 15px;
+        width: 280px;
+        font-size:0.7rem;
+        padding: 15px 15px 5px 15px;
         margin: 5px;
         border: solid #003366;
         border-radius: 10px;
         color: #003399;
     }
     .note-text {
-        height: 180px;
+        height: 120px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -75,5 +75,15 @@
     }
     .tags-box a {
         margin-right: 3px;
+    }
+    .note-footer {
+        border-top: 1px solid #003366;
+        text-align:right;
+    }
+    @media screen and (max-width: 480px) {
+        /* 480px以下に適用されるCSS（スマホ用） */
+        .note-card {
+            width: 95%;
+        }
     }
 {% endblock %}
