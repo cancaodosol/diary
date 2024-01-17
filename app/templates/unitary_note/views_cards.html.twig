@@ -19,7 +19,13 @@
                 {{ note.textHtml | raw }}
             </div>
             <div class="note-footer">
-                {{ note.dateString }} ({{ note.dateYoubi }}) {{ note.titleDate }}
+                <a href="{{ path('app_unitary_date',
+                    {
+                        date: note.dateString
+                    }) }}">
+                    {{ note.dateString }} ({{ note.dateYoubi }})
+                </a>
+                {{ note.titleDate }}
                 [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
                     {
                         id: note.id
