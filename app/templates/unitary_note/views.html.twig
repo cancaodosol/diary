@@ -13,7 +13,7 @@
             [　{{ note.dateString }} ({{ note.dateYoubi }})　]
         </div>
         <div class="unitary-title">
-            {{ note.title }}
+            <a class="text-dark" href="{{ path('edit_unitary',{ id: note.id }) }}">{{ note.title }}</a>
             {% for tag in note.tags %}
                 <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
                     {
