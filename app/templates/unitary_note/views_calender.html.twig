@@ -1,0 +1,60 @@
+{% extends 'base_view.html.twig' %}
+
+{% block contents_wide %}
+    <h2>{{ form_name }}</h2>
+    <div>
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag, mode: '' }) }}">
+            << 一覧形式で表示
+        </a>
+    </div>
+    <div class="calender-cards-box">
+    {% for calender_note in calender_notes %}
+        <div class="calender-card">
+            <div class="note-card">
+                {{ calender_note.date|date('m/d') }}
+                <div class="note-content">
+                    {% for note in calender_note.notes %}
+                        <li class="note-title">{{ note.getTitleWithoutDate() }}</li>
+                   {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block style %}
+    .calender-title {
+        font-size:0.8rem;
+        font-weight:bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid #003366;
+    }
+    .calender-tags {
+        text-decoration: none;
+    }
+    .calender-cards-box {
+        display: flex;
+        flex-wrap: wrap-reverse;
+        align-items: flex-end;
+    }
+    .calender-card {
+        width: 14.2%;
+        padding: 5px;
+    }
+    .note-card {
+        font-size:0.7rem;
+        padding: 10px;
+        border: solid #003366;
+        border-radius: 10px;
+        color: #003399;
+    }
+    @media screen and (max-width: 480px) {
+        /* 480px以下に適用されるCSS（スマホ用） */
+        .calender-card {
+            width: 95%;
+        }
+    }
+{% endblock %}

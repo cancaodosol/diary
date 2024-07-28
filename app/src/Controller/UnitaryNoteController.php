@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\NoteTags;
 use App\Entity\UnitaryNote;
 use App\Entity\Diary;
+use App\Helpers\DateHelper;
+
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +33,14 @@ class UnitaryNoteController extends AbstractController
         if($tagName == 'All')
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
-                ->findRecently((new \DateTime('now'))->modify('-1 months'));
+                ->findRecently((new \DateTime('now'))->modify('-3 months'));
+
+            if($mode == "calender")
+            {
+                $dateHelper = new DateHelper();
+                $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 16);
+                return $this->viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates);
+            }
 
             return $this->render('unitary_note/views_units.html.twig', [
                 'form_name' => '',
@@ -44,6 +53,13 @@ class UnitaryNoteController extends AbstractController
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
             ->findBy([], ["date" => "DESC", "title" => "ASC"]);
+
+            if($mode == "calender")
+            {
+                $dateHelper = new DateHelper();
+                $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 160);
+                return $this->viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates);
+            }
 
             return $this->render('unitary_note/views_units.html.twig', [
                 'form_name' => '',
@@ -72,6 +88,10 @@ class UnitaryNoteController extends AbstractController
                 'thisTag' => $tagName,
                 'notes' => $notes,
             ]);
+        } elseif($mode == "calender") {
+            $dateHelper = new DateHelper();
+            $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 16);
+            return $this->viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates);
         } else {
             return $this->render('unitary_note/views.html.twig', [
                 'form_name' => '',
@@ -80,6 +100,39 @@ class UnitaryNoteController extends AbstractController
                 'notes' => $notes,
             ]);
         }
+    }
+
+    private function viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates): Response
+    {
+        $calender_notes = [];
+        $note_index = 0;
+        for ($i = 0; $i < count($calender_dates); $i++) {
+            $calender_date = $calender_dates[$i];
+            $calender_date_notes = [];
+            for ($j = $note_index; $j < count($notes); $j++) {
+                $note = $notes[$j];
+                if($calender_date->format('Y-n-j') != $note->getDate()->format('Y-n-j')){
+                    if(count($calender_date_notes) == 0) continue;
+                    $note_index = $j;
+                    break;
+                }
+                $calender_date_notes[] = $note;
+            }
+            $calender_notes[] = [
+                "date" => $calender_date,
+                "notes" => $calender_date_notes,
+            ];
+        }
+
+        $calender_notes = array_reverse($calender_notes);
+
+        return $this->render('unitary_note/views_calender.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'thisTag' => $tagName,
+            'notes' => $notes,
+            'calender_notes' => $calender_notes,
+        ]);
     }
 
     /**
