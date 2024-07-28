@@ -28,7 +28,7 @@ class DateHelper
         $weekend = $this->getWeekedndDate($date);
         for($i = 0; $i < $dates; $i++){
             if($i != 0) $date->modify("-1 day");
-            $result[] = clone $date;
+            $result[] = new JapaneseDate(clone $date);
         }
         return $result;
     }

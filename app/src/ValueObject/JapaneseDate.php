@@ -16,6 +16,11 @@ class JapaneseDate
         return $this->date;
     }
 
+    public function format($format): string
+    {
+        return $this->date->format($format);
+    }
+
     public function getYoubi(): ?string
     {
         $w_no = $this->date->format('w');

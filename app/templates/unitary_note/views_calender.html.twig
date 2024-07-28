@@ -11,10 +11,10 @@
     {% for calender_note in calender_notes %}
         <div class="calender-card">
             <div class="note-card">
-                {{ calender_note.date|date('m/d') }}
+                <div class="calender-title">{{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})</div>
                 <div class="note-content">
                     {% for note in calender_note.notes %}
-                        <li class="note-title">{{ note.getTitleWithoutDate() }}</li>
+                        <li class="note-title"><a href="{{ path('view_unitary', { id: note.id }) }}">{{ note.getTitleWithoutDate() }}</a></li>
                    {% endfor %}
                 </div>
             </div>
@@ -38,18 +38,23 @@
     .calender-cards-box {
         display: flex;
         flex-wrap: wrap-reverse;
-        align-items: flex-end;
+        align-items: stretch;
     }
     .calender-card {
         width: 14.2%;
         padding: 5px;
+        margin-top: 15px;
     }
     .note-card {
+        height: 100%;
         font-size:0.7rem;
         padding: 10px;
         border: solid #003366;
         border-radius: 10px;
         color: #003399;
+    }
+    .note-content {
+        margin-top: 15px;
     }
     @media screen and (max-width: 480px) {
         /* 480px以下に適用されるCSS（スマホ用） */
