@@ -85,24 +85,24 @@ class UnitaryNoteController extends AbstractController
             return $this->render('unitary_note/views_cards.html.twig', [
                 'form_name' => '',
                 'tags' => $tags,
-                'thisTag' => $tagName,
+                'thisTag' => $tag,
                 'notes' => $notes,
             ]);
         } elseif($mode == "calender") {
             $dateHelper = new DateHelper();
             $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 16);
-            return $this->viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates);
+            return $this->viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates);
         } else {
             return $this->render('unitary_note/views.html.twig', [
                 'form_name' => '',
                 'tags' => $tags,
-                'thisTag' => $tagName,
+                'thisTag' => $tag,
                 'notes' => $notes,
             ]);
         }
     }
 
-    private function viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates): Response
+    private function viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates): Response
     {
         $calender_notes = [];
         $note_index = 0;
@@ -129,7 +129,7 @@ class UnitaryNoteController extends AbstractController
         return $this->render('unitary_note/views_calender.html.twig', [
             'form_name' => '',
             'tags' => $tags,
-            'thisTag' => $tagName,
+            'thisTag' => $tag,
             'notes' => $notes,
             'calender_notes' => $calender_notes,
         ]);

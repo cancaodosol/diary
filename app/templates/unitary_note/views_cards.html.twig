@@ -2,9 +2,19 @@
 
 {% block contents_wide %}
     <h2>{{ form_name }}</h2>
+    {% if(thisTag) %}
+    <div class="mb-5 p-3">
+        <div class="text-dark">＜ {{ thisTag.name }} ＞ <a href="{{ path('edit_note_tags', { id: thisTag.id }) }}">編集</a></div>
+        <div class="mt-1">{{ thisTag.description | raw }}</div>
+        <div class="mt-1">{{ thisTag.textHtml | raw }}</div>
+    </div>
+    {% endif %}
     <div>
-        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag, mode: '' }) }}">
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: '' }) }}">
             << 一覧形式で表示
+        </a>
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: 'calender' }) }}">
+            >> カレンダー形式で表示
         </a>
     </div>
     <div class="note-cards-box">

@@ -54,4 +54,30 @@ class NoteTagsController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    /**
+     * @Route("/note/tags/edit/{id}", name="edit_note_tags")
+     */
+    public function editNoteTags(Request $request, ManagerRegistry $doctrine, int $id): Response
+    {
+        $tag = $doctrine->getRepository(NoteTags::class)->find($id);
+        $form = $this->createForm(NoteTagsType::class, $tag);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $tag = $form->getData();
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($tag);
+            $entityManager->flush();
+            return $this->redirectToRoute('app_note_tags');
+        }
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
+        return $this->renderForm('./new.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'form' => $form,
+        ]);
+    }
 }
