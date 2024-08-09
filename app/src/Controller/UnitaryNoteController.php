@@ -39,7 +39,7 @@ class UnitaryNoteController extends AbstractController
             {
                 $dateHelper = new DateHelper();
                 $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 16);
-                return $this->viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates);
+                return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates);
             }
 
             return $this->render('unitary_note/views_units.html.twig', [
@@ -58,7 +58,7 @@ class UnitaryNoteController extends AbstractController
             {
                 $dateHelper = new DateHelper();
                 $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 160);
-                return $this->viewNotesByCalenderFormat($tags, $tagName, $notes, $calender_dates);
+                return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates);
             }
 
             return $this->render('unitary_note/views_units.html.twig', [
