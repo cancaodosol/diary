@@ -303,7 +303,7 @@ class UnitaryNoteController extends AbstractController
 
         $notes = $doctrine->getRepository(UnitaryNote::class)
             ->findInTerm(
-                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-2 days'),
+                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-1 days'),
                 (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
             );
 
