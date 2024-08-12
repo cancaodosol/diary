@@ -30,7 +30,7 @@
                     <hr>
                     <div class="unitary-text mb-5">
                     {% for note in note_unit.notes %}
-                            ・<a class="note-title" href="{{ path('view_unitary',
+                            ・<a class="note-title" href="{{ path('edit_unitary_with_compact',
                                 {
                                     id: note.id
                                 }) }}">
