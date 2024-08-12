@@ -3,17 +3,23 @@
 {% block contents %}
     <div class="diary-date">
         {{ note.dateString }} ({{ note.dateYoubi }})　{{ note.title }}
-        <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',
+        <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary_with_compact',
             {
                 id: note.id
             }) }}">
-            編集
+            編集W
         </a>
         <a class="btn btn-primary btn-sm" href="{{ path('new_unitary',
             {
                 date: note.dateString
             }) }}">
             追加
+        </a>
+        <a class="btn btn-primary btn-sm" href="{{ path('new_unitary_with_compact',
+            {
+                date: note.dateString
+            }) }}">
+            追加W
         </a>
         <a class="btn btn-primary btn-sm" href="{{ path('view_raw_unitary',
             {
@@ -33,17 +39,23 @@
         {{ note.textHtml | raw }}
     </div>
     <div class="diary-footer">
-        <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary',
+        <a class="btn btn-primary btn-sm" href="{{ path('edit_unitary_with_compact',
             {
                 id: note.id
             }) }}">
-            編集
+            編集W
         </a>
         <a class="btn btn-primary btn-sm" href="{{ path('new_unitary',
             {
                 date: note.dateString
             }) }}">
             追加
+        </a>
+        <a class="btn btn-primary btn-sm" href="{{ path('new_unitary_with_compact',
+            {
+                date: note.dateString
+            }) }}">
+            追加W
         </a>
         <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date',
             {

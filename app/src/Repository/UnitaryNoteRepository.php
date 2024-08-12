@@ -54,6 +54,22 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function findInTerm(\DateTimeInterface $startdate, \DateTimeInterface $enddate)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u
+            FROM App\Entity\UnitaryNote u
+            WHERE u.date >= :startdate and u.date <= :enddate
+            ORDER BY u.date ASC, u.title ASC'
+        )->setParameter('startdate', $startdate)
+         ->setParameter('enddate', $enddate);
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
+
 //    /**
 //     * @return UnitaryNote[] Returns an array of UnitaryNote objects
 //     */

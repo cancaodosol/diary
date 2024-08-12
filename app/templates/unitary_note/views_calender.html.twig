@@ -8,7 +8,6 @@
         <div class="mt-1">{{ thisTag.description | raw }}</div>
         <div class="mt-1">{{ thisTag.textHtml | raw }}</div>
     </div>
-    {% endif %}
     <div>
         <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: '' }) }}">
             << 一覧形式で表示
@@ -17,6 +16,7 @@
             >> カード形式で表示
         </a>
     </div>
+    {% endif %}
     <div class="calender-cards-box">
     {% for calender_note in calender_notes %}
         <div class="calender-card">

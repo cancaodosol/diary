@@ -23,7 +23,7 @@
             [　{{ note.dateString }} ({{ note.dateYoubi }})　]
         </div>
         <div class="unitary-title">
-            <a class="text-dark" href="{{ path('edit_unitary',{ id: note.id }) }}">{{ note.title }}</a>
+            <a class="text-dark" href="{{ path('edit_unitary_with_compact',{ id: note.id }) }}">{{ note.title }}</a>
             {% for tag in note.tags %}
                 <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
                     {
@@ -37,11 +37,11 @@
             {{ note.textHtml | raw }}
         </div>
         <div class="unitary-footer">
-            [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary',
+            [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary_with_compact',
                 {
                     id: note.id
                 }) }}">
-                書く
+                編集W
             </a>
             <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
                 {

@@ -269,6 +269,104 @@ class UnitaryNoteController extends AbstractController
         ]);
     }
 
+
+    /**
+     * @Route("/unitary/new_w/{date}", name="new_unitary_with_compact")
+     */
+    public function newUnitaryWithCompact(Request $request, ManagerRegistry $doctrine, string $date=''): Response
+    {
+        $note = new UnitaryNote();
+        if($date == '') $date = "today";
+        $date = $this->transferDate($date);
+        if($date != '')
+        {
+            $note->setDate(DateTime::createFromFormat('Y-m-d', $date));
+        }
+
+        $form = $this->createForm(UnitaryNoteType::class, $note);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $note = $form->getData();
+            $title = $note->getStartedAndFinishedAt()."　".$note->getTitle();
+            $note->setTitle($title);
+
+            // 更新処理
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($note);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('new_unitary_with_compact', [
+                'date' => $note->getDateString()
+            ]);
+        }
+
+        $notes = $doctrine->getRepository(UnitaryNote::class)
+            ->findInTerm(
+                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-2 days'),
+                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
+            );
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+
+        return $this->renderForm('./diary_compact/withnew.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'form' => $form,
+            'note_units' => $this->createNoteUnits($notes),
+        ]);
+    }
+
+    /**
+     * @Route("/unitary/edit_w/{id}", name="edit_unitary_with_compact")
+     */
+    public function editUnitaryWithCompact(Request $request, ManagerRegistry $doctrine, int $id): Response
+    {
+        $note = $doctrine->getRepository(UnitaryNote::class)->findOneBy(['id' => $id]);
+        if(!$note)
+        {
+            $note = new UnitaryNote('');
+        }
+        $note->setStartedAt(".");
+        $note->setFinishedAt(".");
+
+        $form = $this->createForm(UnitaryNoteType::class, $note);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $note = $form->getData();
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($note);
+            $entityManager->flush();
+            return $this->redirectToRoute('new_unitary_with_compact', [
+                'date' => $note->getDateString()
+            ]);
+        }
+
+        $notes = $doctrine->getRepository(UnitaryNote::class)
+            ->findInTerm(
+                (clone $note->getDate())->setTime(0, 0)->modify('-2 days'),
+                (clone $note->getDate())->setTime(0, 0)->modify('+1 days')
+            );
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+
+        return $this->renderForm('./diary_compact/withnew.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'form' => $form,
+            'note_units' => $this->createNoteUnits($notes),
+        ]);
+
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+
+        return $this->renderForm('./new.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'form' => $form,
+        ]);
+    }
+
     /**
      * @Route("/unitary/view/{id}", name="view_unitary")
      */
