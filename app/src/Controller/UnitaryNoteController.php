@@ -220,7 +220,7 @@ class UnitaryNoteController extends AbstractController
             $entityManager->persist($note);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_unitary_date', [
+            return $this->redirectToRoute('new_unitary_with_compact', [
                 'date' => $note->getDateString()
             ]);
         }
