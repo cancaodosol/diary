@@ -18,7 +18,7 @@ class NoteTagsController extends AbstractController
      */
     public function index(ManagerRegistry $doctrine): Response
     {
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
         return $this->render('note_tags/index.html.twig', [
             'controller_name' => 'NoteTagsController',
             'tags' => $tags,
@@ -46,7 +46,7 @@ class NoteTagsController extends AbstractController
             return $this->redirectToRoute('app_note_tags');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
@@ -72,7 +72,7 @@ class NoteTagsController extends AbstractController
             return $this->redirectToRoute('app_note_tags');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
