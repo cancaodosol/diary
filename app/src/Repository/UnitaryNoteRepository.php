@@ -62,7 +62,7 @@ class UnitaryNoteRepository extends ServiceEntityRepository
             'SELECT u
             FROM App\Entity\UnitaryNote u
             WHERE u.date >= :startdate and u.date <= :enddate
-            ORDER BY u.date ASC, u.title ASC'
+            ORDER BY u.date DESC, u.title ASC'
         )->setParameter('startdate', $startdate)
          ->setParameter('enddate', $enddate);
 
