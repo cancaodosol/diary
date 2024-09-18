@@ -24,7 +24,17 @@
                 <div class="calender-title">{{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})</div>
                 <div class="note-content">
                     {% for note in calender_note.notes %}
-                        <li class="note-title"><a href="{{ path('view_unitary', { id: note.id }) }}">{{ note.getTitleWithoutDate() }}</a></li>
+                        <li class="note-title">
+                            <a href="{{ path('view_unitary', { id: note.id }) }}">{{ note.getTitle() }}</a>
+                            {% for tag in note.tags %}
+                                <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
+                                    {
+                                        tagName: tag.name
+                                    }) }}">
+                                    {{ tag.name }}
+                                </a>
+                            {% endfor %}
+                        </li>
                    {% endfor %}
                 </div>
             </div>
