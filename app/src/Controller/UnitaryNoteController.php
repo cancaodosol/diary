@@ -11,6 +11,7 @@ use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -269,6 +270,40 @@ class UnitaryNoteController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/api/unitary/3days/{date}", name="api_get_unitary_3days")
+     */
+    public function apiGetUnitary3days(Request $request, ManagerRegistry $doctrine, string $date=''): JsonResponse
+    {
+        $note = new UnitaryNote();
+        if($date == '') $date = "today";
+        $date = $this->transferDate($date);
+
+        $notes = $doctrine->getRepository(UnitaryNote::class)
+            ->findInTerm(
+                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-2 days'),
+                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
+            );
+
+        $units = $this->createNoteUnits($notes);
+        
+        $results = [];
+        foreach ($units as $unit) {
+            $newUnit = [
+                'date' => $unit['date'],
+                'dateWithYoubi' => $unit['dateWithYoubi'],
+                'preDate' => $unit['preDate'],
+                'nextDate' => $unit['nextDate'],
+                'notes' => []
+            ];
+            foreach ($unit["notes"] as $note) {
+                $newUnit["notes"][] = $note->toArray();
+            }
+            $results[] = $newUnit;
+        }
+
+        return new JsonResponse(["units" => $results]);
+    }
 
     /**
      * @Route("/unitary/new_w/{date}", name="new_unitary_with_compact")
