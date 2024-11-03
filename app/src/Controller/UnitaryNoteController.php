@@ -498,8 +498,8 @@ class UnitaryNoteController extends AbstractController
     }
 
     /** 
-    特定の日付文字列が来た場合は、変換して返す。today, yesterday
-    **/
+     * 特定の日付文字列が来た場合は、変換して返す。today, yesterday
+     */
     private function transferDate(string $date): string
     {
         switch ($date) {
