@@ -78,6 +78,10 @@ class UnitaryNote
 
     public function toArray()
     {
+        $tags = [];
+        foreach ($this->getTags() as $tag) {
+            $tags[] = $tag->toArray();
+        }
         return [
             "id" => $this->id,
             "userId" => $this->userId,
@@ -89,6 +93,7 @@ class UnitaryNote
             "title" => $this->title,
             "text" => $this->text,
             "textHtml" => $this->getTextHtml(),
+            "tags" => $tags,
         ];
     }
 

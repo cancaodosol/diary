@@ -59,11 +59,18 @@
             unit.notes.forEach((note) => {
                 let noteHtml = `・<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
                             +`  note_title`
-                            +`</a>`
-                            +`<br/>`;
+                            +`</a>`;
                 noteHtml = noteHtml.replaceAll("note_id", note.id);
                 noteHtml = noteHtml.replaceAll("note_title", note.title);
-                notesHtml += noteHtml;
+                let tagsHtml = '';
+                note.tags.forEach((tag) => {
+                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
+                        + tag.name
+                        +`</a>`
+                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
+                    tagsHtml += tagHtml;
+                });
+                notesHtml += noteHtml + tagsHtml + '<br/>';
             });
             notesHtml += `</div>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
@@ -92,11 +99,20 @@
 
             let notesHtml = ``;
             unit.notes.forEach((note) => {
+                let tagsHtml = '';
+                note.tags.forEach((tag) => {
+                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
+                        + tag.name
+                        +`</a>`
+                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
+                    tagsHtml += tagHtml;
+                });
                 let noteHtml = `<hr>`
                             +`<div id="notes-today" class="unitary-title">`
                             +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
                             +`      note_title`
                             +`  </a>`
+                            + tagsHtml
                             +`</div>`
                             +`<div class="unitary-text">note_textHtml</div>`;
                             +`<div class="unitary-footer"></div>`;
