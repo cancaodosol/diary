@@ -271,19 +271,26 @@ class UnitaryNoteController extends AbstractController
     }
 
     /**
-     * @Route("/api/unitary/3days/{date}", name="api_get_unitary_3days")
+     * @Route("/api/unitary/{date}/{mode}", name="api_get_unitary")
      */
-    public function apiGetUnitary3days(Request $request, ManagerRegistry $doctrine, string $date=''): JsonResponse
+    public function apiGetUnitary(Request $request, ManagerRegistry $doctrine, string $mode='3days', string $date=''): JsonResponse
     {
         $note = new UnitaryNote();
         if($date == '') $date = "today";
         $date = $this->transferDate($date);
 
-        $notes = $doctrine->getRepository(UnitaryNote::class)
-            ->findInTerm(
-                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-2 days'),
-                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
-            );
+        $notes = [];
+        if($mode == '1day'){
+            $notes = $doctrine->getRepository(UnitaryNote::class)->findBy(
+                ['date' => DateTime::createFromFormat('Y-m-d', $date)],
+                ["title" => "ASC"]);
+        } else {
+            $notes = $doctrine->getRepository(UnitaryNote::class)
+                ->findInTerm(
+                    (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-2 days'),
+                    (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
+                );
+        }
 
         $units = $this->createNoteUnits($notes);
         

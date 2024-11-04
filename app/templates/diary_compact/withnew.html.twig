@@ -7,16 +7,25 @@
 {% block body %}
     <h2>{{ form_name }}</h2>
     <div class="row">
-        <div id="notes-box" class="col-md-4 mb-4 px-5">
+        <div id="notes-box" class="col-md-4 mb-4">
+            <div id="notes-btn-box" class="mb-4 px-4 d-flex justify-content-end">
+                <button id="btn-show-compact-notes" class="btn btn-outline-primary btn-sm mx-1">コンパクト版</button>
+                <button id="btn-show-normal-notes" class="btn btn-outline-primary btn-sm mx-1">通常版</button>
+                <button id="btn-hidden-notes" class="btn btn-outline-primary btn-sm mx-1">非表示</button>
+            </div>
+            <div id="note-contents-box" class="px-1">
+            </div>
         </div>
         <div class="col-md-8">
             {{ form(form) }}
         </div>
     </div>
     <script>
-    async function getUnits(date) {
-        let url = `{{ path('api_get_unitary_3days', { date: 'today' }) }}`;
+    async function getUnits(date, mode) {
+        let url = `{{ path('api_get_unitary', { date: 'today', mode: 'mode' }) }}`;
         url = url.replace('today', date);
+        url = url.replace('mode', mode);
+        console.log(url);
         const res = await fetch(url, {
                 headers: {
                     "Content-Type": "application/json;charset=utf-8",
@@ -28,8 +37,8 @@
     };
 
     async function displayCompactNotes(date) {
-        const notesBoxEle = document.getElementById("notes-box");
-        const units = await getUnits(date);
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        const units = await getUnits(date, "3days");
 
         units["units"].forEach((unit) => {
             let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
@@ -59,14 +68,14 @@
             notesHtml += `</div>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
 
-            notesBoxEle.innerHTML += titleHtml;
-            notesBoxEle.innerHTML += notesHtml;
+            noteContentsBoxEle.innerHTML += titleHtml;
+            noteContentsBoxEle.innerHTML += notesHtml;
         });
     }
 
     async function displayNormalNotes(date) {
-        const notesBoxEle = document.getElementById("notes-box");
-        const units = await getUnits(date);
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        const units = await getUnits(date, "1day");
 
         units["units"].forEach((unit) => {
             let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
@@ -100,19 +109,37 @@
             notesHtml += `<div class="btn-bar text-center mt-3 mb-5"></div>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
 
-            notesBoxEle.innerHTML += titleHtml;
-            notesBoxEle.innerHTML += notesHtml;
+            noteContentsBoxEle.innerHTML += titleHtml;
+            noteContentsBoxEle.innerHTML += notesHtml;
         });
     }
 
+    async function clearNotes(height = 0) {
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        noteContentsBoxEle.innerHTML = "";
+        noteContentsBoxEle.style.height = height + "px";
+    }
+
     async function onload() {
-        const thisDate = document.getElementById("unitary_note_date").value;
-        displayNormalNotes(thisDate);
+        const thisDateEle = document.getElementById("unitary_note_date");
+        document.getElementById("btn-show-compact-notes").onclick = (e) => {
+            clearNotes(800);
+            displayCompactNotes(thisDateEle.value);
+        };
+        document.getElementById("btn-show-normal-notes").onclick = (e) => {
+            clearNotes(800);
+            displayNormalNotes(thisDateEle.value);
+        };
+        document.getElementById("btn-hidden-notes").onclick = (e) => {
+            clearNotes();
+        };
+
+        displayCompactNotes(thisDateEle.value);
     }
     onload()
     </script>
     <style>
-        #notes-box {
+        #note-contents-box {
             height: 800px;
             overflow: scroll;
         }
