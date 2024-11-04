@@ -76,6 +76,27 @@ class UnitaryNote
         $this->tags = new ArrayCollection();
     }
 
+    public function toArray()
+    {
+        $tags = [];
+        foreach ($this->getTags() as $tag) {
+            $tags[] = $tag->toArray();
+        }
+        return [
+            "id" => $this->id,
+            "userId" => $this->userId,
+            "date" => $this->date,
+            "dateString" => $this->getDateString(),
+            "dateStringWithYoubi" => $this->getDateStringWithYoubi(),
+            "preDateString" => $this->getPreDateString(),
+            "nextDateString" => $this->getNextDateString(),
+            "title" => $this->title,
+            "text" => $this->text,
+            "textHtml" => $this->getTextHtml(),
+            "tags" => $tags,
+        ];
+    }
+
     public function clearItem(): void
     {
         $this->id = null;

@@ -45,6 +45,16 @@ class NoteTags
         $this->unitaryNotes = new ArrayCollection();
     }
 
+    public function toArray()
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->getName(),
+            "text" => $this->getText(),
+            "textHtml" => $this->getTextHtml(),
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

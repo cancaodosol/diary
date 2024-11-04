@@ -7,53 +7,177 @@
 {% block body %}
     <h2>{{ form_name }}</h2>
     <div class="row">
-        <div class="col-md-4 mb-4 px-5">
-            {%if note_units|length > 0 %}
-                {% for note_unit in note_units %}
-                    <div class="unitary-date text-center">
-                        {{ note_unit.dateWithYoubi }}
-                        [
-                        <a class="btn btn-link btn-sm" href="{{ path('new_unitary_with_compact',
-                            {
-                                date: note_unit.date
-                            }) }}">
-                            追加W
-                        </a>
-                        <a class="btn btn-link btn-sm" href="{{ path('app_unitary_date',
-                            {
-                                date: note_unit.date
-                            }) }}">
-                            見る
-                        </a>
-                        ]
-                    </div>
-                    <hr>
-                    <div class="unitary-text mb-5">
-                    {% for note in note_unit.notes %}
-                            ・<a class="note-title" href="{{ path('edit_unitary_with_compact',
-                                {
-                                    id: note.id
-                                }) }}">
-                                {{ note.title }}
-                            </a>
-                            {% for tag in note.tags %}
-                                <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
-                                    {
-                                        tagName: tag.name
-                                    }) }}">
-                                    {{ tag.name }}
-                                </a>
-                            {% endfor %}
-                            <br/>
-                    {% endfor %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div>データはありません。</div>
-            {% endif %}
+        <div id="notes-box" class="col-md-4 mb-4">
+            <div id="notes-btn-box" class="mb-4 px-4 d-flex justify-content-end">
+                <button id="btn-show-compact-notes" class="btn btn-outline-primary btn-sm mx-1">コンパクト版</button>
+                <button id="btn-show-normal-notes" class="btn btn-outline-primary btn-sm mx-1">通常版</button>
+                <button id="btn-hidden-notes" class="btn btn-outline-primary btn-sm mx-1">非表示</button>
+            </div>
+            <div id="note-contents-box" class="px-1">
+            </div>
         </div>
         <div class="col-md-8">
             {{ form(form) }}
         </div>
     </div>
+    <script>
+    async function getUnits(date, mode) {
+        let url = `{{ path('api_get_unitary', { date: 'today', mode: 'mode' }) }}`;
+        url = url.replace('today', date);
+        url = url.replace('mode', mode);
+        console.log(url);
+        const res = await fetch(url, {
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                    "Accept": "application/json"
+                },
+            });
+        const retjson = await res.json();
+        return retjson;
+    };
+
+    async function displayCompactNotes(date) {
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        const units = await getUnits(date, "3days");
+
+        units["units"].forEach((unit) => {
+            let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
+                        +`[<a class="btn btn-link btn-sm" href="{{ path('new_unitary_with_compact', { date: 'today' }) }}">`
+                        +`    追加W`
+                        +`</a>`
+                        +`<a class="btn btn-link btn-sm" href="{{ path('app_unitary_date', { date: 'today' }) }}">`
+                        +`    見る`
+                        +`</a>`
+                        +`]`
+                    + `</div>`;
+            titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
+            titleHtml = titleHtml.replaceAll("today", unit.date);
+
+            let notesHtml = `<hr>`
+                        +`<div id="notes-today" class="unitary-text mb-5">`;
+            
+            unit.notes.forEach((note) => {
+                let noteHtml = `・<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
+                            +`  note_title`
+                            +`</a>`;
+                noteHtml = noteHtml.replaceAll("note_id", note.id);
+                noteHtml = noteHtml.replaceAll("note_title", note.title);
+                let tagsHtml = '';
+                note.tags.forEach((tag) => {
+                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
+                        + tag.name
+                        +`</a>`
+                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
+                    tagsHtml += tagHtml;
+                });
+                notesHtml += noteHtml + tagsHtml + '<br/>';
+            });
+            notesHtml += `</div>`;
+            notesHtml = notesHtml.replaceAll("today", unit.date);
+
+            noteContentsBoxEle.innerHTML += titleHtml;
+            noteContentsBoxEle.innerHTML += notesHtml;
+        });
+    }
+
+    async function displayNormalNotes(date) {
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        const units = await getUnits(date, "1day");
+
+        units["units"].forEach((unit) => {
+            let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
+                        +`[<a class="btn btn-link btn-sm" href="{{ path('new_unitary_with_compact', { date: 'today' }) }}">`
+                        +`    追加W`
+                        +`</a>`
+                        +`<a class="btn btn-link btn-sm" href="{{ path('app_unitary_date', { date: 'today' }) }}">`
+                        +`    見る`
+                        +`</a>`
+                        +`]`
+                    + `</div>`;
+            titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
+            titleHtml = titleHtml.replaceAll("today", unit.date);
+
+            let notesHtml = ``;
+            unit.notes.forEach((note) => {
+                let tagsHtml = '';
+                note.tags.forEach((tag) => {
+                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
+                        + tag.name
+                        +`</a>`
+                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
+                    tagsHtml += tagHtml;
+                });
+                let noteHtml = `<hr>`
+                            +`<div id="notes-today" class="unitary-title">`
+                            +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
+                            +`      note_title`
+                            +`  </a>`
+                            + tagsHtml
+                            +`</div>`
+                            +`<div class="unitary-text">note_textHtml</div>`;
+                            +`<div class="unitary-footer"></div>`;
+                noteHtml = noteHtml.replaceAll("note_id", note.id);
+                noteHtml = noteHtml.replaceAll("note_title", note.title);
+                noteHtml = noteHtml.replaceAll("note_textHtml", note.textHtml);
+                notesHtml += noteHtml;
+            });
+            notesHtml += `</div>`;
+            notesHtml += `<div class="btn-bar text-center mt-3 mb-5"></div>`;
+            notesHtml = notesHtml.replaceAll("today", unit.date);
+
+            noteContentsBoxEle.innerHTML += titleHtml;
+            noteContentsBoxEle.innerHTML += notesHtml;
+        });
+    }
+
+    async function clearNotes(height = 0) {
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        noteContentsBoxEle.innerHTML = "";
+        noteContentsBoxEle.style.height = height + "px";
+    }
+
+    async function onload() {
+        const thisDateEle = document.getElementById("unitary_note_date");
+        document.getElementById("btn-show-compact-notes").onclick = (e) => {
+            clearNotes(800);
+            displayCompactNotes(thisDateEle.value);
+        };
+        document.getElementById("btn-show-normal-notes").onclick = (e) => {
+            clearNotes(800);
+            displayNormalNotes(thisDateEle.value);
+        };
+        document.getElementById("btn-hidden-notes").onclick = (e) => {
+            clearNotes();
+        };
+
+        displayCompactNotes(thisDateEle.value);
+    }
+    onload()
+    </script>
+    <style>
+        #note-contents-box {
+            height: 800px;
+            overflow: scroll;
+        }
+        .unitary-date {
+            font-size:1.1rem;
+            font-weight:bold;
+            margin-bottom:20px;
+        }
+        .unitary-title {
+            font-size:0.9rem;
+            font-weight:bold;
+            margin-bottom:20px;
+        }
+        .unitary-text {
+            overflow-wrap: break-word;
+        }
+        .unitary-footer {
+            margin-bottom:40px;
+            text-align:right;
+        }
+        .note-tags {
+            text-decoration: none;
+        }
+    </style>
 {% endblock %}
