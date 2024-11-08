@@ -137,6 +137,21 @@ class UnitaryNoteController extends AbstractController
     }
 
     /**
+     * @Route("/unitary/search/{keyword}", name="app_search_unitary")
+     */
+    public function index_search(ManagerRegistry $doctrine, string $keyword): Response
+    {
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $notes = $doctrine->getRepository(UnitaryNote::class)->findByKeyword($keyword);
+        return $this->render('unitary_note/views.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'thisTag' => '',
+            'notes' => $notes,
+        ]);
+    }
+
+    /**
      * @Route("/unitary/d/{date}", name="app_unitary_date")
      */
     public function index_diary(ManagerRegistry $doctrine, string $date): Response

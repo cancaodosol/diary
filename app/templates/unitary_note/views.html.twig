@@ -10,10 +10,10 @@
     </div>
     {% endif %}
     <div>
-        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: 'card' }) }}">
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name ?? 'All', mode: 'card' }) }}">
             >> カード形式で表示
         </a>
-        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: 'calender' }) }}">
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name ?? 'All', mode: 'calender' }) }}">
             >> カレンダー形式で表示
         </a>
     </div>
