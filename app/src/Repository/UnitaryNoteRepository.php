@@ -70,6 +70,21 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function findByKeyword(string $keyword)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u
+            FROM App\Entity\UnitaryNote u
+            WHERE u.title like :keyword or u.text like :keyword
+            ORDER BY u.date DESC, u.title ASC'
+        )->setParameter('keyword', '%'.$keyword.'%');
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
+
 //    /**
 //     * @return UnitaryNote[] Returns an array of UnitaryNote objects
 //     */
