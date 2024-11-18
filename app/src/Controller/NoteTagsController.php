@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\NoteTags;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,14 +10,14 @@ use Doctrine\Persistence\ManagerRegistry;
 
 use App\Form\NoteTagsType;
 
-class NoteTagsController extends AbstractController
+class NoteTagsController extends BaseController
 {
     /**
      * @Route("/note/tags", name="app_note_tags")
      */
     public function index(ManagerRegistry $doctrine): Response
     {
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
         return $this->render('note_tags/index.html.twig', [
             'controller_name' => 'NoteTagsController',
             'tags' => $tags,
@@ -46,7 +45,7 @@ class NoteTagsController extends AbstractController
             return $this->redirectToRoute('app_note_tags');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
@@ -72,7 +71,7 @@ class NoteTagsController extends AbstractController
             return $this->redirectToRoute('app_note_tags');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',

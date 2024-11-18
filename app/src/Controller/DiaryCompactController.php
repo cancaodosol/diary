@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\DiaryCompact;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,7 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 use App\Entity\NoteTags;
 
-class DiaryCompactController extends AbstractController
+class DiaryCompactController extends BaseController
 {
     /**
      * @Route("/diaryc", name="app_diary_compact")
@@ -21,7 +20,7 @@ class DiaryCompactController extends AbstractController
         $diaries = $doctrine->getRepository(DiaryCompact::class)
             ->findBy([], ["date" => "DESC"]);
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $this->getTags($doctrine);
 
         return $this->render('diary/views.html.twig', [
             'form_name' => '',
@@ -38,7 +37,7 @@ class DiaryCompactController extends AbstractController
         $diaries = $doctrine->getRepository(DiaryCompact::class)
             ->findBy([], ["date" => "ASC"]);
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $this->getTags($doctrine);
 
         return $this->render('diary/views.html.twig', [
             'form_name' => '',

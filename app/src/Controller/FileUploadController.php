@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\NoteTags;
 
 use DateTime;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 use App\Form\FileUploadType;
 
-class FileUploadController extends AbstractController
+class FileUploadController extends BaseController
 {
     /**
      * @Route("/upload_files", name="upload_files")
@@ -46,7 +45,7 @@ class FileUploadController extends AbstractController
             return $this->redirectToRoute('show_upload_files');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
@@ -92,7 +91,7 @@ class FileUploadController extends AbstractController
         foreach($serverFiles as $serverFile){
             $files[] = $baseUrl.'/'.$serverFile;
         }
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+        $tags = $this->getTags($doctrine);
         return $this->renderForm('./file_upload/index.html.twig', [
             'form_name' => '',
             'tags' => $tags,
