@@ -7,6 +7,11 @@
         <div class="text-dark">＜ {{ thisTag.name }} ＞ <a href="{{ path('edit_note_tags', { id: thisTag.id }) }}">編集</a></div>
         <div class="mt-1">{{ thisTag.description | raw }}</div>
         <div class="mt-1">{{ thisTag.textHtml | raw }}</div>
+        <div class="d-flex flex-wrap">
+        {% for tag in thisTag.getChildrenTags %}
+            <a class="mt-1 p-1" href="{{ path('app_unitary', { tagName: tag.name, mode: 'card' }) }}">{{ tag.name }}</a>
+        {% endfor %}
+        </div>
     </div>
     {% endif %}
     <div>

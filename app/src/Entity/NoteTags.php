@@ -127,7 +127,7 @@ class NoteTags
         return $this;
     }
 
-    public function getChildrenTags(): Collection
+    public function getChildrenTags()
     {
         return $this->childrenTags;
     }
