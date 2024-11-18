@@ -17,14 +17,14 @@ use Doctrine\Persistence\ManagerRegistry;
 
 use App\Form\UnitaryNoteType;
 
-class UnitaryNoteController extends AbstractController
+class UnitaryNoteController extends BaseController
 {
     /**
      * @Route("/unitary/t/{tagName}/{mode}", name="app_unitary")
      */
     public function index(ManagerRegistry $doctrine, string $tagName='', string $mode=''): Response
     {
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         if($tagName == '')
         {
@@ -141,7 +141,7 @@ class UnitaryNoteController extends AbstractController
      */
     public function index_search(ManagerRegistry $doctrine, string $keyword): Response
     {
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
         $notes = $doctrine->getRepository(UnitaryNote::class)->findByKeyword($keyword);
         return $this->render('unitary_note/views.html.twig', [
             'form_name' => '',
@@ -169,7 +169,7 @@ class UnitaryNoteController extends AbstractController
             $notes[] = $note;
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->render('unitary_note/views_units.html.twig', [
             'form_name' => '',
@@ -186,7 +186,7 @@ class UnitaryNoteController extends AbstractController
         $notes = $doctrine->getRepository(UnitaryNote::class)
             ->findBy([], ["date" => "DESC", "title" => "ASC"]);
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->render('unitary_note/views_compact.html.twig', [
             'form_name' => '',
@@ -203,7 +203,7 @@ class UnitaryNoteController extends AbstractController
         $notes = $doctrine->getRepository(UnitaryNote::class)
             ->findBy(["div" => $div], ["date" => "ASC"]);
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->render('unitary_note/views.html.twig', [
             'form_name' => '',
@@ -241,7 +241,7 @@ class UnitaryNoteController extends AbstractController
             ]);
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
@@ -276,7 +276,7 @@ class UnitaryNoteController extends AbstractController
             ]);
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
@@ -364,7 +364,7 @@ class UnitaryNoteController extends AbstractController
                 (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
             );
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./diary_compact/withnew.html.twig', [
             'form_name' => '',
@@ -406,7 +406,7 @@ class UnitaryNoteController extends AbstractController
                 (clone $note->getDate())->setTime(0, 0)->modify('+1 days')
             );
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./diary_compact/withnew.html.twig', [
             'form_name' => '',
@@ -415,7 +415,7 @@ class UnitaryNoteController extends AbstractController
             'note_units' => $this->createNoteUnits($notes),
         ]);
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
@@ -435,7 +435,7 @@ class UnitaryNoteController extends AbstractController
             $note = new UnitaryNote('');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('unitary_note/view.html.twig', [
             'form_name' => '',
@@ -455,7 +455,7 @@ class UnitaryNoteController extends AbstractController
             $note = new UnitaryNote('');
         }
 
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["name" => "ASC"]);
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('unitary_note/view_raw.html.twig', [
             'form_name' => '',
