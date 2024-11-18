@@ -21,6 +21,11 @@ class NoteTags
     private $id;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $parentTagId;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $name;
@@ -40,6 +45,8 @@ class NoteTags
      */
     private $text;
 
+    private $childrenTags;
+
     public function __construct()
     {
         $this->unitaryNotes = new ArrayCollection();
@@ -58,6 +65,11 @@ class NoteTags
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getParentTagId(): ?int
+    {
+        return $this->parentTagId;
     }
 
     public function getName(): ?string
@@ -99,6 +111,18 @@ class NoteTags
         $this->description = $description;
 
         return $this;
+    }
+
+    public function appendChildrenTag($tag): self
+    {
+        if(!$this->childrenTags) $this->childrenTags = [];
+        $this->childrenTags[] = $tag;
+        return $this;
+    }
+
+    public function getChildrenTags(): Collection
+    {
+        return $this->childrenTags;
     }
 
     /**
