@@ -67,6 +67,13 @@ class NoteTags
         return $this->id;
     }
 
+    public function setParentTagId(int $parentTagId): self
+    {
+        $this->parentTagId = $parentTagId;
+
+        return $this;
+    }
+
     public function getParentTagId(): ?int
     {
         return $this->parentTagId;
