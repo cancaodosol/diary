@@ -123,16 +123,24 @@ class UnitaryNoteController extends BaseController
     /**
      * @Route("/unitary/search", name="app_search_unitary")
      */
-    public function index_search(Request $request, ManagerRegistry $doctrine): Response
+    public function index_search(Request $request, ManagerRegistry $doctrine)
     {
+        $date = $request->request->get("date");
+        if($date) {
+            return $this->redirectToRoute('app_unitary', [
+                'date' => $date,
+                'mode' => 'calender'
+            ]);
+        }
+        $keyword = $request->request->get("keyword");
         $tags = $this->getTags($doctrine);
-        $notes = $doctrine->getRepository(UnitaryNote::class)->findByKeyword($request->request->get("keyword"));
+        $notes = $doctrine->getRepository(UnitaryNote::class)->findByKeyword($keyword);
         return $this->render('unitary_note/views.html.twig', [
             'form_name' => '',
             'tags' => $tags,
             'thisTag' => '',
             'notes' => $notes,
-            'searchKeyword' => $request->request->get("keyword"),
+            'searchKeyword' => $keyword,
         ]);
     }
 
