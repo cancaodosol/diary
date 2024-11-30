@@ -121,7 +121,7 @@ class UnitaryNoteController extends BaseController
     }
 
     /**
-     * @Route("/unitary/search", methods: ['POST'], name="app_search_unitary")
+     * @Route("/unitary/search", name="app_search_unitary")
      */
     public function index_search(Request $request, ManagerRegistry $doctrine): Response
     {
