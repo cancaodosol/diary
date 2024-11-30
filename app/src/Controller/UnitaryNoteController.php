@@ -20,45 +20,29 @@ use App\Form\UnitaryNoteType;
 class UnitaryNoteController extends BaseController
 {
     /**
-     * @Route("/unitary/t/{tagName}/{mode}", name="app_unitary")
+     * @Route("/unitary/t", name="app_unitary")
      */
-    public function index(ManagerRegistry $doctrine, string $tagName='', string $mode=''): Response
+    public function index(Request $request, ManagerRegistry $doctrine): Response
     {
         $tags = $this->getTags($doctrine);
 
-        if($tagName == '')
-        {
-            return $this->redirectToRoute('app_unitary',['tagName' => 'All', 'mode' => $mode]);
-        }
+        $tagName = $request->query->get("tagName", "All");
+        $mode = $request->query->get("mode", "");
+        $date = $this->transferDate($request->query->get("date", "today"));
+        $months = $request->query->get("months", "3");
+
+        $enddate = DateTime::createFromFormat('Y-m-d', $date);
+        $startdate = DateTime::createFromFormat('Y-m-d', $date)->modify("-{$months} months");
 
         if($tagName == 'All')
         {
             $notes = $doctrine->getRepository(UnitaryNote::class)
-                ->findRecently((new \DateTime('now'))->modify('-3 months'));
+                ->findInTerm($startdate, $enddate);
 
             if($mode == "calender")
             {
                 $dateHelper = new DateHelper();
-                $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 16);
-                return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates);
-            }
-
-            return $this->render('unitary_note/views_units.html.twig', [
-                'form_name' => '',
-                'tags' => $tags,
-                'note_units' => $this->createNoteUnits($notes),
-            ]);
-        }
-
-        if($tagName == 'Full')
-        {
-            $notes = $doctrine->getRepository(UnitaryNote::class)
-            ->findBy([], ["date" => "DESC", "title" => "ASC"]);
-
-            if($mode == "calender")
-            {
-                $dateHelper = new DateHelper();
-                $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 160);
+                $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, 4 * ($months + 1));
                 return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates);
             }
 
