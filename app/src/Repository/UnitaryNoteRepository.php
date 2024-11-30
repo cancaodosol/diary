@@ -82,7 +82,11 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         )->setParameter('keyword', '%'.$keyword.'%');
 
         // returns an array of Product objects
-        return $query->getResult();
+        $notes = $query->getResult();
+        foreach ($notes as $note) {
+            $note->setKeyword($keyword);
+        }
+        return $notes;
     }
 
 //    /**

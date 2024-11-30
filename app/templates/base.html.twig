@@ -93,6 +93,10 @@
                 </div>
             </header>
             <div class="btn-bar mt-3 mb-3">
+                <form method="post" action="{{ path('app_search_unitary') }}" class="d-flex mb-3">
+                    <input name="keyword" value="{{ searchKeyword ?? ''}}" class="form-control w-25"/>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
                 <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-1week'}) }}">
                     １週間前
                 </a>

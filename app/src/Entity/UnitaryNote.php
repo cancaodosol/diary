@@ -62,6 +62,8 @@ class UnitaryNote
      */
     private $tags;
 
+    private $keyword;
+
     private $startedAt;
 
     private $finishedAt;
@@ -207,7 +209,8 @@ class UnitaryNote
 
     public function getTextHtml(): ?string
     {
-        return (new HtmlText($this->text))->getTextHtml();
+        $textHtml = $this->keyword ? str_replace($this->keyword, '<span style="background-color: yellow;">'.$this->keyword.'</span>', $this->text) : $this->text;
+        return (new HtmlText($textHtml))->getTextHtml();
     }
 
     public function setText(?string $text): self
@@ -215,6 +218,18 @@ class UnitaryNote
         $this->text = $text;
 
         return $this;
+    }
+
+    public function setKeyword(?string $keyword): self
+    {
+        $this->keyword = $keyword;
+
+        return $this;
+    }
+
+    public function getKeyword(): ?string
+    {
+        return $this->keyword;
     }
 
     public function getStartedAt(): ?string
