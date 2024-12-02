@@ -3,11 +3,11 @@
 {% block contents %}
     <h2>{{ form_name }}</h2>
     {% for note_unit in note_units %}
-        <div class="unitary-date text-center">
-            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.preDate }) }}">
+        <div class="unitary-date text-center d-flex justify-content-center align-items-center">
+            <a class="btn btn-outline-primary btn-sm mx-1" href="#{{ note_unit.preDate }}">
                 ＜＜ 
-            </a>　
-            {{ note_unit.dateWithYoubi }}
+            </a>
+            <h3 id="{{ note_unit.date }}">{{ note_unit.dateWithYoubi }}</h3>
             [<a class="btn btn-link btn-sm" href="{{ path('new_unitary',
                 {
                     date: note_unit.date
@@ -25,7 +25,7 @@
                 }) }}">
                 見る
             </a>]
-            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.nextDate }) }}">
+            <a class="btn btn-outline-primary btn-sm mx-1" href="#{{ note_unit.nextDate }}">
                 ＞＞
             </a>
         </div>
@@ -46,26 +46,14 @@
                 {{ note.textHtml | raw }}
             </div>
             <div class="unitary-footer">
-                [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary_with_compact',
-                    {
-                        id: note.id
-                    }) }}">
-                    編集W
-                </a>
-                <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
-                    {
-                        id: note.id
-                    }) }}">
-                    見る
-                </a>]
             </div>
         {% endfor %}
         <div class="btn-bar text-center mt-3 mb-5">
-            <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.preDate }) }}">
+            <a class="btn btn-primary btn-sm" href="#{{ note_unit.preDate }}">
                 ＜＜ １日戻る
             </a>
             　
-            <a class="btn btn-primary btn-sm" href="{{ path('app_unitary_date', { date: note_unit.nextDate }) }}">
+            <a class="btn btn-primary btn-sm" href="#{{ note_unit.nextDate }}">
                 １日進む ＞＞
             </a>
         </div>

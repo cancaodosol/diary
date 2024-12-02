@@ -164,13 +164,13 @@ class UnitaryNote
     public function getPreDateString(): ?string
     {
         $nowDate = $this->getDateString();
-        return date('Y-m-d', strtotime($nowDate.' -1 days'));
+        return date('Y-n-j', strtotime($nowDate.' -1 days'));
     }
 
     public function getNextDateString(): ?string
     {
         $nowDate = $this->getDateString();
-        return date('Y-m-d', strtotime($nowDate.' +1 days'));
+        return date('Y-n-j', strtotime($nowDate.' +1 days'));
     }
 
     public function setDate(\DateTimeInterface $date): self
