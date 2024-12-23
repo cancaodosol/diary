@@ -107,14 +107,13 @@
                     tagHtml = tagHtml.replaceAll("tag_name", tag.name);
                     tagsHtml += tagHtml;
                 });
-                let noteHtml = `<hr>`
-                            +`<div id="notes-today" class="unitary-title">`
+                let noteHtml = `<div id="notes-today" class="unitary-title">`
                             +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
                             +`      note_title`
                             +`  </a>`
                             + tagsHtml
                             +`</div>`
-                            +`<div class="unitary-text">note_textHtml</div>`;
+                            +`<div class="unitary-text">note_textHtml</div>`
                             +`<div class="unitary-footer"></div>`;
                 noteHtml = noteHtml.replaceAll("note_id", note.id);
                 noteHtml = noteHtml.replaceAll("note_title", note.title);
