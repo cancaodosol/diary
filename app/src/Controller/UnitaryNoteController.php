@@ -359,7 +359,7 @@ class UnitaryNoteController extends BaseController
 
         $tags = $this->getTags($doctrine);
 
-        return $this->renderForm('./diary_compact/withnew.html.twig', [
+        return $this->renderForm('./unitary_note/withnew.html.twig', [
             'form_name' => '',
             'tags' => $tags,
             'form' => $form,
@@ -401,7 +401,7 @@ class UnitaryNoteController extends BaseController
 
         $tags = $this->getTags($doctrine);
 
-        return $this->renderForm('./diary_compact/withnew.html.twig', [
+        return $this->renderForm('./unitary_note/withnew.html.twig', [
             'form_name' => '',
             'tags' => $tags,
             'form' => $form,
