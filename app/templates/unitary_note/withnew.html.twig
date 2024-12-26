@@ -17,7 +17,16 @@
             </div>
         </div>
         <div class="col-md-8">
-            {{ form(form) }}
+            {{ form_start(form) }}
+            <div class="d-flex">
+                {{ form_row(form.date) }}
+                {{ form_row(form.startedAt) }}
+                {{ form_row(form.finishedAt) }}
+            </div>
+            {{ form_row(form.title) }}
+            {{ form_row(form.tags) }}
+            {{ form_row(form.text) }}
+            {{ form_row(form.save) }}
         </div>
     </div>
     <script>
@@ -138,11 +147,11 @@
     async function onload() {
         const thisDateEle = document.getElementById("unitary_note_date");
         document.getElementById("btn-show-compact-notes").onclick = (e) => {
-            clearNotes(800);
+            clearNotes(750);
             displayCompactNotes(thisDateEle.value);
         };
         document.getElementById("btn-show-normal-notes").onclick = (e) => {
-            clearNotes(800);
+            clearNotes(750);
             displayNormalNotes(thisDateEle.value);
         };
         document.getElementById("btn-hidden-notes").onclick = (e) => {
@@ -155,7 +164,7 @@
     </script>
     <style>
         #note-contents-box {
-            height: 800px;
+            height: 750px;
             overflow: scroll;
         }
         .unitary-date {

@@ -32,6 +32,7 @@ class UnitaryNoteType extends AbstractType
                     'required' => true,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd',
+                    'row_attr' => ['class' => 'flex-grow-1 mb-3'],
                 ]
             )
             ->add(
