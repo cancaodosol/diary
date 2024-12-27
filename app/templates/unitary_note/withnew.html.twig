@@ -117,7 +117,7 @@
                     tagsHtml += tagHtml;
                 });
                 let noteHtml = `<div id="notes-today" class="unitary-title">`
-                            +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
+                            +`  ・<a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
                             +`      note_title`
                             +`  </a>`
                             + tagsHtml
@@ -175,10 +175,11 @@
         .unitary-title {
             font-size:0.9rem;
             font-weight:bold;
-            margin-bottom:20px;
+            margin-bottom:5px;
         }
         .unitary-text {
             overflow-wrap: break-word;
+            padding-left: 13px;
         }
         .unitary-footer {
             margin-bottom:40px;
