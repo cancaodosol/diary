@@ -47,7 +47,7 @@
 
     async function displayCompactNotes(date) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const units = await getUnits(date, "3days");
+        const units = await getUnits(date, "1day");
 
         units["units"].forEach((unit) => {
             let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
@@ -63,7 +63,7 @@
             titleHtml = titleHtml.replaceAll("today", unit.date);
 
             let notesHtml = `<hr>`
-                        +`<div id="notes-today" class="unitary-text mb-5">`;
+                        +`<div id="notes-today" class="unitary-text">`;
             
             unit.notes.forEach((note) => {
                 let noteHtml = `・<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
@@ -81,7 +81,7 @@
                 });
                 notesHtml += noteHtml + tagsHtml + '<br/>';
             });
-            notesHtml += `</div>`;
+            notesHtml += `</div><hr>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
 
             noteContentsBoxEle.innerHTML += titleHtml;
@@ -138,20 +138,19 @@
         });
     }
 
-    async function clearNotes(height = 0) {
+    async function clearNotes() {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
         noteContentsBoxEle.innerHTML = "";
-        noteContentsBoxEle.style.height = height + "px";
     }
 
     async function onload() {
         const thisDateEle = document.getElementById("unitary_note_date");
         document.getElementById("btn-show-compact-notes").onclick = (e) => {
-            clearNotes(750);
+            clearNotes();
             displayCompactNotes(thisDateEle.value);
         };
         document.getElementById("btn-show-normal-notes").onclick = (e) => {
-            clearNotes(750);
+            clearNotes();
             displayNormalNotes(thisDateEle.value);
         };
         document.getElementById("btn-hidden-notes").onclick = (e) => {
@@ -164,8 +163,6 @@
     </script>
     <style>
         #note-contents-box {
-            height: 750px;
-            overflow: scroll;
         }
         .unitary-date {
             font-size:1.1rem;
