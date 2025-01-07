@@ -92,7 +92,7 @@ class FileUploadController extends BaseController
         $baseUrl = $this->getParameter('uploads_base_url');
         $upload_dir = 'uploads';
         $serverFiles = glob($upload_dir.'/*.*');
-        sort($serverFiles);
+        rsort($serverFiles);
 
         $startIndex = $filesPerPage * ($page - 1);
         $endIndex = $filesPerPage * $page - 1;
