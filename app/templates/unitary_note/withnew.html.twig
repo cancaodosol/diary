@@ -138,9 +138,10 @@
         });
     }
 
-    async function clearNotes() {
+    async function clearNotes(height = 0) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
         noteContentsBoxEle.innerHTML = "";
+        noteContentsBoxEle.style.height = height ? height + "px" : "null";
     }
 
     async function onload() {
@@ -150,7 +151,7 @@
             displayCompactNotes(thisDateEle.value);
         };
         document.getElementById("btn-show-normal-notes").onclick = (e) => {
-            clearNotes();
+            clearNotes(750);
             displayNormalNotes(thisDateEle.value);
         };
         document.getElementById("btn-hidden-notes").onclick = (e) => {
@@ -163,6 +164,7 @@
     </script>
     <style>
         #note-contents-box {
+            overflow: scroll;
         }
         .unitary-date {
             font-size:1.1rem;
