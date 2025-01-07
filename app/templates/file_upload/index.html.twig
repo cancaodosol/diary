@@ -26,6 +26,14 @@
             </div>
         {% endfor %}
     </div>
+    {% if page > 1 %}
+    <a class="btn btn-primary btn-sm mb-3" href="{{ path('show_upload_files', { "page": page - 1}) }}">
+        前のページへ
+    </a>
+    {% endif %}
+    <a class="btn btn-primary btn-sm mb-3" href="{{ path('show_upload_files', { "page": page + 1}) }}">
+        次のページへ
+    </a>
 </div>
 
 <script>

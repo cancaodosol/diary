@@ -83,18 +83,30 @@ class FileUploadController extends BaseController
      */
     public function show_upload_files(Request $request, ManagerRegistry $doctrine): Response
     {
+        $filesPerPage = 24;
+
+        $mode = $request->query->get("mode", "");
+        $page = $request->query->get("page", 1);
+        if($page < 1) $page = 1;
+
         $baseUrl = $this->getParameter('uploads_base_url');
         $upload_dir = 'uploads';
         $serverFiles = glob($upload_dir.'/*.*');
         arsort($serverFiles);
+
+        $startIndex = $filesPerPage * ($page - 1);
+        $endIndex = $filesPerPage * $page - 1;
+
         $files = [];
-        foreach($serverFiles as $serverFile){
-            $files[] = $baseUrl.'/'.$serverFile;
+        for($i = $startIndex; $i <= $endIndex && $i < count($serverFiles); $i++){
+            $files[] = $baseUrl.'/'.$serverFiles[$i];
         }
+
         $tags = $this->getTags($doctrine);
         return $this->renderForm('./file_upload/index.html.twig', [
             'form_name' => '',
             'tags' => $tags,
+            'page' => $page,
             'files' => $files
         ]);
     }
