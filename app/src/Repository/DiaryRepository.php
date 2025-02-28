@@ -6,6 +6,8 @@ use App\Entity\Diary;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use DateTime;
+
 /**
  * @extends ServiceEntityRepository<Diary>
  *
@@ -39,28 +41,26 @@ class DiaryRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Diary[] Returns an array of Diary objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findOneByDate(string $date)
+    {
+        return $this->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);
+    }
 
-//    public function findOneBySomeField($value): ?Diary
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findInTerm(\DateTimeInterface $startdate, \DateTimeInterface $enddate)
+    {
+        if($startdate > $enddate) return $this->findInTerm($enddate, $startdate);
+
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u
+            FROM App\Entity\Diary u
+            WHERE u.date >= :startdate and u.date <= :enddate
+            ORDER BY u.date DESC, u.text ASC'
+        )->setParameter('startdate', $startdate)
+         ->setParameter('enddate', $enddate);
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
 }

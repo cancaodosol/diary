@@ -73,7 +73,7 @@ class DiaryController extends AbstractController
     public function editDiary(Request $request, ManagerRegistry $doctrine, string $date): Response
     {
         $date = $this->transferDate($date);
-        $diary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);
+        $diary = $doctrine->getRepository(Diary::class)->findOneByDate($date);
         if(!$diary)
         {
             $diary = new Diary();
@@ -108,10 +108,11 @@ class DiaryController extends AbstractController
     public function viewDiary(Request $request, ManagerRegistry $doctrine, string $date): Response
     {
         $date = $this->transferDate($date);
-        $diary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);;
+        $diary = $doctrine->getRepository(Diary::class)->findOneByDate($date);
         if(!$diary)
         {
             $diary = new Diary();
+            $diary->setDate(DateTime::createFromFormat('Y-m-d', $date));
         }
 
         $form = $this->createForm(DiaryType::class, $diary);
@@ -136,9 +137,9 @@ class DiaryController extends AbstractController
         ]);
     }
 
-    /** 
-    特定の日付文字列が来た場合は、変換して返す。today, yesterday
-    **/
+    /**
+     * 特定の日付文字列が来た場合は、変換して返す。today, yesterday 
+     */
     private function transferDate(string $date): string
     {
         switch ($date) {

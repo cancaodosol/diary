@@ -43,13 +43,13 @@ class UnitaryNoteController extends BaseController
             {
                 $dateHelper = new DateHelper();
                 $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, 4 * ($months + 1));
-                return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates);
+                return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates, $doctrine);
             }
 
             return $this->render('unitary_note/views_units.html.twig', [
                 'form_name' => '',
                 'tags' => $tags,
-                'note_units' => $this->createNoteUnits($notes),
+                'note_units' => $this->createNoteUnits($notes, $doctrine),
             ]);
         }
 
@@ -76,7 +76,7 @@ class UnitaryNoteController extends BaseController
         } elseif($mode == "calender") {
             $dateHelper = new DateHelper();
             $calender_dates = $dateHelper->getDatesInTheLastWeeks(new DateTime(), 16);
-            return $this->viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates);
+            return $this->viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates, $doctrine);
         } else {
             return $this->render('unitary_note/views.html.twig', [
                 'form_name' => '',
@@ -87,9 +87,19 @@ class UnitaryNoteController extends BaseController
         }
     }
 
-    private function viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates): Response
+    private function viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates, $doctrine): Response
     {
         $calender_notes = [];
+
+        $titles = [];
+        if(count($notes) > 0){
+            $diaries = $doctrine->getRepository(Diary::class)->findInTerm($notes[0]->getDate(), $notes[count($notes)-1]->getDate());
+            foreach($diaries as $diary)
+            {
+                $titles[$diary->getDateString()] = $diary->getText();
+            }
+        }
+
         $note_index = 0;
         for ($i = 0; $i < count($calender_dates); $i++) {
             $calender_date = $calender_dates[$i];
@@ -105,6 +115,7 @@ class UnitaryNoteController extends BaseController
             }
             $calender_notes[] = [
                 "date" => $calender_date,
+                "title" => $titles[$calender_date->getDateString()] ?? "",
                 "notes" => $calender_date_notes,
             ];
         }
@@ -167,7 +178,7 @@ class UnitaryNoteController extends BaseController
         return $this->render('unitary_note/views_units.html.twig', [
             'form_name' => '',
             'tags' => $tags,
-            'note_units' => $this->createNoteUnits($notes),
+            'note_units' => $this->createNoteUnits($notes, $doctrine),
         ]);
     }
 
@@ -184,7 +195,7 @@ class UnitaryNoteController extends BaseController
         return $this->render('unitary_note/views_compact.html.twig', [
             'form_name' => '',
             'tags' => $tags,
-            'note_units' => $this->createNoteUnits($notes),
+            'note_units' => $this->createNoteUnits($notes, $doctrine),
         ]);
     }
 
@@ -300,7 +311,7 @@ class UnitaryNoteController extends BaseController
                 );
         }
 
-        $units = $this->createNoteUnits($notes);
+        $units = $this->createNoteUnits($notes, $doctrine);
         
         $results = [];
         foreach ($units as $unit) {
@@ -309,6 +320,7 @@ class UnitaryNoteController extends BaseController
                 'dateWithYoubi' => $unit['dateWithYoubi'],
                 'preDate' => $unit['preDate'],
                 'nextDate' => $unit['nextDate'],
+                'title' => $unit['title'],
                 'notes' => []
             ];
             foreach ($unit["notes"] as $note) {
@@ -363,7 +375,7 @@ class UnitaryNoteController extends BaseController
             'form_name' => '',
             'tags' => $tags,
             'form' => $form,
-            'note_units' => $this->createNoteUnits($notes),
+            'note_units' => $this->createNoteUnits($notes, $doctrine),
         ]);
     }
 
@@ -405,7 +417,7 @@ class UnitaryNoteController extends BaseController
             'form_name' => '',
             'tags' => $tags,
             'form' => $form,
-            'note_units' => $this->createNoteUnits($notes),
+            'note_units' => $this->createNoteUnits($notes, $doctrine),
         ]);
 
         $tags = $this->getTags($doctrine);
@@ -551,16 +563,25 @@ class UnitaryNoteController extends BaseController
             }
     }
 
-    private function createNoteUnits($notes)
+    private function createNoteUnits($notes, ManagerRegistry $doctrine)
     {
         $noteUnits = [];
         if(count($notes) == 0) return $noteUnits;
+
+        $titles = [];
+        $diaries = $doctrine->getRepository(Diary::class)->findInTerm($notes[0]->getDate(), $notes[count($notes)-1]->getDate());
+        foreach($diaries as $diary)
+        {
+            $titles[$diary->getDateString()] = $diary->getText();
+        }
+
         $preDate = $notes[0]->getDateString();
         $unit = [
             'date' => $preDate,
             'dateWithYoubi' => $notes[0]->getDateStringWithYoubi(),
             'preDate' => $notes[0]->getPreDateString(),
             'nextDate' => $notes[0]->getNextDateString(),
+            'title' => $titles[$preDate] ?? '',
             'notes' => []
         ];
         foreach($notes as $note)
@@ -580,6 +601,7 @@ class UnitaryNoteController extends BaseController
                     'dateWithYoubi' => $note->getDateStringWithYoubi(),
                     'preDate' => $note->getPreDateString(),
                     'nextDate' => $note->getNextDateString(),
+                    'title' => $titles[$nowDate] ?? '',
                     'notes' => []
                 ];
 

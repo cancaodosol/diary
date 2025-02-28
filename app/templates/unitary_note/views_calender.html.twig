@@ -21,7 +21,12 @@
     {% for calender_note in calender_notes %}
         <div class="calender-card">
             <div class="note-card">
-                <div class="calender-title">{{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})</div>
+                <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
+                    <div class="calender-title">
+                        {{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})
+                    </div>
+                </a>
+                <div class="overflow-hidden">{{calender_note.title}}</div>
                 <div class="note-content">
                     {% for note in calender_note.notes %}
                         <li class="note-title">
@@ -51,6 +56,8 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         border-bottom: 1px solid #003366;
+        color: #003399;
+        text-decoration: none;
     }
     .calender-tags {
         text-decoration: none;
@@ -74,7 +81,7 @@
         color: #003399;
     }
     .note-content {
-        margin-top: 15px;
+        margin-top: 10px;
     }
     @media screen and (max-width: 480px) {
         /* 480px以下に適用されるCSS（スマホ用） */

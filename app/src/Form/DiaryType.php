@@ -27,38 +27,10 @@ class DiaryType extends AbstractType
                 ]
             )
             ->add(
-                'title',
+                'text',
                 TextType::class,
                 [
                     'label' => 'タイトル',
-                ],
-            )
-            ->add(
-                'text',
-                TextareaType::class,
-                [
-                    'label' => '行動記録',
-                    'required' => false,
-                    'attr' => 
-                    [
-                        'rows' => '18'
-                    ],
-                ]
-            )
-            ->add(
-                'startedAt',
-                TextType::class,
-                [
-                    'label' => '開始時刻',
-                    'required' => true,
-                ],
-            )
-            ->add(
-                'finishedAt',
-                TextType::class,
-                [
-                    'label' => '終了時刻',
-                    'required' => false,
                 ],
             )
             ->add(

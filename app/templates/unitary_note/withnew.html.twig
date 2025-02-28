@@ -59,9 +59,11 @@
                         +`    見る`
                         +`</a>`
                         +`]`
-                    + `</div>`;
+                    + `</div>`
+                    + `<div class="text-center">%%title%%</div>`;
             titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
             titleHtml = titleHtml.replaceAll("today", unit.date);
+            titleHtml = titleHtml.replaceAll("%%title%%", unit.title);
 
             let notesHtml = `<hr>`
                         +`<div id="notes-today" class="unitary-text">`;
@@ -175,7 +177,6 @@
         .unitary-date {
             font-size:1.1rem;
             font-weight:bold;
-            margin-bottom:20px;
         }
         .unitary-title {
             font-size:0.9rem;

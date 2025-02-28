@@ -16,6 +16,11 @@ class JapaneseDate
         return $this->date;
     }
 
+    public function getDateString(): ?string
+    {
+        return $this->date->format('Y-n-j');
+    }
+
     public function format($format): string
     {
         return $this->date->format($format);
