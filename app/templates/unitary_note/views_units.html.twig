@@ -25,7 +25,7 @@
                 </a>
             </div>
         </div>
-        <div class="pb-4 px-2">{{ note_unit.title }}</div>
+        <div class="pb-4 px-2">{{ note_unit.title | raw }}</div>
         {% for note in note_unit.notes %}
             <div class="unitary-title">
                 ・<a class="text-dark" href="{{ path('edit_unitary_with_compact',{ id: note.id }) }}">{{ note.title }}</a>
