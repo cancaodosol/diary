@@ -26,7 +26,7 @@
                         {{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})
                     </div>
                 </a>
-                <div class="overflow-hidden">{{calender_note.title}}</div>
+                <div class="overflow-hidden">{{ calender_note.title | raw }}</div>
                 <div class="note-content">
                     {% for note in calender_note.notes %}
                         <li class="note-title">
