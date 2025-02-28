@@ -94,7 +94,7 @@
             </header>
             <div class="btn-bar mt-3 mb-3">
                 <form method="post" action="{{ path('app_search_unitary') }}" class="d-flex mb-3">
-                    <input name="date" value="{{ searchDate ?? ''}}" type="date" class="form-control w-25"/>
+                    <input name="date" value="{{ searchDate ?? date('now')|date('Y-m-d')}}" type="date" class="form-control w-25"/>
                     <input name="keyword" value="{{ searchKeyword ?? ''}}" class="form-control w-25"/>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
