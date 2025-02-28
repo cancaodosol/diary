@@ -9,6 +9,7 @@
     <div class="row">
         <div id="notes-box" class="col-md-4 mb-4">
             <div id="notes-btn-box" class="mb-4 px-4 d-flex justify-content-end">
+                <button id="btn-edit-title" class="btn btn-primary btn-sm mx-1">タイトル</button>
                 <button id="btn-show-compact-notes" class="btn btn-outline-primary btn-sm mx-1">コンパクト版</button>
                 <button id="btn-show-normal-notes" class="btn btn-outline-primary btn-sm mx-1">通常版</button>
                 <button id="btn-hidden-notes" class="btn btn-outline-primary btn-sm mx-1">非表示</button>
@@ -146,6 +147,11 @@
 
     async function onload() {
         const thisDateEle = document.getElementById("unitary_note_date");
+        document.getElementById("btn-edit-title").onclick = (e) => {
+            let path = `{{ path('edit_diary', { date: 'today' }) }}`;
+            location.replace(path.replace("today", thisDateEle.value));
+            return;
+        };
         document.getElementById("btn-show-compact-notes").onclick = (e) => {
             clearNotes();
             displayCompactNotes(thisDateEle.value);

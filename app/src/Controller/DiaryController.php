@@ -36,23 +36,6 @@ class DiaryController extends AbstractController
     }
 
     /**
-     * @Route("/diary_r", name="app_diary_r")
-     */
-    public function index_r(Request $request, ManagerRegistry $doctrine): Response
-    {
-        $diaries = $doctrine->getRepository(Diary::class)
-            ->findBy([], ["date" => "ASC"]);
-
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
-
-        return $this->render('diary/views.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'diaries' => $diaries,
-        ]);
-    }
-
-    /**
      * @Route("/diary/new", name="new_diary")
      */
     public function newDiary(Request $request, ManagerRegistry $doctrine): Response
@@ -65,79 +48,12 @@ class DiaryController extends AbstractController
         {
             $diary = $form->getData();
 
-            // 同日の行動記録の末尾に、追記する。
-            $title = "<strong>".$diary->getStartedAndFinishedAt()."　".$diary->getTitle()."</strong>";
-            $dDiary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $diary->getDateString())]);
-            if($dDiary)
-            {
-                $text = $dDiary->getText().
-                    "\r\n\r\n<hr>\r\n".$this->_createTitleText($title, $diary->getText());
-                $dDiary->setText($text);
-                $diary = $dDiary;
-            }
-            else
-            {
-                $text = $this->_createTitleText($title, $diary->getText());
-                $diary->setText($text);
-            }
-
             // 更新処理
             $entityManager = $doctrine->getManager();
             $entityManager->persist($diary);
             $entityManager->flush();
-            $this->updateDiaryCompact($doctrine, $diary);
 
-            return $this->redirectToRoute('app_diary_compact');
-        }
-
-        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
-
-        return $this->renderForm('./new.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'form' => $form,
-        ]);
-    }
-
-    private function _createTitleText(string $title, $text): string
-    {
-        $result = '';
-        if(trim($text))
-        {
-            $result = $title."\r\n\r\n".$text."\r\n";
-        }
-        else
-        {
-            $result = $title."\r\n";
-        }
-        return $result;
-    }
-
-    /**
-     * @Route("/diary/edit/{date}", name="edit_diary")
-     */
-    public function editDiary(Request $request, ManagerRegistry $doctrine, string $date): Response
-    {
-        $date = $this->transferDate($date);
-        $diary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);
-        if(!$diary)
-        {
-            $diary = new Diary();
-        }
-        $diary->setTitle(".");
-        $diary->setStartedAt(".");
-        $diary->setFinishedAt(".");
-
-        $form = $this->createForm(DiaryType::class, $diary);
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
-            $diary = $form->getData();
-            $entityManager = $doctrine->getManager();
-            $entityManager->persist($diary);
-            $entityManager->flush();
-            $this->updateDiaryCompact($doctrine, $diary);
-            return $this->redirectToRoute('view_diary', [
+            return $this->redirectToRoute('new_unitary_with_compact', [
                 'date' => $diary->getDateString()
             ]);
         }
@@ -151,34 +67,39 @@ class DiaryController extends AbstractController
         ]);
     }
 
-    private function updateDiaryCompact(ManagerRegistry $doctrine, Diary $diary)
+    /**
+     * @Route("/diary/edit/{date}", name="edit_diary")
+     */
+    public function editDiary(Request $request, ManagerRegistry $doctrine, string $date): Response
     {
-        $diaryC = $doctrine->getRepository(DiaryCompact::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $diary->getDateString())]);
-        if(!$diaryC)
+        $date = $this->transferDate($date);
+        $diary = $doctrine->getRepository(Diary::class)->findOneBy(['date' => DateTime::createFromFormat('Y-m-d', $date)]);
+        if(!$diary)
         {
-            $diaryC = new DiaryCompact();
+            $diary = new Diary();
+            $diary->setDate(DateTime::createFromFormat('Y-m-d', $date));
         }
 
-        // strongタグの文字列を抽出する
-        // 参考：https://qiita.com/kanaxx/items/daca1c57e48e0a8d674a
-        $strongs = "";
-        $pattern = '@<strong>(.*)</strong>@';
-        if( preg_match_all($pattern, $diary->getText(), $result) ){
-            var_dump($result);
-            foreach($result[1] as $strong)
-            {
-                $strongs = $strongs."<br>".$strong;
-            }
-        }else{
-            $strongs = 'No match' . PHP_EOL;
+        $form = $this->createForm(DiaryType::class, $diary);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $diary = $form->getData();
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($diary);
+            $entityManager->flush();
+            return $this->redirectToRoute('new_unitary_with_compact', [
+                'date' => $diary->getDateString()
+            ]);
         }
-        $diaryC->setDiaryId($diary->getId());
-        $diaryC->setDate($diary->getDate());
-        $diaryC->setText($strongs);
 
-        $entityManager = $doctrine->getManager();
-        $entityManager->persist($diaryC);
-        $entityManager->flush();
+        $tags = $doctrine->getRepository(NoteTags::class)->findAll();
+
+        return $this->renderForm('./new.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'form' => $form,
+        ]);
     }
 
     /**
