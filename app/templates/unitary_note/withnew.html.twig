@@ -48,7 +48,7 @@
 
     async function displayCompactNotes(date) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const units = await getUnits(date, "1day");
+        const units = await getUnits(date, "2day");
 
         units["units"].forEach((unit) => {
             let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
@@ -94,7 +94,7 @@
 
     async function displayNormalNotes(date) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const units = await getUnits(date, "1day");
+        const units = await getUnits(date, "2day");
 
         units["units"].forEach((unit) => {
             let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`

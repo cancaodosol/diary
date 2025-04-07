@@ -304,6 +304,12 @@ class UnitaryNoteController extends BaseController
             $notes = $doctrine->getRepository(UnitaryNote::class)->findBy(
                 ['date' => DateTime::createFromFormat('Y-m-d', $date)],
                 ["title" => "ASC"]);
+        } elseif($mode == '2day') {
+            $notes = $doctrine->getRepository(UnitaryNote::class)
+                ->findInTerm(
+                    (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-1 days'),
+                    (DateTime::createFromFormat('Y-m-d', $date))
+                );
         } else {
             $notes = $doctrine->getRepository(UnitaryNote::class)
                 ->findInTerm(
