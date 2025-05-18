@@ -27,8 +27,13 @@
     {% for note in notes %}
         <div class="note-card">
             <div class="note-title">
-                #{{ no }}: {{ note.titleWithoutDate }}
-                {% set no = no - 1 %}
+                <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
+                    {
+                        id: note.id
+                    }) }}">
+                    #{{ no }}: {{ note.titleWithoutDate }}
+                    {% set no = no - 1 %}
+                </a>
             </div>
             <div class="note-text">
                 {{ note.textHtml | raw }}
@@ -41,18 +46,6 @@
                     {{ note.dateString }} ({{ note.dateYoubi }})
                 </a>
                 {{ note.titleDate }}
-                [<a class="btn btn-link btn-sm" href="{{ path('edit_unitary_with_compact',
-                    {
-                        id: note.id
-                    }) }}">
-                    ✏️
-                </a>
-                <a class="btn btn-link btn-sm" href="{{ path('view_unitary',
-                    {
-                        id: note.id
-                    }) }}">
-                    👀
-                </a>]
             </div>
         </div>
     {% endfor %}
@@ -79,19 +72,22 @@
     .note-card {
         width: 280px;
         font-size:0.7rem;
-        padding: 15px 15px 5px 15px;
+        padding: 2px 5px 2px 5px;
         margin: 5px;
         border: solid #003366;
         border-radius: 10px;
         color: #003399;
     }
     .note-text {
-        height: 120px;
+        height: 200px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow-y: scroll;
-        margin: 10px 0 10px 0;
+        margin: 5px 0 5px 0;
+    }
+    .note-text img {
+        border-radius: 5px;
     }
     .tags-box {
         display: flex;
@@ -101,6 +97,7 @@
         margin-right: 3px;
     }
     .note-footer {
+        padding-right: 2px;
         border-top: 1px solid #003366;
         text-align:right;
     }
