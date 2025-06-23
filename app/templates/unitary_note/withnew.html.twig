@@ -147,6 +147,8 @@
         noteContentsBoxEle.style.height = height ? height + "px" : "null";
     }
 
+    let displayMode = "compact";
+
     async function onload() {
         const thisDateEle = document.getElementById("unitary_note_date");
         document.getElementById("btn-edit-title").onclick = (e) => {
@@ -156,14 +158,29 @@
         };
         document.getElementById("btn-show-compact-notes").onclick = (e) => {
             clearNotes();
+            displayMode = "compact";
             displayCompactNotes(thisDateEle.value);
         };
         document.getElementById("btn-show-normal-notes").onclick = (e) => {
             clearNotes(750);
+            displayMode = "normal";
             displayNormalNotes(thisDateEle.value);
         };
         document.getElementById("btn-hidden-notes").onclick = (e) => {
             clearNotes();
+            displayMode = "hidden";
+        };
+
+        document.getElementById("unitary_note_date").onchange = (e) => {
+            clearNotes();
+            if(displayMode === "hidden") return;
+            if(displayMode === "compact"){
+                displayCompactNotes(thisDateEle.value);
+            }
+            if(displayMode === "normal"){
+                clearNotes(750);
+                displayNormalNotes(thisDateEle.value);            
+            }
         };
 
         displayCompactNotes(thisDateEle.value);
