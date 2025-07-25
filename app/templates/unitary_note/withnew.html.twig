@@ -26,11 +26,33 @@
             </div>
             {{ form_row(form.title) }}
             {{ form_row(form.tags) }}
+            <div class="d-flex mb-4">
+                <input type="file" name="image" id="image-input">
+            </div>
             {{ form_row(form.text) }}
             {{ form_row(form.save) }}
         </div>
     </div>
     <script>
+
+    function api_upload_file(file) {
+        console.log(file);
+        const formData = new FormData();
+        formData.append('image', file);
+    
+        fetch('{{ path('api_upload_files') }}', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.url) {
+                    const textarea = document.getElementById('unitary_note_text');
+                    textarea.value += `\n<img src="${data.url}" style="width: 100%; max-width: 540px;"/>\n`;
+                }
+            });
+    };
+
     async function getUnits(date, mode) {
         let url = `{{ path('api_get_unitary', { date: 'today', mode: 'mode' }) }}`;
         url = url.replace('today', date);
@@ -180,6 +202,13 @@
             if(displayMode === "normal"){
                 clearNotes(750);
                 displayNormalNotes(thisDateEle.value);            
+            }
+        };
+
+        document.getElementById('image-input').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                api_upload_file(file);
             }
         };
 

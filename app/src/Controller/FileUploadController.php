@@ -8,6 +8,7 @@ use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -51,6 +52,26 @@ class FileUploadController extends BaseController
             'form_name' => '',
             'tags' => $tags,
             'form' => $form,
+        ]);
+    }
+
+    /**
+     * @Route("/api/upload_files", name="api_upload_files", methods={"POST"})
+     */
+    public function api_upload_files(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
+    {
+        $file = $request->files->get('image');
+        if (!$file) {
+            return new JsonResponse(['error' => 'No image uploaded'], 400);
+        }
+
+        $url = $this->uploadFiles($file, $slugger);
+
+        $baseUrl = $this->getParameter('uploads_base_url');
+        $url = str_replace('./uploads/', 'uploads/', $url); // Remove leading './' for URL
+
+        return new JsonResponse([
+            'url' => $baseUrl.'/'.$url
         ]);
     }
 
