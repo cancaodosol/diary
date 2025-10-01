@@ -340,6 +340,44 @@ class UnitaryNoteController extends BaseController
     }
 
     /**
+     * @Route("/api/unitary_tag/{tagName}", name="api_get_unitary_by_tag")
+     */
+    public function apiGetUnitaryByTag(Request $request, ManagerRegistry $doctrine, string $tagName): JsonResponse
+    {
+        $tag = $doctrine->getRepository(NoteTags::class)
+            ->findOneBy(["name" => $tagName]);
+        $notesInterator = $tag->getUnitaryNotes()->getIterator();
+        $notesInterator->uasort(function($pA , $pB){
+                if($pA->getDate() < $pB->getDate()) return 1;
+                if($pA->getDate() > $pB->getDate()) return -1;
+                if($pA->getTitle() < $pB->getTitle()) return 1;
+                if($pA->getTitle() > $pB->getTitle()) return -1;
+                return 0;
+            });
+        $notes = iterator_to_array($notesInterator, false);
+
+        $units = $this->createNoteUnits($notes, $doctrine);
+        
+        $results = [];
+        foreach ($units as $unit) {
+            $newUnit = [
+                'date' => $unit['date'],
+                'dateWithYoubi' => $unit['dateWithYoubi'],
+                'preDate' => $unit['preDate'],
+                'nextDate' => $unit['nextDate'],
+                'title' => $unit['title'],
+                'notes' => []
+            ];
+            foreach ($unit["notes"] as $note) {
+                $newUnit["notes"][] = $note->toArray();
+            }
+            $results[] = $newUnit;
+        }
+
+        return new JsonResponse(["units" => $results]);
+    }
+
+    /**
      * @Route("/unitary/new_w/{date}", name="new_unitary_with_compact")
      */
     public function newUnitaryWithCompact(Request $request, ManagerRegistry $doctrine, string $date=''): Response

@@ -12,6 +12,8 @@
                 <button id="btn-edit-title" class="btn btn-primary btn-sm mx-1">タイトル</button>
                 <button id="btn-show-compact-notes" class="btn btn-outline-primary btn-sm mx-1">コンパクト版</button>
                 <button id="btn-show-normal-notes" class="btn btn-outline-primary btn-sm mx-1">通常版</button>
+                <button id="btn-show-compact-tag-notes" class="btn btn-outline-primary btn-sm mx-1">タグ版(C)</button>
+                <button id="btn-show-normal-tag-notes" class="btn btn-outline-primary btn-sm mx-1">タグ版</button>
                 <button id="btn-hidden-notes" class="btn btn-outline-primary btn-sm mx-1">非表示</button>
             </div>
             <div id="note-contents-box" class="px-1">
@@ -57,6 +59,20 @@
         let url = `{{ path('api_get_unitary', { date: 'today', mode: 'mode' }) }}`;
         url = url.replace('today', date);
         url = url.replace('mode', mode);
+        console.log(url);
+        const res = await fetch(url, {
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                    "Accept": "application/json"
+                },
+            });
+        const retjson = await res.json();
+        return retjson;
+    };
+
+    async function getUnitsByTagName(tagName) {
+        let url = `{{ path('api_get_unitary_by_tag', { tagName: 'tagName' }) }}`;
+        url = url.replace('tagName', tagName);
         console.log(url);
         const res = await fetch(url, {
                 headers: {
@@ -163,6 +179,82 @@
         });
     }
 
+    async function displayCompactNotesByTag(tagName) {
+        console.log(tagName);
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        const result = await getUnitsByTagName(tagName);
+
+        result["units"].forEach((unit) => {
+            let notesHtml =
+                `<div class="unit-date-compact">${ unit.dateWithYoubi }</div>`
+                +`<div id="notes-today" class="unitary-text">`;
+            
+            unit.notes.forEach((note) => {
+                let noteHtml =
+                    `・<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
+                    +`  note_title`
+                    +`</a>`;
+                noteHtml = noteHtml.replaceAll("note_id", note.id);
+                noteHtml = noteHtml.replaceAll("note_title", note.title);
+                let tagsHtml = '';
+                note.tags.forEach((tag) => {
+                    if(tag.name == tagName) return;
+                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
+                        + tag.name
+                        +`</a>`
+                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
+                    tagsHtml += tagHtml;
+                });
+                notesHtml += noteHtml + tagsHtml + '<br/>';
+            });
+            notesHtml += `</div><hr>`;
+            notesHtml = notesHtml.replaceAll("today", unit.date);
+
+            noteContentsBoxEle.innerHTML += notesHtml;
+        });
+    }
+
+    async function displayNormalNotesByTag(tagName) {
+        console.log(tagName);
+        const noteContentsBoxEle = document.getElementById("note-contents-box");
+        const result = await getUnitsByTagName(tagName);
+
+        console.log(result);
+
+        let notesHtml = ``;
+        result["units"].forEach((unit) => {
+            notesHtml += `<div class="unit-date">${ unit.dateWithYoubi }</div><hr>`;
+            unit.notes.forEach((note) => {
+                let tagsHtml = '';
+                note.tags.forEach((tag) => {
+                    if(tag.name == tagName) return;
+                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
+                        + tag.name
+                        +`</a>`
+                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
+                    tagsHtml += tagHtml;
+                });
+                let noteHtml = 
+                    `<div class="note-datetime">note_datetime</div>`
+                    +`<div id="notes-today" class="unitary-title">`
+                    +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
+                    +`      note_title`
+                    +`  </a>`
+                    + tagsHtml
+                    +`</div>`
+                    +`<div class="unitary-text">note_textHtml</div>`
+                    +`<div class="unitary-footer"></div>`;
+                noteHtml = noteHtml.replaceAll("note_id", note.id);
+                noteHtml = noteHtml.replaceAll("note_datetime", note.title.substring(0, 13));
+                noteHtml = noteHtml.replaceAll("note_title", note.title.substring(14, note.title.length));
+                noteHtml = noteHtml.replaceAll("note_textHtml", note.textHtml);
+                notesHtml += noteHtml;
+            });
+        });
+
+        noteContentsBoxEle.innerHTML += notesHtml;
+    }
+
     async function clearNotes(height = 0) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
         noteContentsBoxEle.innerHTML = "";
@@ -187,6 +279,30 @@
             clearNotes(750);
             displayMode = "normal";
             displayNormalNotes(thisDateEle.value);
+        };
+        document.getElementById("btn-show-compact-tag-notes").onclick = (e) => {
+            const checkedLabels = Array.from(
+                document.querySelectorAll('#unitary_note_tags input[type="checkbox"]:checked')
+            ).map(cb => document.querySelector(`label[for="${cb.id}"]`).textContent);
+    
+            if(!checkedLabels) return;
+    
+            const tagName = checkedLabels[0];
+            clearNotes(750);
+            displayMode = "compact";
+            displayCompactNotesByTag(tagName);
+        };
+        document.getElementById("btn-show-normal-tag-notes").onclick = (e) => {
+            const checkedLabels = Array.from(
+                document.querySelectorAll('#unitary_note_tags input[type="checkbox"]:checked')
+            ).map(cb => document.querySelector(`label[for="${cb.id}"]`).textContent);
+    
+            if(!checkedLabels) return;
+    
+            const tagName = checkedLabels[0];
+            clearNotes(750);
+            displayMode = "normal";
+            displayNormalNotesByTag(tagName);
         };
         document.getElementById("btn-hidden-notes").onclick = (e) => {
             clearNotes();
@@ -224,6 +340,13 @@
             font-size:1.1rem;
             font-weight:bold;
         }
+        .unit-date {
+            font-weight: bold;
+            margin-bottom: -15px;
+        }
+        .unit-date-compact {
+            font-weight: bold;
+        }
         .unitary-title {
             font-size:0.9rem;
             font-weight:bold;
@@ -239,6 +362,10 @@
         }
         .note-tags {
             text-decoration: none;
+        }
+        .unitary-title ~ .note-datetime {
+            margin-bottom: -5px;
+            font-size: 0.7rem;
         }
     </style>
 {% endblock %}
