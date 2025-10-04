@@ -328,7 +328,22 @@
             }
         };
 
-        displayCompactNotes(thisDateEle.value);
+
+        // 画面初期表示
+        const checkedLabels = Array.from(
+            document.querySelectorAll('#unitary_note_tags input[type="checkbox"]:checked')
+        ).map(cb => document.querySelector(`label[for="${cb.id}"]`).textContent);
+
+        if(checkedLabels){
+            // タグが選択されていたら、タグ一覧表示
+            const tagName = checkedLabels[0];
+            clearNotes(750);
+            displayMode = "normal";
+            displayNormalNotesByTag(tagName);
+        } else {
+            // なしなら、最近の日記を表示
+            displayCompactNotes(thisDateEle.value);
+        }
     }
     onload()
     </script>

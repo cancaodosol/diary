@@ -246,8 +246,6 @@ class UnitaryNoteController extends BaseController
             ]);
         }
 
-        $tags = $this->getTags($doctrine);
-
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
             'tags' => $tags,
@@ -383,11 +381,15 @@ class UnitaryNoteController extends BaseController
     public function newUnitaryWithCompact(Request $request, ManagerRegistry $doctrine, string $date=''): Response
     {
         $note = new UnitaryNote();
+
         if($date == '') $date = "today";
         $date = $this->transferDate($date);
-        if($date != '')
-        {
-            $note->setDate(DateTime::createFromFormat('Y-m-d', $date));
+        $note->setDate(DateTime::createFromFormat('Y-m-d', $date));
+
+        $tagName = $request->get("tagName");
+        if($tagName != ""){
+            $tag = $doctrine->getRepository(NoteTags::class)->findOneBy(["name" => $tagName]);
+            $note->addTag($tag);
         }
 
         $form = $this->createForm(UnitaryNoteType::class, $note);
@@ -397,6 +399,7 @@ class UnitaryNoteController extends BaseController
             $note = $form->getData();
             $title = $note->getStartedAndFinishedAt()."　".$note->getTitle();
             $note->setTitle($title);
+            $tagName = count($note->getTags()) ? $note->getTags()[0]->getName() : "";
 
             // 更新処理
             $entityManager = $doctrine->getManager();
@@ -404,7 +407,8 @@ class UnitaryNoteController extends BaseController
             $entityManager->flush();
 
             return $this->redirectToRoute('new_unitary_with_compact', [
-                'date' => $note->getDateString()
+                'date' => $note->getDateString(),
+                'tagName' => $tagName,
             ]);
         }
 
