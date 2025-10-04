@@ -334,7 +334,7 @@
             document.querySelectorAll('#unitary_note_tags input[type="checkbox"]:checked')
         ).map(cb => document.querySelector(`label[for="${cb.id}"]`).textContent);
 
-        if(checkedLabels){
+        if(checkedLabels.length > 0){
             // タグが選択されていたら、タグ一覧表示
             const tagName = checkedLabels[0];
             clearNotes(750);
