@@ -245,6 +245,8 @@ class UnitaryNoteController extends BaseController
                 'date' => $note->getDateString()
             ]);
         }
+        
+        $tags = $this->getTags($doctrine);
 
         return $this->renderForm('./new.html.twig', [
             'form_name' => '',
