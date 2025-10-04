@@ -219,8 +219,6 @@
         const noteContentsBoxEle = document.getElementById("note-contents-box");
         const result = await getUnitsByTagName(tagName);
 
-        console.log(result);
-
         let notesHtml = ``;
         result["units"].forEach((unit) => {
             notesHtml += `<div class="unit-date">${ unit.dateWithYoubi }</div><hr>`;
@@ -235,19 +233,29 @@
                     tagsHtml += tagHtml;
                 });
                 let noteHtml = 
-                    `<div class="note-datetime">note_datetime</div>`
+                    `<div id="note-${ note.id }" note-id="${ note.id }">`
+                    +`<div class="note-datetime">note_datetime</div>`
                     +`<div id="notes-today" class="unitary-title">`
                     +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
                     +`      note_title`
                     +`  </a>`
                     + tagsHtml
                     +`</div>`
-                    +`<div class="unitary-text">note_textHtml</div>`
+                    +`<div class="unitary-text" onclick="startEditNote(${ note.id })">note_textHtml</div>`
+                    +`<div class="note-edit-area" style="display: none;">`
+                    +`  <textarea class="form-control" style="field-sizing: content; font-size:0.8rem;">note_textRaw</textarea>`
+                    +`  <div class="mt-1 d-flex justify-content-end gap-2">`
+                    +`    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="closeNote(${note.id})">閉じる</button>`
+                    +`    <button class="btn btn-sm btn-outline-primary" type="button" onclick="updateNote(${note.id})">更新</button>`
+                    +`  </div>`
+                    +`</div>`
                     +`<div class="unitary-footer"></div>`;
+                    +`</div>`;
                 noteHtml = noteHtml.replaceAll("note_id", note.id);
                 noteHtml = noteHtml.replaceAll("note_datetime", note.title.substring(0, 13));
                 noteHtml = noteHtml.replaceAll("note_title", note.title.substring(14, note.title.length));
                 noteHtml = noteHtml.replaceAll("note_textHtml", note.textHtml);
+                noteHtml = noteHtml.replaceAll("note_textRaw", note.text ?? '');
                 notesHtml += noteHtml;
             });
         });
@@ -259,6 +267,51 @@
         const noteContentsBoxEle = document.getElementById("note-contents-box");
         noteContentsBoxEle.innerHTML = "";
         noteContentsBoxEle.style.height = height ? height + "px" : "null";
+    }
+
+    async function closeNote(noteId) {
+        const editArea = document.querySelector(`#note-${noteId} .note-edit-area`);
+        const showArea = document.querySelector(`#note-${noteId} .unitary-text`);
+        editArea.style.display = "none";
+        showArea.style.display = "block";
+    }
+
+    async function updateNote(noteId) {
+        const editArea = document.querySelector(`#note-${noteId} .note-edit-area`);
+        const editTextArea = document.querySelector(`#note-${noteId} .note-edit-area textarea`);
+        const showArea = document.querySelector(`#note-${noteId} .unitary-text`);
+
+        const payload = { text: editTextArea.value };
+
+        try {
+            let url = '{{ path('api_edit_unitary', { noteId: 'note_id' }) }}';
+            url = url.replace('note_id', noteId);
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            const data = await res.json();
+
+            showArea.innerHTML = data.note.textHtml;
+            editArea.style.display = "none";
+            showArea.style.display = "block";
+
+        } catch (err) {
+            console.error('送信エラー', err);
+            alert('送信失敗: ' + err.message);
+        }
+    }
+
+    async function startEditNote(noteId) {
+        const editArea = document.querySelector(`#note-${noteId} .note-edit-area`);
+        const showArea = document.querySelector(`#note-${noteId} .unitary-text`);
+        editArea.style.display = "block";
+        showArea.style.display = "none";
     }
 
     let displayMode = "compact";
@@ -368,11 +421,12 @@
             margin-bottom:5px;
         }
         .unitary-text {
+            min-height: 10px;
             overflow-wrap: break-word;
             padding-left: 13px;
         }
         .unitary-footer {
-            margin-bottom:40px;
+            margin-bottom:30px;
             text-align:right;
         }
         .note-tags {

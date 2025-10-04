@@ -378,6 +378,29 @@ class UnitaryNoteController extends BaseController
     }
 
     /**
+     * @Route("/api/unitary_edit/{noteId}", name="api_edit_unitary", methods={"POST"})
+     */
+    public function apiEditUnitary(Request $request, ManagerRegistry $doctrine, string $noteId): JsonResponse
+    {
+        $note = $doctrine->getRepository(UnitaryNote::class)->findOneBy(['id' => $noteId ]);
+        if(!$note){
+            throw $this->createNotFoundException('The note with ID ' . $noteId . ' was not found.');
+        }
+
+        $postData = json_decode($request->getContent(), true);
+        $note->setText($postData["text"]);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($note);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            "noteId" => $noteId,
+            "note" => $note->toArray()
+        ]);
+    }
+
+    /**
      * @Route("/unitary/new_w/{date}", name="new_unitary_with_compact")
      */
     public function newUnitaryWithCompact(Request $request, ManagerRegistry $doctrine, string $date=''): Response
