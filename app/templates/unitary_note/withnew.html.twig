@@ -5,6 +5,9 @@
 {% block title %} {{ form_name }} {% endblock %}
 
 {% block body %}
+    <script src="{{ asset("assets/timeline.js") }}"></script>
+    <link href="{{ asset("assets/timeline.css") }}" rel="stylesheet" />
+
     <h2>{{ form_name }}</h2>
     <div class="row">
         <div id="notes-box" class="col-md-4 mb-4">
@@ -86,7 +89,7 @@
 
     async function displayCompactNotes(date) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const units = await getUnits(date, "2day");
+        const units = await getUnits(date, "1day");
 
         units["units"].forEach((unit) => {
             let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
@@ -127,6 +130,25 @@
 
             noteContentsBoxEle.innerHTML += titleHtml;
             noteContentsBoxEle.innerHTML += notesHtml;
+        });
+
+        const boxes = document.querySelectorAll('.unitary-text');
+        boxes.forEach((box) => {
+            const events = [];
+            const list = box.querySelectorAll('.note-title');
+            list.forEach((item, index) => {
+                const ll = document.createElement('div');
+                ll.appendChild(item);
+                const event = noteTitleToEvent(ll);
+                if(event){
+                    events.push(event);
+                }
+            });
+            if(events.length > 0){
+                box.classList.add("timeline");
+                box.innerHTML = "";
+                drawTimeline(box, events);
+            }
         });
     }
 
