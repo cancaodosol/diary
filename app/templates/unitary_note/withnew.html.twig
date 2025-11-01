@@ -110,7 +110,7 @@
                         +`<div id="notes-today" class="unitary-text">`;
             
             unit.notes.forEach((note) => {
-                let noteHtml = `・<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
+                let noteHtml = `<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
                             +`  note_title`
                             +`</a>`;
                 noteHtml = noteHtml.replaceAll("note_id", note.id);
@@ -123,7 +123,7 @@
                     tagHtml = tagHtml.replaceAll("tag_name", tag.name);
                     tagsHtml += tagHtml;
                 });
-                notesHtml += noteHtml + tagsHtml + '<br/>';
+                notesHtml += `<span class="note-title-tags">${noteHtml}${tagsHtml}</span><br/>`;
             });
             notesHtml += `</div><hr>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
@@ -135,7 +135,7 @@
         const boxes = document.querySelectorAll('.unitary-text');
         boxes.forEach((box) => {
             const events = [];
-            const list = box.querySelectorAll('.note-title');
+            const list = box.querySelectorAll('.note-title-tags');
             list.forEach((item, index) => {
                 const ll = document.createElement('div');
                 ll.appendChild(item);
