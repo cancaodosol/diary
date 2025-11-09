@@ -18,7 +18,16 @@ class HtmlText
         # 改行コードの前に、<br />を追記。
         $textHtml = nl2br($textHtml);
 
-        # TODO [code][/code]内の<br />を除去
+        # [code]...[/code] 内の <br /> を除去
+        $textHtml = preg_replace_callback(
+            '/\[code\](.*?)\[\/code\]/s',
+            function ($matches) {
+                // <br />を除去
+                $codeContent = str_replace('<br />', '', $matches[1]);
+                return '[code]' . $codeContent . '[/code]';
+            },
+            $textHtml
+        );
 
         # [code][/code]の置換
         $textHtml = str_replace('[code]', '<div class="code-text" style="font-size:0.8rem;"><script type="text/plain" class="language-php line-numbers">', $textHtml);
