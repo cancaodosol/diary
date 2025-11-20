@@ -373,9 +373,10 @@ class UnitaryNoteController extends BaseController
     {
         $note = new UnitaryNote();
 
-        if($date == '') $date = "today";
-        $date = $this->transferDate($date);
-        $note->setDate(DateTime::createFromFormat('Y-m-d', $date));
+        if($date != ''){
+            $note->setDate(DateTime::createFromFormat('Y-m-d', $this->transferDate($date)));
+        }
+        $datestr = $note->getDate()->format('Y-m-d');
 
         $tagName = $request->get("tagName");
         if($tagName != ""){
@@ -405,8 +406,8 @@ class UnitaryNoteController extends BaseController
 
         $notes = $doctrine->getRepository(UnitaryNote::class)
             ->findInTerm(
-                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('-2 days'),
-                (DateTime::createFromFormat('Y-m-d', $date))->setTime(0, 0)->modify('+1 days')
+                (DateTime::createFromFormat('Y-m-d', $datestr))->setTime(0, 0)->modify('-2 days'),
+                (DateTime::createFromFormat('Y-m-d', $datestr))->setTime(0, 0)->modify('+1 days')
             );
 
         $tags = $this->getTags($doctrine);
