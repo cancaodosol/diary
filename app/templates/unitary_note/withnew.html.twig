@@ -336,9 +336,22 @@
         showArea.style.display = "none";
     }
 
-    let displayMode = "compact";
+    function settingShortCuts(){
+        document.addEventListener('keydown', function (e) {
+            // MacのCommand + S も対応
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey;
 
-    async function onload() {
+            if (isCtrlOrCmd && e.key.toLowerCase() === 's') {
+                e.preventDefault(); // ブラウザ保存ダイアログを無効化
+
+                console.log("Ctrl + S detected!");
+                // ここに好きな処理を書く
+                document.getElementById("unitary_note_save").click();
+            }
+        });
+    }
+
+    function initModeSelect(){
         const thisDateEle = document.getElementById("unitary_note_date");
         document.getElementById("btn-edit-title").onclick = (e) => {
             let path = `{{ path('edit_diary', { date: 'today' }) }}`;
@@ -383,7 +396,15 @@
             clearNotes();
             displayMode = "hidden";
         };
+    }
 
+    let displayMode = "compact";
+
+    async function onload() {
+        settingShortCuts();
+        initModeSelect();
+
+        const thisDateEle = document.getElementById("unitary_note_date");
         document.getElementById("unitary_note_date").onchange = (e) => {
             clearNotes();
             if(displayMode === "hidden") return;
@@ -402,7 +423,6 @@
                 api_upload_file(file);
             }
         };
-
 
         // 画面初期表示
         const checkedLabels = Array.from(
