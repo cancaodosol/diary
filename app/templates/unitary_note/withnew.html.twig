@@ -337,6 +337,19 @@
     }
 
     function settingShortCuts(){
+        // フォーカス対象のエレメントを配列で管理
+        const focusTargets = [
+            document.getElementById("unitary_note_date"),
+            document.getElementById("unitary_note_startedAt"),
+            document.getElementById("unitary_note_finishedAt"),
+            document.getElementById("unitary_note_title"),
+            document.getElementById("unitary_note_text"),
+            document.getElementById("unitary_note_save")
+        ];
+
+        // 現在のインデックス
+        let focusIndex = 0;
+
         document.addEventListener('keydown', function (e) {
             // MacのCommand + S も対応
             const isCtrlOrCmd = e.ctrlKey || e.metaKey;
@@ -347,6 +360,20 @@
                 console.log("Ctrl + S detected!");
                 // ここに好きな処理を書く
                 document.getElementById("unitary_note_save").click();
+            }
+
+            // Ctrl + →
+            if (isCtrlOrCmd && e.key === "ArrowRight") {
+                e.preventDefault();
+                focusIndex = (focusIndex + 1) % focusTargets.length;
+                focusTargets[focusIndex].focus();
+            }
+
+            // Ctrl + ←
+            if (isCtrlOrCmd && e.key === "ArrowLeft") {
+                e.preventDefault();
+                focusIndex = (focusIndex - 1 + focusTargets.length) % focusTargets.length;
+                focusTargets[focusIndex].focus();
             }
         });
     }
