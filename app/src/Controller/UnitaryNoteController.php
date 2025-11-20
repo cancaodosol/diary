@@ -184,40 +184,6 @@ class UnitaryNoteController extends BaseController
     }
 
     /**
-     * @Route("/unitary/compact", name="app_unitary_compact")
-     */
-    public function index_compact(ManagerRegistry $doctrine): Response
-    {
-        $notes = $doctrine->getRepository(UnitaryNote::class)
-            ->findBy([], ["date" => "DESC", "title" => "ASC"]);
-
-        $tags = $this->getTags($doctrine);
-
-        return $this->render('unitary_note/views_compact.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'note_units' => $this->createNoteUnits($notes, $doctrine),
-        ]);
-    }
-
-    /**
-     * @Route("/unitary_r/{div}", name="app_unitary_r")
-     */
-    public function index_r(ManagerRegistry $doctrine, string $div): Response
-    {
-        $notes = $doctrine->getRepository(UnitaryNote::class)
-            ->findBy(["div" => $div], ["date" => "ASC"]);
-
-        $tags = $this->getTags($doctrine);
-
-        return $this->render('unitary_note/views.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'notes' => $notes,
-        ]);
-    }
-
-    /**
      * @Route("/unitary/new/{date}", name="new_unitary")
      */
     public function newUnitary(Request $request, ManagerRegistry $doctrine, string $date=''): Response
