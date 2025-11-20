@@ -89,6 +89,18 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         return $notes;
     }
 
+
+    public function findNthLatest(int $n): ?UnitaryNote
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.date', 'DESC')
+            ->addOrderBy('u.title', 'ASC')
+            ->setFirstResult($n - 1)   // ← N番目の位置（0始まり）
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return UnitaryNote[] Returns an array of UnitaryNote objects
 //     */
