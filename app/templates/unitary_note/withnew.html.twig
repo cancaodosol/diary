@@ -349,6 +349,7 @@
 
         // 現在のインデックス
         let focusIndex = 0;
+        focusTargets[focusIndex].focus();
 
         document.addEventListener('keydown', function (e) {
             // MacのCommand + S も対応
@@ -367,6 +368,11 @@
                 e.preventDefault();
                 focusIndex = (focusIndex + 1) % focusTargets.length;
                 focusTargets[focusIndex].focus();
+                if(focusTargets[focusIndex].tagName === "INPUT"){
+                    // テキストエリアや入力欄の場合、末尾にカーソルを移動
+                    const len = focusTargets[focusIndex].value.length;
+                    focusTargets[focusIndex].setSelectionRange(len, len);
+                }
             }
 
             // Ctrl + ←
@@ -374,6 +380,11 @@
                 e.preventDefault();
                 focusIndex = (focusIndex - 1 + focusTargets.length) % focusTargets.length;
                 focusTargets[focusIndex].focus();
+                if(focusTargets[focusIndex].tagName === "INPUT"){
+                    // テキストエリアや入力欄の場合、末尾にカーソルを移動
+                    const len = focusTargets[focusIndex].value.length;
+                    focusTargets[focusIndex].setSelectionRange(len, len);
+                }
             }
         });
     }
