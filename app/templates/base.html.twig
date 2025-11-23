@@ -117,10 +117,10 @@
             </div>
 
             <div class="btn-bar mt-3 mb-3">
-                <form method="post" action="{{ path('app_search_unitary') }}" class="d-flex mb-3">
+                <form method="post" action="{{ path('app_command') }}" class="d-flex mb-3 gap-1">
                     <input name="date" value="{{ searchDate ?? date('now')|date('Y-m-d')}}" type="date" class="form-control w-25"/>
                     <input name="keyword" value="{{ searchKeyword ?? ''}}" class="form-control w-25"/>
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="submit" class="btn btn-primary btn-sm">検索</button>
                 </form>
                 <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-1week'}) }}">
                     １週間前
@@ -171,26 +171,5 @@
             </div>
         </div>
     </body>
-    <script>
-
-        function settingShortCuts(){
-            let showCommandBox = false;
-
-            document.addEventListener('keydown', function (e) {
-                // MacのCommand + S も対応
-                const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-
-                if (isCtrlOrCmd && e.key.toLowerCase() === 'c') {
-                    e.preventDefault();
-                    showCommandBox = !showCommandBox;
-                    document.getElementById("command-box").style.display = showCommandBox ? "block" : "none";
-                    if(showCommandBox){
-                        document.querySelector('#command-box input[name="command"]').focus();
-                    }
-                }
-            });
-        }
-        settingShortCuts();
-    </script>
 </html>
 
