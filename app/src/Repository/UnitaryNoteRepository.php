@@ -94,7 +94,7 @@ class UnitaryNoteRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('u')
             ->orderBy('u.date', 'DESC')
-            ->addOrderBy('u.title', 'ASC')
+            ->addOrderBy('u.title', 'DESC')
             ->setFirstResult($n - 1)   // ← N番目の位置（0始まり）
             ->setMaxResults(1)
             ->getQuery()
