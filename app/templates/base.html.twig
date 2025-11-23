@@ -93,35 +93,27 @@
                 </div>
             </header>
 
-            <div id="command-box" class="mt-3 mb-3" style="display: none;">
-                <div class="card border-0 shadow-sm">
-                    <div class="px-3 pt-2 bg-white border-0 d-flex align-items-center">
-                        <div class="me-2 text-muted small">⌘</div>
-                        <strong class="text-muted small">Command Console</strong>
-                    </div>
-
-                    <div class="px-3 pb-2">
-                        <form method="post" action="{{ path('app_command') }}" class="d-flex align-items-center">
-                            <span class="me-2 text-secondary fw-bold small">></span>
-
-                            <input
-                                name="command"
-                                class="form-control border-0 border-bottom rounded-0 shadow-none p-1"
-                                placeholder="コマンドを入力..."
-                                autocomplete="off"
-                                style="font-size: 0.8rem;"
-                            />
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <div class="btn-bar mt-3 mb-3">
                 <form method="post" action="{{ path('app_command') }}" class="d-flex mb-3 gap-1">
                     <input name="date" value="{{ searchDate ?? date('now')|date('Y-m-d')}}" type="date" class="form-control w-25"/>
-                    <input name="keyword" value="{{ searchKeyword ?? ''}}" class="form-control w-25"/>
-                    <button type="submit" class="btn btn-primary btn-sm">検索</button>
+                    <input id="keyword-input" name="keyword" value="{{ searchKeyword ?? ''}}" class="form-control w-25"/>
+                    <button id="keyword-submit" type="submit" class="btn btn-primary btn-sm">検索</button>
                 </form>
+                <script>
+                    (function () {
+                        const keywordInput = document.getElementById('keyword-input');
+                        const keywordSubmit = document.getElementById('keyword-submit');
+                        if (!keywordInput || !keywordSubmit) {
+                            return;
+                        }
+                        const updateLabel = () => {
+                            const value = keywordInput.value ?? '';
+                            keywordSubmit.textContent = value.startsWith(':') ? '実行' : '検索';
+                        };
+                        keywordInput.addEventListener('input', updateLabel);
+                        updateLabel();
+                    })();
+                </script>
                 <a class="btn btn-outline-info btn-sm" href="{{ path('app_unitary_date', { date: '-1week'}) }}">
                     １週間前
                 </a>
@@ -172,4 +164,3 @@
         </div>
     </body>
 </html>
-
