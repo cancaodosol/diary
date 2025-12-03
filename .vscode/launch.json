@@ -9,9 +9,9 @@
             "type": "php",
             "request": "launch",
             "port": 9003,
-            "pathMappings": {
-                "var/www/hope-trainers/":"${workspaceRoot}/app/"
-            }
+            // "pathMappings": {
+            //     "var/www/diary/":"${workspaceRoot}/app/"
+            // }
         },
         {
             "name": "Launch currently open script",
