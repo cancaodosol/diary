@@ -20,7 +20,7 @@ class FileUploadController extends BaseController
     /**
      * @Route("/upload_files", name="upload_files")
      */
-    public function upload_files(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
+    public function upload_files(Request $request, ManagerRegistry $doctrine): Response
     {
 
         $form = $this->createForm(FileUploadType::class);
@@ -30,17 +30,17 @@ class FileUploadController extends BaseController
             $file1 = $form->get('file1')->getData();
             if($file1)
             {
-                $url = $this->uploadFiles($file1, $slugger);
+                $url = $this->uploadFiles($file1);
             }
             $file2 = $form->get('file2')->getData();
             if($file2)
             {
-                $url = $this->uploadFiles($file2, $slugger);
+                $url = $this->uploadFiles($file2);
             }
             $file3 = $form->get('file3')->getData();
             if($file3)
             {
-                $url = $this->uploadFiles($file3, $slugger);
+                $url = $this->uploadFiles($file3);
             }
             
             return $this->redirectToRoute('show_upload_files');
@@ -58,14 +58,14 @@ class FileUploadController extends BaseController
     /**
      * @Route("/api/upload_files", name="api_upload_files", methods={"POST"})
      */
-    public function api_upload_files(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
+    public function api_upload_files(Request $request, ManagerRegistry $doctrine): Response
     {
         $file = $request->files->get('image');
         if (!$file) {
             return new JsonResponse(['error' => 'No image uploaded'], 400);
         }
 
-        $url = $this->uploadFiles($file, $slugger);
+        $url = $this->uploadFiles($file);
 
         $baseUrl = $this->getParameter('uploads_base_url');
         $url = str_replace('./uploads/', 'uploads/', $url); // Remove leading './' for URL
@@ -75,14 +75,13 @@ class FileUploadController extends BaseController
         ]);
     }
 
-    private function uploadFiles($file, SluggerInterface $slugger)
+    private function uploadFiles($file)
     {
         if(!$file) return '';
 
         $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = $slugger->slug($originalFileName);
         $nowDatetime = date("YmdHis");
-        $newFilename = $nowDatetime.'_'.$safeFilename.'.'.$file->guessExtension();
+        $newFilename = $nowDatetime.'_'.$originalFileName.'.'.$file->guessExtension();
 
         $upload_dir = './uploads';
         try

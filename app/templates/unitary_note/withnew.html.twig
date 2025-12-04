@@ -4,8 +4,13 @@
 
 {% block title %} {{ form_name }} {% endblock %}
 
-{% block body %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <script src="{{ asset("assets/timeline.js") }}"></script>
+{% endblock %}
+
+{% block body %}
     <link href="{{ asset("assets/timeline.css") }}" rel="stylesheet" />
 
     <h2>{{ form_name }}</h2>
@@ -33,6 +38,8 @@
             {{ form_row(form.tags) }}
             <div class="d-flex mb-4">
                 <input type="file" name="image" id="image-input">
+                <input type="checkbox" name="isCompress" id="image-is-compress" checked>
+                <label for="isCompress">圧縮して保存</label>
             </div>
             {{ form_row(form.text) }}
             {{ form_row(form.save) }}
@@ -455,9 +462,20 @@
             }
         };
 
-        document.getElementById('image-input').onchange = (e) => {
-            const file = e.target.files[0];
+        document.getElementById('image-input').onchange = async (e) => {
+            let file = e.target.files[0];
             if (file) {
+                if(document.getElementById('image-is-compress').checked){
+                    const options = {
+                        maxSizeMB: 0.5,
+                        useWebWorker: true
+                    };
+                    const compressedFile = await imageCompression(file, options);
+
+                    const newFileName = `${file.name.replace(/\.[^/.]+$/, "")}_500kb.${file.name.split('.').pop()}`;
+                    const blob = compressedFile.slice(0, compressedFile.size, compressedFile.type);
+                    file = new File([blob], newFileName, {type: compressedFile.type});
+                }
                 api_upload_file(file);
             }
         };
