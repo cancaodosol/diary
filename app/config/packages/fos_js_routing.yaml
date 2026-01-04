@@ -1,0 +1,9 @@
+fos_js_routing:
+    routes_to_expose:
+        - 'api_get_unitary'
+        - 'new_unitary_with_compact'
+        - 'edit_unitary_with_compact'
+        - 'app_unitary'
+        - 'app_unitary_date'
+        - 'api_edit_unitary'
+        - 'api_get_unitary_by_tag'

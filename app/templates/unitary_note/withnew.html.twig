@@ -7,6 +7,9 @@
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="{{ asset("assets/unitarynote.js") }}"></script>
     <script src="{{ asset("assets/timeline.js") }}"></script>
 {% endblock %}
 
@@ -65,282 +68,46 @@
             });
     };
 
-    async function getUnits(date, mode) {
-        let url = `{{ path('api_get_unitary', { date: 'today', mode: 'mode' }) }}`;
-        url = url.replace('today', date);
-        url = url.replace('mode', mode);
-        console.log(url);
-        const res = await fetch(url, {
-                headers: {
-                    "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json"
-                },
-            });
-        const retjson = await res.json();
-        return retjson;
-    };
-
-    async function getUnitsByTagName(tagName) {
-        let url = `{{ path('api_get_unitary_by_tag', { tagName: 'tagName' }) }}`;
-        url = url.replace('tagName', tagName);
-        console.log(url);
-        const res = await fetch(url, {
-                headers: {
-                    "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json"
-                },
-            });
-        const retjson = await res.json();
-        return retjson;
-    };
-
     async function displayCompactNotes(date) {
+        const service = new unitaryNoteService();
+        const units = await service.getUnits(date, "1day");
+        const uNote = new unitaryNote();
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const units = await getUnits(date, "1day");
-
-        units["units"].forEach((unit) => {
-            let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
-                        +`[<a class="btn btn-link btn-sm" href="{{ path('new_unitary_with_compact', { date: 'today' }) }}">`
-                        +`    追加W`
-                        +`</a>`
-                        +`<a class="btn btn-link btn-sm" href="{{ path('app_unitary_date', { date: 'today' }) }}">`
-                        +`    見る`
-                        +`</a>`
-                        +`]`
-                    + `</div>`
-                    + `<div class="text-center">%%title%%</div>`;
-            titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
-            titleHtml = titleHtml.replaceAll("today", unit.date);
-            titleHtml = titleHtml.replaceAll("%%title%%", unit.title);
-
-            let notesHtml = `<hr>`
-                        +`<div id="notes-today" class="unitary-text">`;
-            
-            unit.notes.forEach((note) => {
-                let noteHtml = `<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
-                            +`  note_title`
-                            +`</a>`;
-                noteHtml = noteHtml.replaceAll("note_id", note.id);
-                noteHtml = noteHtml.replaceAll("note_title", note.title);
-                let tagsHtml = '';
-                note.tags.forEach((tag) => {
-                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
-                        + tag.name
-                        +`</a>`
-                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
-                    tagsHtml += tagHtml;
-                });
-                notesHtml += `<span class="note-title-tags">${noteHtml}${tagsHtml}</span><br/>`;
-            });
-            notesHtml += `</div><hr>`;
-            notesHtml = notesHtml.replaceAll("today", unit.date);
-
-            noteContentsBoxEle.innerHTML += titleHtml;
-            noteContentsBoxEle.innerHTML += notesHtml;
-        });
-
-        const boxes = document.querySelectorAll('.unitary-text');
-        boxes.forEach((box) => {
-            const events = [];
-            const list = box.querySelectorAll('.note-title-tags');
-            list.forEach((item, index) => {
-                const ll = document.createElement('div');
-                ll.appendChild(item);
-                const event = noteTitleToEvent(ll);
-                if(event){
-                    events.push(event);
-                }
-            });
-            if(events.length > 0){
-                box.classList.add("timeline");
-                box.innerHTML = "";
-                drawTimeline(box, events);
-            }
-        });
+        uNote.displayCompactNotes(noteContentsBoxEle, units["units"]);
     }
 
     async function displayNormalNotes(date) {
+        const service = new unitaryNoteService();
+        const units = await service.getUnits(date, "2day");
+
+        const uNote = new unitaryNote();
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const units = await getUnits(date, "2day");
-
-        units["units"].forEach((unit) => {
-            let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
-                        +`[<a class="btn btn-link btn-sm" href="{{ path('new_unitary_with_compact', { date: 'today' }) }}">`
-                        +`    追加W`
-                        +`</a>`
-                        +`<a class="btn btn-link btn-sm" href="{{ path('app_unitary_date', { date: 'today' }) }}">`
-                        +`    見る`
-                        +`</a>`
-                        +`]`
-                    + `</div>`;
-            titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
-            titleHtml = titleHtml.replaceAll("today", unit.date);
-
-            let notesHtml = ``;
-            unit.notes.forEach((note) => {
-                let tagsHtml = '';
-                note.tags.forEach((tag) => {
-                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
-                        + tag.name
-                        +`</a>`
-                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
-                    tagsHtml += tagHtml;
-                });
-                let noteHtml = `<div id="notes-today" class="unitary-title">`
-                            +`  ・<a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
-                            +`      note_title`
-                            +`  </a>`
-                            + tagsHtml
-                            +`</div>`
-                            +`<div class="unitary-text">note_textHtml</div>`
-                            +`<div class="unitary-footer"></div>`;
-                noteHtml = noteHtml.replaceAll("note_id", note.id);
-                noteHtml = noteHtml.replaceAll("note_title", note.title);
-                noteHtml = noteHtml.replaceAll("note_textHtml", note.textHtml);
-                notesHtml += noteHtml;
-            });
-            notesHtml += `</div>`;
-            notesHtml += `<div class="btn-bar text-center mt-3 mb-5"></div>`;
-            notesHtml = notesHtml.replaceAll("today", unit.date);
-
-            noteContentsBoxEle.innerHTML += titleHtml;
-            noteContentsBoxEle.innerHTML += notesHtml;
-        });
+        uNote.displayNormalNotes(noteContentsBoxEle, units);
     }
 
     async function displayCompactNotesByTag(tagName) {
-        console.log(tagName);
+        const service = new unitaryNoteService();
+        const result = await service.getUnitsByTagName(tagName);
+
+        const uNote = new unitaryNote();
+        const units = result["units"];
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const result = await getUnitsByTagName(tagName);
-
-        result["units"].forEach((unit) => {
-            let notesHtml =
-                `<div class="unit-date-compact">${ unit.dateWithYoubi }</div>`
-                +`<div id="notes-today" class="unitary-text">`;
-            
-            unit.notes.forEach((note) => {
-                let noteHtml =
-                    `・<a class="note-title" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
-                    +`  note_title`
-                    +`</a>`;
-                noteHtml = noteHtml.replaceAll("note_id", note.id);
-                noteHtml = noteHtml.replaceAll("note_title", note.title);
-                let tagsHtml = '';
-                note.tags.forEach((tag) => {
-                    if(tag.name == tagName) return;
-                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
-                        + tag.name
-                        +`</a>`
-                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
-                    tagsHtml += tagHtml;
-                });
-                notesHtml += noteHtml + tagsHtml + '<br/>';
-            });
-            notesHtml += `</div><hr>`;
-            notesHtml = notesHtml.replaceAll("today", unit.date);
-
-            noteContentsBoxEle.innerHTML += notesHtml;
-        });
+        uNote.displayCompactNotesByTag(noteContentsBoxEle, units);
     }
 
     async function displayNormalNotesByTag(tagName) {
-        console.log(tagName);
+        const service = new unitaryNoteService();
+        const result = await service.getUnitsByTagName(tagName);
+        const units = result["units"];
+        const uNote = new unitaryNote();
         const noteContentsBoxEle = document.getElementById("note-contents-box");
-        const result = await getUnitsByTagName(tagName);
-
-        let notesHtml = ``;
-        result["units"].forEach((unit) => {
-            notesHtml += `<div class="unit-date">${ unit.dateWithYoubi }</div><hr>`;
-            unit.notes.forEach((note) => {
-                let tagsHtml = '';
-                note.tags.forEach((tag) => {
-                    if(tag.name == tagName) return;
-                    let tagHtml = `<a class="badge bg-primary note-tags" href="{{ path('app_unitary', { tagName: 'tag_name' }) }}">`
-                        + tag.name
-                        +`</a>`
-                    tagHtml = tagHtml.replaceAll("tag_name", tag.name);
-                    tagsHtml += tagHtml;
-                });
-                let noteHtml = 
-                    `<div id="note-${ note.id }" note-id="${ note.id }">`
-                    +`<div class="note-datetime">note_datetime</div>`
-                    +`<div id="notes-today" class="unitary-title">`
-                    +`  <a class="text-dark" href="{{ path('edit_unitary_with_compact', { id: 'note_id' }) }}">`
-                    +`      note_title`
-                    +`  </a>`
-                    + tagsHtml
-                    +`</div>`
-                    +`<div class="unitary-text" onclick="startEditNote(${ note.id })">note_textHtml</div>`
-                    +`<div class="note-edit-area" style="display: none;">`
-                    +`  <textarea class="form-control" style="field-sizing: content; font-size:0.8rem;">note_textRaw</textarea>`
-                    +`  <div class="mt-1 d-flex justify-content-end gap-2">`
-                    +`    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="closeNote(${note.id})">閉じる</button>`
-                    +`    <button class="btn btn-sm btn-outline-primary" type="button" onclick="updateNote(${note.id})">更新</button>`
-                    +`  </div>`
-                    +`</div>`
-                    +`<div class="unitary-footer"></div>`;
-                    +`</div>`;
-                noteHtml = noteHtml.replaceAll("note_id", note.id);
-                noteHtml = noteHtml.replaceAll("note_datetime", note.title.substring(0, 13));
-                noteHtml = noteHtml.replaceAll("note_title", note.title.substring(14, note.title.length));
-                noteHtml = noteHtml.replaceAll("note_textHtml", note.textHtml);
-                noteHtml = noteHtml.replaceAll("note_textRaw", note.text ?? '');
-                notesHtml += noteHtml;
-            });
-        });
-
-        noteContentsBoxEle.innerHTML += notesHtml;
+        uNote.displayNormalNotesByTag(noteContentsBoxEle, units);
     }
 
     async function clearNotes(height = 0) {
         const noteContentsBoxEle = document.getElementById("note-contents-box");
         noteContentsBoxEle.innerHTML = "";
         noteContentsBoxEle.style.height = height ? height + "px" : "null";
-    }
-
-    async function closeNote(noteId) {
-        const editArea = document.querySelector(`#note-${noteId} .note-edit-area`);
-        const showArea = document.querySelector(`#note-${noteId} .unitary-text`);
-        editArea.style.display = "none";
-        showArea.style.display = "block";
-    }
-
-    async function updateNote(noteId) {
-        const editArea = document.querySelector(`#note-${noteId} .note-edit-area`);
-        const editTextArea = document.querySelector(`#note-${noteId} .note-edit-area textarea`);
-        const showArea = document.querySelector(`#note-${noteId} .unitary-text`);
-
-        const payload = { text: editTextArea.value };
-
-        try {
-            let url = '{{ path('api_edit_unitary', { noteId: 'note_id' }) }}';
-            url = url.replace('note_id', noteId);
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-            const data = await res.json();
-
-            showArea.innerHTML = data.note.textHtml;
-            editArea.style.display = "none";
-            showArea.style.display = "block";
-
-        } catch (err) {
-            console.error('送信エラー', err);
-            alert('送信失敗: ' + err.message);
-        }
-    }
-
-    async function startEditNote(noteId) {
-        const editArea = document.querySelector(`#note-${noteId} .note-edit-area`);
-        const showArea = document.querySelector(`#note-${noteId} .unitary-text`);
-        editArea.style.display = "block";
-        showArea.style.display = "none";
     }
 
     function settingShortCuts(){
