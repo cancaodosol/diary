@@ -33,7 +33,7 @@
                         </div>
                     </a>
                     {% if calender_note.notes|length > 0 %}
-                    <button type="button" class="btn btn-outline-primary btn-sm js-show-normal-notes" data-date="{{ calender_note.date.getDateString() }}">
+                    <button type="button" class="btn btn-outline-primary btn-sm calender-toggle-btn js-show-normal-notes" data-date="{{ calender_note.date.getDateString() }}" data-mode="timeline">
                         通常表示
                     </button>
                     {% endif %}
@@ -125,6 +125,11 @@
     .calender-normal-view .unitary-title .text-dark {
         font-size: 0.9rem;
         font-weight: bold;
+    }
+    .calender-toggle-btn {
+        padding: 2px 6px;
+        font-size: 0.65rem;
+        line-height: 1.1;
     }
     .calender-tags {
         text-decoration: none;
