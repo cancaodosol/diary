@@ -28,19 +28,22 @@ class unitaryNoteService {
 }
 
 class unitaryNote {
-    displayNormalNotes = async function(targetEle, units) {
+    displayNormalNotes = async function(targetEle, units, withoutTitleHeader=false) {
 
         units["units"].forEach((unit) => {
-            let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
-                        +`[<a class="btn btn-link btn-sm" href="${Routing.generate('new_unitary_with_compact', { date: unit.date })}">`
-                        +`    追加W`
-                        +`</a>`
-                        +`<a class="btn btn-link btn-sm" href="${Routing.generate('app_unitary_date', { date: unit.date })}">`
-                        +`    見る`
-                        +`</a>`
-                        +`]`
-                    + `</div>`;
-            titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
+            if(!withoutTitleHeader){
+                let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
+                            +`[<a class="btn btn-link btn-sm" href="${Routing.generate('new_unitary_with_compact', { date: unit.date })}">`
+                            +`    追加W`
+                            +`</a>`
+                            +`<a class="btn btn-link btn-sm" href="${Routing.generate('app_unitary_date', { date: unit.date })}">`
+                            +`    見る`
+                            +`</a>`
+                            +`]`
+                        + `</div>`;
+                titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
+                targetEle.innerHTML += titleHtml;
+            }
 
             let notesHtml = ``;
             unit.notes.forEach((note) => {
@@ -77,29 +80,31 @@ class unitaryNote {
             notesHtml += `<div class="btn-bar text-center mt-3 mb-5"></div>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
 
-            targetEle.innerHTML += titleHtml;
             targetEle.innerHTML += notesHtml;
         });
     }
 
-    displayCompactNotes = async function(targetEle, units) {
+    displayCompactNotes = async function(targetEle, units, withoutTitleHeader=false) {
 
         units.forEach((unit) => {
-            let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
-                        +`[<a class="btn btn-link btn-sm" href="${Routing.generate('new_unitary_with_compact', { date: unit.date })}">`
-                        +`    追加W`
-                        +`</a>`
-                        +`<a class="btn btn-link btn-sm" href="${Routing.generate('app_unitary_date', { date: unit.date })}">`
-                        +`    見る`
-                        +`</a>`
-                        +`]`
-                    + `</div>`
-                    + `<div class="text-center">%%title%%</div>`;
-            titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
-            titleHtml = titleHtml.replaceAll("%%title%%", unit.title);
+            if(!withoutTitleHeader){
+                let titleHtml = `<div class="unitary-date text-center">%%dateWithYoubi%%`
+                            +`[<a class="btn btn-link btn-sm" href="${Routing.generate('new_unitary_with_compact', { date: unit.date })}">`
+                            +`    追加W`
+                            +`</a>`
+                            +`<a class="btn btn-link btn-sm" href="${Routing.generate('app_unitary_date', { date: unit.date })}">`
+                            +`    見る`
+                            +`</a>`
+                            +`]`
+                        + `</div>`
+                        + `<div class="text-center">%%title%%</div>`
+                        + `<hr>`;
+                titleHtml = titleHtml.replaceAll("%%dateWithYoubi%%", unit.dateWithYoubi);
+                titleHtml = titleHtml.replaceAll("%%title%%", unit.title);
+                targetEle.innerHTML += titleHtml;
+            }
 
-            let notesHtml = `<hr>`
-                        +`<div id="notes-today" class="unitary-text">`;
+            let notesHtml = `<div id="notes-today" class="unitary-text">`;
             
             unit.notes.forEach((note) => {
                 let noteHtml = `<a class="note-title" href="${Routing.generate('edit_unitary_with_compact', { id: note.id })}">`
@@ -118,7 +123,6 @@ class unitaryNote {
             notesHtml += `</div><hr>`;
             notesHtml = notesHtml.replaceAll("today", unit.date);
 
-            targetEle.innerHTML += titleHtml;
             targetEle.innerHTML += notesHtml;
         });
 

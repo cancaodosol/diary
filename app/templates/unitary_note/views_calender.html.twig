@@ -1,5 +1,10 @@
 {% extends 'base_view.html.twig' %}
 
+{% block plugins %}
+    {{ parent() }}
+    <script src="{{ asset("assets/unitarynote.js") }}"></script>
+{% endblock %}
+
 {% block contents_wide %}
     <h2>{{ form_name }}</h2>
     {% if(thisTag) %}
@@ -21,13 +26,20 @@
     {% for calender_note in calender_notes %}
         <div class="calender-card">
             <div class="note-card">
-                <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
-                    <div class="calender-title">
-                        {{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})
-                    </div>
-                </a>
+                <div class="calender-title-row">
+                    <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
+                        <div class="calender-title">
+                            {{ calender_note.date.format('m / d') }} ({{ calender_note.date.getYoubi() }})
+                        </div>
+                    </a>
+                    {% if calender_note.notes|length > 0 %}
+                    <button type="button" class="btn btn-outline-primary btn-sm js-show-normal-notes" data-date="{{ calender_note.date.getDateString() }}">
+                        通常表示
+                    </button>
+                    {% endif %}
+                </div>
                 <div class="overflow-hidden">{{ calender_note.title | raw }}</div>
-                <div class="note-content">
+                <div class="note-content js-calender-note-content">
                     {% for note in calender_note.notes %}
                         <li class="note-title">
                             <a href="{{ path('view_unitary', { id: note.id }) }}">{{ note.getTitle() }}</a>
@@ -46,6 +58,44 @@
         </div>
     {% endfor %}
     </div>
+    <script>
+        initCalenderNormalNoteButtons = function() {
+            const buttons = document.querySelectorAll('.js-show-normal-notes');
+            if(!buttons.length) return;
+
+            buttons.forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    const date = btn.dataset.date;
+                    if(!date) return;
+
+                    const noteCard = btn.closest('.note-card');
+                    if(!noteCard) return;
+
+                    const targetEle = noteCard.querySelector('.js-calender-note-content');
+                    if(!targetEle) return;
+
+                    targetEle.classList.remove("timeline");
+                    targetEle.classList.add("calender-normal-view");
+
+                    btn.disabled = true;
+                    try {
+                        const service = new unitaryNoteService();
+                        const units = await service.getUnits(date, "1day");
+                        targetEle.innerHTML = "";
+                        const uNote = new unitaryNote();
+                        uNote.displayNormalNotes(targetEle, units, true);
+                    } catch (err) {
+                        console.error('取得エラー', err);
+                        btn.disabled = false;
+                    }
+                });
+            });
+        }
+
+        window.addEventListener("load", () => {
+            initCalenderNormalNoteButtons();
+        });
+    </script>
 {% endblock %}
 
 {% block style %}
@@ -58,6 +108,23 @@
         border-bottom: 1px solid #003366;
         color: #003399;
         text-decoration: none;
+    }
+    .calender-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+    }
+    .calender-normal-view {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    .calender-normal-view > div {
+        margin-bottom: 20px;
+    }
+    .calender-normal-view .unitary-title .text-dark {
+        font-size: 0.9rem;
+        font-weight: bold;
     }
     .calender-tags {
         text-decoration: none;
