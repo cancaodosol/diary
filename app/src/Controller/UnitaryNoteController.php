@@ -36,15 +36,17 @@ class UnitaryNoteController extends BaseController
 
         if($tagName == 'All')
         {
-            $notes = $doctrine->getRepository(UnitaryNote::class)
-                ->findInTerm($startdate, $enddate);
-
             if($mode == "calender")
             {
                 $dateHelper = new DateHelper();
                 $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, 4 * ($months + 1));
-                return $this->viewNotesByCalenderFormat($tags, null, $notes, $calender_dates, $doctrine);
+                $calender_notes = $doctrine->getRepository(UnitaryNote::class)
+                    ->findInTerm($calender_dates[0]->getValue(), $calender_dates[count($calender_dates)-1]->getValue());
+                return $this->viewNotesByCalenderFormat($tags, null, $calender_notes, $calender_dates, $doctrine);
             }
+
+            $notes = $doctrine->getRepository(UnitaryNote::class)
+                ->findInTerm($startdate, $enddate);
 
             return $this->render('unitary_note/views_units.html.twig', [
                 'form_name' => '',

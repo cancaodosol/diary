@@ -56,6 +56,8 @@ class UnitaryNoteRepository extends ServiceEntityRepository
 
     public function findInTerm(\DateTimeInterface $startdate, \DateTimeInterface $enddate)
     {
+        if($startdate > $enddate) return $this->findInTerm($enddate, $startdate);
+
         $entityManager = $this->getEntityManager();
 
         $query = $entityManager->createQuery(
