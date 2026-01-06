@@ -23,7 +23,31 @@ const pxPerMinute = 0.4;
 const timelineStartHour = 4;
 let timelineEndHour = 26;
 
-function drawTimeline(targetEle, scheduleRawData){
+function formatDateYYYYMMDD(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1);
+  const d = String(date.getDate());
+  return `${y}-${m}-${d}`;
+}
+
+function getNowLineInfo() {
+  const now = new Date();
+  let hour = now.getHours();
+  const minute = now.getMinutes();
+  const displayDate = new Date(now);
+
+  if (hour < timelineStartHour) {
+    displayDate.setDate(displayDate.getDate() - 1);
+    hour += 24;
+  }
+
+  return {
+    date: formatDateYYYYMMDD(displayDate),
+    minutes: hour * 60 + minute
+  };
+}
+
+function drawTimeline(targetEle, timelineDate, scheduleRawData){
 
   // 終了時刻の最大値を取得
   const maxEndMinutes = Math.max(...scheduleRawData.map(e => timeToMinutes(e.end)));
@@ -87,7 +111,38 @@ function drawTimeline(targetEle, scheduleRawData){
     targetEle.appendChild(wrapper);
 
     lastEnd = end;
+    drawCurrentTimeline(targetEle, timelineDate);
   });
+}
+
+function drawCurrentTimeline(targetEle, timelineDate) {
+  console.log("drawCurrentTimeline", timelineDate);
+  const nowLine = document.createElement("div");
+  nowLine.className = "timeline-now-line";
+  targetEle.appendChild(nowLine);
+
+  const updateNowLine = () => {
+    if (!timelineDate) {
+      nowLine.style.display = "none";
+      return;
+    }
+    const nowInfo = getNowLineInfo();
+    if (nowInfo.date !== timelineDate) {
+      nowLine.style.display = "none";
+      return;
+    }
+    const topPx = (nowInfo.minutes - timelineStartHour * 60) * pxPerMinute;
+    const maxPx = (timelineEndHour - timelineStartHour) * 60 * pxPerMinute;
+    if (topPx < 0 || topPx > maxPx) {
+      nowLine.style.display = "none";
+      return;
+    }
+    nowLine.style.display = "block";
+    nowLine.style.top = `${topPx}px`;
+  };
+
+  updateNowLine();
+  setInterval(updateNowLine, 360000);
 }
 
 function noteTitleToEvent(titleEle){
@@ -103,23 +158,3 @@ function noteTitleToEvent(titleEle){
     }
     return null;
 }
-
-window.addEventListener("load", () => {
-    const calender = document.querySelectorAll(".note-content");
-    [...calender].reverse().forEach((c) => {
-        const list = c.querySelectorAll("li");
-        const events = [];
-        list.forEach((li) => {
-            const event = noteTitleToEvent(li);
-            if(event){
-                events.push(event);
-            }
-        });
-        if(events.length > 0){
-            const timelineDiv = document.createElement("div");
-            c.classList.add("timeline");
-            c.innerHTML = "";
-            drawTimeline(c, events);
-        }
-    });
-});

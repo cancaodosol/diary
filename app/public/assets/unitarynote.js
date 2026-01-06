@@ -104,7 +104,7 @@ class unitaryNote {
                 targetEle.innerHTML += titleHtml;
             }
 
-            let notesHtml = `<div id="notes-today" class="unitary-text">`;
+            let notesHtml = `<div id="notes-today" class="unitary-text" unit-date="${unit.date}">`;
             
             unit.notes.forEach((note) => {
                 let noteHtml = `<a class="note-title" href="${Routing.generate('edit_unitary_with_compact', { id: note.id })}">`
@@ -129,6 +129,7 @@ class unitaryNote {
         const boxes = document.querySelectorAll('.unitary-text');
         boxes.forEach((box) => {
             const events = [];
+            const date = box.getAttribute('unit-date');
             const list = box.querySelectorAll('.note-title-tags');
             list.forEach((item, index) => {
                 const ll = document.createElement('div');
@@ -141,7 +142,7 @@ class unitaryNote {
             if(events.length > 0){
                 box.classList.add("timeline");
                 box.innerHTML = "";
-                drawTimeline(box, events);
+                drawTimeline(box, date, events);
             }
         });
     }

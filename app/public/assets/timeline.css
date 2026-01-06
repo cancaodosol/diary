@@ -66,3 +66,12 @@
   color: #888;
   margin-top: -10px;
 }
+
+.timeline-now-line {
+  position: absolute;
+  left: -4px;
+  right: 0;
+  height: 2px;
+  background-color: #e53935;
+  z-index: 5;
+}

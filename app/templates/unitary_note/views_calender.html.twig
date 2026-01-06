@@ -39,7 +39,7 @@
                     {% endif %}
                 </div>
                 <div class="overflow-hidden">{{ calender_note.title | raw }}</div>
-                <div class="note-content js-calender-note-content">
+                <div class="note-content js-calender-note-content" unit-date="{{ calender_note.date.getDateString() }}">
                     {% for note in calender_note.notes %}
                         <li class="note-title">
                             <a href="{{ path('view_unitary', { id: note.id }) }}">{{ note.getTitle() }}</a>
@@ -59,6 +59,28 @@
     {% endfor %}
     </div>
     <script>
+        initDrawTimeline = function(){
+            const calender = document.querySelectorAll(".note-content");
+            [...calender].reverse().forEach((c) => {
+                const unitDate = c.getAttribute("unit-date");
+                const list = c.querySelectorAll("li");
+                const events = [];
+                list.forEach((li) => {
+                    const event = noteTitleToEvent(li);
+                    if(event){
+                        events.push(event);
+                    }
+                });
+                if(events.length > 0){
+                    const timelineDiv = document.createElement("div");
+                    c.classList.add("timeline");
+                    c.innerHTML = "";
+                    drawTimeline(c, unitDate, events);
+                }
+            });
+
+        }
+
         initCalenderNormalNoteButtons = function() {
             const buttons = document.querySelectorAll('.js-show-normal-notes');
             if(!buttons.length) return;
@@ -93,6 +115,7 @@
         }
 
         window.addEventListener("load", () => {
+            initDrawTimeline();
             initCalenderNormalNoteButtons();
         });
     </script>
