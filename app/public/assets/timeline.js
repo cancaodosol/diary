@@ -19,7 +19,7 @@ function timeToMinutes(t) {
   return h * 60 + m;
 }
 
-const pxPerMinute = 0.4;
+const pxPerMinute = 0.6;
 const timelineStartHour = 4;
 let timelineEndHour = 26;
 
