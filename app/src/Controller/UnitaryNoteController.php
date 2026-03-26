@@ -32,7 +32,9 @@ class UnitaryNoteController extends BaseController
         $months = $request->query->get("months", $mode != "calender" ? "1" : "3");
 
         $enddate = DateTime::createFromFormat('Y-m-d', $date);
-        $startdate = DateTime::createFromFormat('Y-m-d', $date)->modify("-{$months} months");
+        $startdate = $request->query->get("months") && $mode == "calender" ?
+            DateTime::createFromFormat('Y-m-d', $date)->modify("-{$months} months") : 
+            DateTime::createFromFormat('Y-m-d', $date)->modify("-7 days");
 
         if($tagName == 'All')
         {
