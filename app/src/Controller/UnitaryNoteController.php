@@ -104,7 +104,7 @@ class UnitaryNoteController extends BaseController
         $tagIds = [];
         if($thisTag) {
             $tagIds[] = $thisTag->getId();
-            foreach($thisTag->getChildrenTags() as $tag){
+            foreach($thisTag->getChildrenTags() ?? [] as $tag){
                 $tagIds[] = $tag->getId();
             }
         }
