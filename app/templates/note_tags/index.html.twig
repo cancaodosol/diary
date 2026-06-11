@@ -1,20 +1,124 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello NoteTagsController!{% endblock %}
+{% block title %}タグ管理{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container mt-3">
+    <h2>タグ管理</h2>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/var/www/diary/src/Controller/NoteTagsController.php'|file_link(0) }}">src/Controller/NoteTagsController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/var/www/diary/templates/note_tags/index.html.twig'|file_link(0) }}">templates/note_tags/index.html.twig</a></code></li>
-    </ul>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">タグ名</th>
+                    <th scope="col">表示色</th>
+                    <th scope="col">説明</th>
+                    <th scope="col">並び順</th>
+                    <th scope="col">親ID</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in tags %}
+                <tr>
+                    <form method="post" action="{{ path('update_note_tag', {id: tag.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('update_note_tag_' ~ tag.id) }}">
+                        <td>{{ tag.id }}</td>
+                        <td>
+                            <input type="text" name="name" value="{{ tag.name }}" required class="form-control form-control-sm" style="min-width: 100px;">
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-1">
+                                <input type="color" name="displayColor_picker"
+                                    value="{{ tag.displayColor ?: '#ffffff' }}"
+                                    class="form-control form-control-color form-control-sm"
+                                    style="width: 36px; height: 28px; padding: 1px;"
+                                    oninput="this.form.querySelector('[name=displayColor]').value = this.value">
+                                <input type="text" name="displayColor"
+                                    value="{{ tag.displayColor ?: '' }}"
+                                    placeholder="#RRGGBB"
+                                    class="form-control form-control-sm"
+                                    style="width: 90px;"
+                                    pattern="^(#[0-9A-Fa-f]{6})?$"
+                                    oninput="if(this.value.match(/^#[0-9A-Fa-f]{6}$/)) this.form.querySelector('[name=displayColor_picker]').value = this.value">
+                            </div>
+                        </td>
+                        <td>
+                            <textarea name="description" class="form-control form-control-sm" rows="2" style="min-width: 150px;">{{ tag.description }}</textarea>
+                        </td>
+                        <td>
+                            <input type="number" name="sortOrder" value="{{ tag.sortOrder }}" class="form-control form-control-sm" style="width: 70px;">
+                        </td>
+                        <td>
+                            <input type="number" name="parentTagId" value="{{ tag.parentTagId ?: '' }}" class="form-control form-control-sm" style="width: 70px;" min="1">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-sm">保存</button>
+                    </form>
+                    <form method="post" action="{{ path('delete_note_tag', {id: tag.id}) }}" style="display:inline;" onsubmit="return confirm('タグ「{{ tag.name|e('js') }}」を削除しますか？');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_note_tag_' ~ tag.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                    </form>
+                        </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">タグが登録されていません</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="mt-4">タグを追加</h4>
+    <form method="post" action="{{ path('add_note_tag') }}" class="mb-4">
+        <input type="hidden" name="_token" value="{{ csrf_token('add_note_tag') }}">
+        <div class="row g-2 align-items-end">
+            <div class="col-auto">
+                <label class="form-label form-label-sm">タグ名 <span class="text-danger">*</span></label>
+                <input type="text" name="name" required class="form-control form-control-sm" style="min-width: 120px;">
+            </div>
+            <div class="col-auto">
+                <label class="form-label form-label-sm">表示色</label>
+                <div class="d-flex align-items-center gap-1">
+                    <input type="color" name="displayColor_picker_new" value="#ffffff"
+                        class="form-control form-control-color form-control-sm"
+                        style="width: 36px; height: 28px; padding: 1px;"
+                        oninput="document.getElementById('new-display-color').value = this.value">
+                    <input type="text" name="displayColor" id="new-display-color"
+                        placeholder="#RRGGBB"
+                        class="form-control form-control-sm"
+                        style="width: 90px;"
+                        pattern="^(#[0-9A-Fa-f]{6})?$"
+                        oninput="if(this.value.match(/^#[0-9A-Fa-f]{6}$/)) document.querySelector('[name=displayColor_picker_new]').value = this.value">
+                </div>
+            </div>
+            <div class="col-auto">
+                <label class="form-label form-label-sm">説明</label>
+                <textarea name="description" class="form-control form-control-sm" rows="2" style="min-width: 150px;"></textarea>
+            </div>
+            <div class="col-auto">
+                <label class="form-label form-label-sm">並び順</label>
+                <input type="number" name="sortOrder" value="0" class="form-control form-control-sm" style="width: 70px;">
+            </div>
+            <div class="col-auto">
+                <label class="form-label form-label-sm">親ID</label>
+                <input type="number" name="parentTagId" class="form-control form-control-sm" style="width: 70px;" min="1">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success btn-sm">追加</button>
+            </div>
+        </div>
+    </form>
 </div>
 {% endblock %}

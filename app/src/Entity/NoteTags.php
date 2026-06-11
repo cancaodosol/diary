@@ -45,6 +45,16 @@ class NoteTags
      */
     private $text;
 
+    /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    private $displayColor;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $sortOrder = 0;
+
     private $childrenTags;
 
     public function __construct()
@@ -57,6 +67,10 @@ class NoteTags
         return [
             "id" => $this->id,
             "name" => $this->getName(),
+            "displayColor" => $this->getDisplayColor(),
+            "description" => $this->getDescription(),
+            "sortOrder" => $this->getSortOrder(),
+            "parentTagId" => $this->getParentTagId(),
             "text" => $this->getText(),
             "textHtml" => $this->getTextHtml(),
         ];
@@ -67,7 +81,7 @@ class NoteTags
         return $this->id;
     }
 
-    public function setParentTagId(int $parentTagId): self
+    public function setParentTagId(?int $parentTagId): self
     {
         $this->parentTagId = $parentTagId;
 
@@ -116,6 +130,30 @@ class NoteTags
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDisplayColor(): ?string
+    {
+        return $this->displayColor;
+    }
+
+    public function setDisplayColor(?string $displayColor): self
+    {
+        $this->displayColor = $displayColor;
+
+        return $this;
+    }
+
+    public function getSortOrder(): int
+    {
+        return $this->sortOrder ?? 0;
+    }
+
+    public function setSortOrder(int $sortOrder): self
+    {
+        $this->sortOrder = $sortOrder;
 
         return $this;
     }
