@@ -20,53 +20,68 @@
             </a>
         </div>
     </div>
-    <div class="calender-cards-box">
-    {% for youbi in youbis %}
-        <div class="calender-card youbi">
-            <span class="calender-youbi">{{ youbi }}</span>
+    <div style="display: flex; flex-wrap: wrap;">
+        <div class="calender-cards-box">
+        {% for youbi in youbis %}
+            <div class="calender-card youbi">
+                <span class="calender-youbi">{{ youbi }}</span>
+            </div>
+        {% endfor %}
+        {% for calender_note in calender_notes %}
+            <div class="calender-card">
+                <div class="note-card" style="opacity: {{ calender_note.month != this_month ? '0.2' : '1' }};">
+                    <div class="calender-title-row">
+                        <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
+                            <div class="calender-title" style="
+                                {% if calender_note.date.getYoubi() == '土' %}
+                                    color: blue;
+                                {% elseif calender_note.date.getYoubi() == '日' %}
+                                    color: red;
+                                {% endif %}
+                                {% if calender_note.date.getDateString() == 'now'|date('Y-n-j') %}
+                                    background-color: yellow;
+                                    border-radius: 5px;
+                                {% endif %}
+                            ">
+                                {{ calender_note.date.format('d') }}
+                            </div>
+                        </a>
+                        <div class="overflow-hidden" style="white-space: nowrap; text-overflow: ellipsis;">{{ calender_note.title | raw }}</div>
+                    </div>
+                    <div class="note-content js-calender-note-content" unit-date="{{ calender_note.date.getDateString() }}">
+                        {% for note in calender_note.notes %}
+                            {% if thisTag.displayType == 'image' %}
+                            {{ note.textHtml | raw }}
+                            {% else %}
+                            <div style="white-space: nowrap; text-overflow: ellipsis;">
+                                {% set fontColor = note.tags[0].displayColor %}
+                                <a type="button" class="btn-show-note-view" note_id="{{ note.id }}" style="text-decoration: none; color: {{ fontColor }};">
+                                    ・{{ note.titleWithoutDate }}
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div style="height: 15px;">
+                        📝
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
         </div>
-    {% endfor %}
-    {% for calender_note in calender_notes %}
-        <div class="calender-card">
-            <div class="note-card" style="opacity: {{ calender_note.month != this_month ? '0.2' : '1' }};">
-                <div class="calender-title-row">
-                    <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
-                        <div class="calender-title" style="
-                            {% if calender_note.date.getYoubi() == '土' %}
-                                color: blue;
-                            {% elseif calender_note.date.getYoubi() == '日' %}
-                                color: red;
-                            {% endif %}
-                            {% if calender_note.date.getDateString() == 'now'|date('Y-n-j') %}
-                                background-color: yellow;
-                                border-radius: 5px;
-                            {% endif %}
-                        ">
-                            {{ calender_note.date.format('d') }}
-                        </div>
-                    </a>
-                    <div class="overflow-hidden" style="white-space: nowrap; text-overflow: ellipsis;">{{ calender_note.title | raw }}</div>
+        <div id="note-view">
+            <div class="note-view-content">
+                <div class="note-view-header">
+                    <div id="note-view-title-date"></div>
+                    <div id="note-view-title"></div>
+                    <div id="note-view-tags"></div>
                 </div>
-                <div class="note-content js-calender-note-content" unit-date="{{ calender_note.date.getDateString() }}">
-                    {% for note in calender_note.notes %}
-                        {% if thisTag.displayType == 'image' %}
-                        {{ note.textHtml | raw }}
-                        {% else %}
-                        <div style="white-space: nowrap; text-overflow: ellipsis;">
-                            {% set fontColor = note.tags[0].displayColor %}
-                            <a href="{{ path('view_unitary', { id: note.id }) }}" style="text-decoration: none; color: {{ fontColor }};">
-                                ・{{ note.titleWithoutDate }}
-                            </a>
-                        </div>
-                        {% endif %}
-                    {% endfor %}
+                <div id="note-view-body">
                 </div>
-                <div style="height: 15px;">
-                    📝
+                <div id="note-view-footer">
                 </div>
             </div>
         </div>
-    {% endfor %}
     </div>
     {% if(thisTag) %}
     <div class="mb-5 p-3">
@@ -84,62 +99,32 @@
     </div>
     {% endif %}
     <script>
-        initDrawTimeline = function(){
-            const calender = document.querySelectorAll(".note-content");
-            [...calender].reverse().forEach((c) => {
-                const unitDate = c.getAttribute("unit-date");
-                const list = c.querySelectorAll("li");
-                const events = [];
-                list.forEach((li) => {
-                    const event = noteTitleToEvent(li);
-                    if(event){
-                        events.push(event);
-                    }
-                });
-                if(events.length > 0){
-                    const timelineDiv = document.createElement("div");
-                    c.classList.add("timeline");
-                    c.innerHTML = "";
-                    drawTimeline(c, unitDate, events);
-                }
-            });
-
-        }
-
-        initCalenderNormalNoteButtons = function() {
-            const buttons = document.querySelectorAll('.js-show-normal-notes');
-            if(!buttons.length) return;
-
-            buttons.forEach((btn) => {
-                btn.addEventListener('click', async () => {
-                    const date = btn.dataset.date;
-                    if(!date) return;
-
-                    const noteCard = btn.closest('.note-card');
-                    if(!noteCard) return;
-
-                    const targetEle = noteCard.querySelector('.js-calender-note-content');
-                    if(!targetEle) return;
-
-                    targetEle.classList.remove("timeline");
-                    targetEle.classList.add("calender-normal-view");
-
-                    btn.disabled = true;
-                    try {
-                        const service = new unitaryNoteService();
-                        const units = await service.getUnits(date, "1day");
-                        targetEle.innerHTML = "";
-                        const uNote = new unitaryNote();
-                        uNote.displayNormalNotes(targetEle, units, true);
-                    } catch (err) {
-                        console.error('取得エラー', err);
-                        btn.disabled = false;
-                    }
+        initShowNoteViewButtons = function() {
+            const buttons = document.querySelectorAll(".btn-show-note-view");
+            buttons.forEach(btn => {
+                btn.addEventListener("click", function() {
+                    const noteId = this.getAttribute("note_id");
+                    if(!noteId) return;
+                    const url = "{{ path('api_get_one_unitary', { noteId: 'NOTE_ID' }) }}".replace("NOTE_ID", noteId);
+                    fetch(url, {
+                        method: 'GET'
+                    }).then(response => response.json())
+                    .then(data => {
+                        const height = document.querySelector(".calender-cards-box").offsetHeight;
+                        document.getElementById("note-view").style.height = height + "px";
+                        document.getElementById("note-view").style.overflowY = "scroll";
+                        document.getElementById("note-view-title-date").innerText = data.note.titleDate;
+                        document.getElementById("note-view-title").innerText = data.note.titleWithoutDate;
+                        document.getElementById("note-view-tags").innerHTML = data.note.tags.map(tag => `<span>#${tag.name}</span>`).join(' ');
+                        document.getElementById("note-view-body").innerHTML = data.note.textHtml;
+                        console.log(data);
+                    });
                 });
             });
         }
 
         window.addEventListener("load", () => {
+            initShowNoteViewButtons();
         });
     </script>
 {% endblock %}
@@ -211,4 +196,20 @@
             width: 95%;
         }
     }
+    #note-view {
+        width: 350px;
+        padding-right: 15px;
+    }
+    #note-view-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    .note-view-header {
+        margin-bottom: 20px;
+    }
+    #note-view-tags span {
+        font-size: 0.6rem;
+        color: blue;
+    }
+
 {% endblock %}

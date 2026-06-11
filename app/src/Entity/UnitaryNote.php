@@ -93,6 +93,8 @@ class UnitaryNote
             "preDateString" => $this->getPreDateString(),
             "nextDateString" => $this->getNextDateString(),
             "title" => $this->title,
+            "titleWithoutDate" => $this->getTitleWithoutDate(),
+            "titleDate" => $this->getTitleDate(),
             "text" => $this->text,
             "textHtml" => $this->getTextHtml(),
             "tags" => $tags,
