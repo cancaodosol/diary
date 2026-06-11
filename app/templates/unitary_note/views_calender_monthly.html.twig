@@ -31,13 +31,17 @@
             <div class="note-card" style="opacity: {{ calender_note.month != this_month ? '0.2' : '1' }};">
                 <div class="calender-title-row">
                     <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
-                        <div class="calender-title"
+                        <div class="calender-title" style="
                             {% if calender_note.date.getYoubi() == '土' %}
-                                style="color: blue;"
+                                color: blue;
                             {% elseif calender_note.date.getYoubi() == '日' %}
-                                style="color: red;"
+                                color: red;
                             {% endif %}
-                        >
+                            {% if calender_note.date.getDateString() == 'now'|date('Y-n-j') %}
+                                background-color: yellow;
+                                border-radius: 5px;
+                            {% endif %}
+                        ">
                             {{ calender_note.date.format('d') }}
                         </div>
                     </a>
