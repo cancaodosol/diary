@@ -17,12 +17,14 @@ class NoteTagsController extends BaseController
      */
     public function index(ManagerRegistry $doctrine): Response
     {
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy(
+        $tags = $this->getTags($doctrine);
+        $editTags = $doctrine->getRepository(NoteTags::class)->findBy(
             [],
             ['parentTagId' => 'ASC','sortOrder' => 'ASC', 'id' => 'ASC']
         );
         return $this->render('note_tags/index.html.twig', [
             'tags' => $tags,
+            'editTags' => $editTags,
         ]);
     }
 

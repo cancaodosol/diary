@@ -30,7 +30,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for tag in tags %}
+                {% for tag in editTags %}
                 <tr>
                     <form method="post" action="{{ path('update_note_tag', {id: tag.id}) }}">
                         <input type="hidden" name="_token" value="{{ csrf_token('update_note_tag_' ~ tag.id) }}">
