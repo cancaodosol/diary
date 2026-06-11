@@ -45,6 +45,7 @@ class NoteTagsController extends BaseController
         $tag = new NoteTags();
         $tag->setName($name);
         $tag->setDisplayColor($this->resolveDisplayColor($request->request->get('displayColor', '')));
+        $tag->setDisplayType($this->resolveDisplayType($request->request->get('displayType', '')));
         $tag->setDescription($request->request->get('description') ?: null);
         $tag->setSortOrder((int) $request->request->get('sortOrder', 0));
 
@@ -101,6 +102,7 @@ class NoteTagsController extends BaseController
 
         $tag->setName($name);
         $tag->setDisplayColor($this->resolveDisplayColor($request->request->get('displayColor', '')));
+        $tag->setDisplayType($this->resolveDisplayType($request->request->get('displayType', '')));
         $tag->setDescription($request->request->get('description') ?: null);
         $tag->setSortOrder((int) $request->request->get('sortOrder', 0));
         $tag->setParentTagId($parentTagId);
@@ -209,6 +211,19 @@ class NoteTagsController extends BaseController
             return null;
         }
         return $trimmed;
+    }
+
+    /**
+     * 表示タイプの値を正規化する。空値は DISPLAY_TYPE_TITLE として扱う（ユーザー入力のデフォルト）。
+     * 許可値（title/image）以外の不正値も DISPLAY_TYPE_TITLE に正規化する。
+     */
+    private function resolveDisplayType(string $value): string
+    {
+        $trimmed = trim($value);
+        if (in_array($trimmed, NoteTags::DISPLAY_TYPE_VALUES, true)) {
+            return $trimmed;
+        }
+        return NoteTags::DISPLAY_TYPE_TITLE;
     }
 
     /**

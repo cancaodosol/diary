@@ -13,6 +13,15 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class NoteTags
 {
+    public const DISPLAY_TYPE_TITLE = 'title';
+    public const DISPLAY_TYPE_IMAGE = 'image';
+
+    /** @var string[] 許可された表示タイプ値 */
+    public const DISPLAY_TYPE_VALUES = [
+        self::DISPLAY_TYPE_TITLE,
+        self::DISPLAY_TYPE_IMAGE,
+    ];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -55,6 +64,11 @@ class NoteTags
      */
     private $sortOrder = 0;
 
+    /**
+     * @ORM\Column(type="string", length=32, options={"default": "title"})
+     */
+    private $displayType = self::DISPLAY_TYPE_TITLE;
+
     private $childrenTags;
 
     public function __construct()
@@ -68,6 +82,7 @@ class NoteTags
             "id" => $this->id,
             "name" => $this->getName(),
             "displayColor" => $this->getDisplayColor(),
+            "displayType" => $this->getDisplayType(),
             "description" => $this->getDescription(),
             "sortOrder" => $this->getSortOrder(),
             "parentTagId" => $this->getParentTagId(),
@@ -154,6 +169,18 @@ class NoteTags
     public function setSortOrder(int $sortOrder): self
     {
         $this->sortOrder = $sortOrder;
+
+        return $this;
+    }
+
+    public function getDisplayType(): string
+    {
+        return $this->displayType;
+    }
+
+    public function setDisplayType(string $displayType): self
+    {
+        $this->displayType = $displayType;
 
         return $this;
     }

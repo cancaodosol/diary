@@ -103,12 +103,55 @@ class NoteTagsTest extends TestCase
         $this->assertSame('テスト説明', $tag->getDescription());
     }
 
+    public function testDisplayTypeDefaultIsTitle(): void
+    {
+        // Given: 新規 NoteTags（表示タイプ未設定）
+        $tag = new NoteTags();
+
+        // Then: デフォルトは「タイトル表示」
+        $this->assertSame(NoteTags::DISPLAY_TYPE_TITLE, $tag->getDisplayType());
+    }
+
+    public function testDisplayTypeGetterSetter(): void
+    {
+        // Given: 新規 NoteTags
+        $tag = new NoteTags();
+
+        // When: 表示タイプを「画像表示」にセット
+        $tag->setDisplayType(NoteTags::DISPLAY_TYPE_IMAGE);
+
+        // Then: 同じ値が返る
+        $this->assertSame(NoteTags::DISPLAY_TYPE_IMAGE, $tag->getDisplayType());
+    }
+
+    public function testDisplayTypeCanBeSetBackToTitle(): void
+    {
+        // Given: 画像表示に設定済みの NoteTags
+        $tag = new NoteTags();
+        $tag->setDisplayType(NoteTags::DISPLAY_TYPE_IMAGE);
+
+        // When: タイトル表示に戻す
+        $tag->setDisplayType(NoteTags::DISPLAY_TYPE_TITLE);
+
+        // Then: タイトル表示が返る
+        $this->assertSame(NoteTags::DISPLAY_TYPE_TITLE, $tag->getDisplayType());
+    }
+
+    public function testDisplayTypeValuesConstantContainsBothValues(): void
+    {
+        // Then: 定数 DISPLAY_TYPE_VALUES に title と image の両方が含まれる
+        $this->assertContains(NoteTags::DISPLAY_TYPE_TITLE, NoteTags::DISPLAY_TYPE_VALUES);
+        $this->assertContains(NoteTags::DISPLAY_TYPE_IMAGE, NoteTags::DISPLAY_TYPE_VALUES);
+        $this->assertCount(2, NoteTags::DISPLAY_TYPE_VALUES);
+    }
+
     public function testToArrayContainsAllRequiredFields(): void
     {
         // Given: 全フィールドが設定された NoteTags
         $tag = new NoteTags();
         $tag->setName('タグA');
         $tag->setDisplayColor('#00ff00');
+        $tag->setDisplayType(NoteTags::DISPLAY_TYPE_IMAGE);
         $tag->setDescription('説明A');
         $tag->setSortOrder(2);
         $tag->setParentTagId(1);
@@ -120,6 +163,7 @@ class NoteTagsTest extends TestCase
         $this->assertArrayHasKey('id', $array);
         $this->assertArrayHasKey('name', $array);
         $this->assertArrayHasKey('displayColor', $array);
+        $this->assertArrayHasKey('displayType', $array);
         $this->assertArrayHasKey('description', $array);
         $this->assertArrayHasKey('sortOrder', $array);
         $this->assertArrayHasKey('parentTagId', $array);
@@ -128,6 +172,7 @@ class NoteTagsTest extends TestCase
 
         $this->assertSame('タグA', $array['name']);
         $this->assertSame('#00ff00', $array['displayColor']);
+        $this->assertSame(NoteTags::DISPLAY_TYPE_IMAGE, $array['displayType']);
         $this->assertSame('説明A', $array['description']);
         $this->assertSame(2, $array['sortOrder']);
         $this->assertSame(1, $array['parentTagId']);
@@ -142,10 +187,11 @@ class NoteTagsTest extends TestCase
         // When: toArray を呼ぶ
         $array = $tag->toArray();
 
-        // Then: nullable フィールドは null が返る
+        // Then: nullable フィールドは null が返り、displayType はデフォルト値が返る
         $this->assertNull($array['displayColor']);
         $this->assertNull($array['description']);
         $this->assertNull($array['parentTagId']);
         $this->assertSame(0, $array['sortOrder']);
+        $this->assertSame(NoteTags::DISPLAY_TYPE_TITLE, $array['displayType']);
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\NoteTags;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -23,6 +24,17 @@ class NoteTagsType extends AbstractType
                 [
                     'label' => '表示色',
                     'required' => false,
+                ]
+            )
+            ->add(
+                'displayType',
+                ChoiceType::class,
+                [
+                    'label' => '表示タイプ',
+                    'choices' => [
+                        'タイトル表示' => NoteTags::DISPLAY_TYPE_TITLE,
+                        '画像表示' => NoteTags::DISPLAY_TYPE_IMAGE,
+                    ],
                 ]
             )
             ->add(
