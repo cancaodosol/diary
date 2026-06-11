@@ -77,6 +77,14 @@
                     <div id="note-view-tags"></div>
                 </div>
                 <div id="note-view-body">
+                    <div id="note-text"></div>
+                    <div id="note-edit-area" style="display: none;">
+                        <textarea id="note-text-for-edit" class="form-control" style="field-sizing: content; font-size:0.8rem;"></textarea>
+                        <div class="mt-1 d-flex justify-content-end gap-2">
+                            <button id="close-edit-note-btn" class="btn btn-sm btn-outline-secondary" type="button">閉じる</button>
+                            <button id="update-edit-note-btn" class="btn btn-sm btn-outline-primary" type="button">更新</button>
+                        </div>
+                    </div>
                 </div>
                 <div id="note-view-footer">
                 </div>
@@ -110,21 +118,76 @@
                         method: 'GET'
                     }).then(response => response.json())
                     .then(data => {
+                        document.getElementById("note-view").setAttribute("note-id", noteId);
                         const height = document.querySelector(".calender-cards-box").offsetHeight;
                         document.getElementById("note-view").style.height = height + "px";
                         document.getElementById("note-view").style.overflowY = "scroll";
                         document.getElementById("note-view-title-date").innerText = data.note.titleDate;
                         document.getElementById("note-view-title").innerText = data.note.titleWithoutDate;
                         document.getElementById("note-view-tags").innerHTML = data.note.tags.map(tag => `<span>#${tag.name}</span>`).join(' ');
-                        document.getElementById("note-view-body").innerHTML = data.note.textHtml;
+                        document.getElementById("note-text").innerHTML = data.note.textHtml;
+                        document.getElementById("note-text-for-edit").value = data.note.text;
                         console.log(data);
                     });
                 });
             });
         }
 
+        const updateBtn = document.getElementById("update-edit-note-btn");
+        const closeBtn = document.getElementById("close-edit-note-btn");
+        const noteEditArea = document.getElementById("note-edit-area");
+        const noteText = document.getElementById("note-text");
+        const noteTextForEdit = document.getElementById("note-text-for-edit");
+
+        resetEditNoteArea = function() {
+            noteEditArea.style.display = "none";
+            noteText.style.display = "block";
+        }
+
+        initEditNoteButtons = function() {
+            noteText.addEventListener("click", async function() {
+                noteEditArea.style.display = "block";
+                noteText.style.display = "none";
+            });
+
+            closeBtn.addEventListener("click", async function() {
+                noteEditArea.style.display = "none";
+                noteText.style.display = "block";
+            });
+
+            updateBtn.addEventListener("click", async function() {
+                const noteId = document.getElementById("note-view").getAttribute("note-id");
+                if(!noteId) return;
+
+                const payload = { text: noteTextForEdit.value };
+
+                try {
+                    let url = `${Routing.generate('api_edit_unitary', { noteId: noteId })}`;
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+                    const data = await res.json();
+
+                    noteText.innerHTML = data.note.textHtml;
+                    noteEditArea.style.display = "none";
+                    noteText.style.display = "block";
+
+                } catch (err) {
+                    console.error('送信エラー', err);
+                    alert('送信失敗: ' + err.message);
+                }
+            });
+        }
+
         window.addEventListener("load", () => {
             initShowNoteViewButtons();
+            initEditNoteButtons();
         });
     </script>
 {% endblock %}
@@ -199,6 +262,7 @@
     #note-view {
         width: 350px;
         padding-right: 15px;
+        padding-bottom: 15px;
     }
     #note-view-title {
         font-size: 1.2rem;
@@ -211,5 +275,4 @@
         font-size: 0.6rem;
         color: blue;
     }
-
 {% endblock %}
