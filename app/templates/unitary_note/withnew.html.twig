@@ -16,6 +16,8 @@
 {% block body %}
     <link href="{{ asset("assets/timeline.css") }}" rel="stylesheet" />
 
+    {{ form_errors(form) }}
+
     <h2>{{ form_name }}</h2>
     <div class="row">
         <div id="notes-box" class="col-md-4 mb-4">
@@ -46,6 +48,7 @@
             </div>
             {{ form_row(form.text) }}
             {{ form_row(form.save) }}
+            {{ form_end(form) }}
         </div>
     </div>
     <script>
