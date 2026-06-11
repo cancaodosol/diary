@@ -100,20 +100,29 @@ class UnitaryNoteController extends BaseController
         $tagName = $request->query->get("tagName", "");
         $month = $request->query->get("month", date('Y-m'));
 
+        $thisTag = $tagName != "" ? $doctrine->getRepository(NoteTags::class)->findOneBy(["name" => $tagName]) : null;
+        $tagIds = [];
+        if($thisTag) {
+            $tagIds[] = $thisTag->getId();
+            foreach($thisTag->getChildrenTags() as $tag){
+                $tagIds[] = $tag->getId();
+            }
+        }
+
         $startdate = DateTime::createFromFormat('Y-m-d', $month . "-01");
         $enddate = (clone $startdate)->modify('last day of this month');
 
         $dateHelper = new DateHelper();
         $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, 5);
         $calender_notes = $doctrine->getRepository(UnitaryNote::class)
-            ->findInTermWithTagName($calender_dates[0]->getValue(), $calender_dates[count($calender_dates)-1]->getValue(), $tagName);
+            ->findInTermWithTagName($calender_dates[0]->getValue(), $calender_dates[count($calender_dates)-1]->getValue(), $tagIds);
         
         $notes = $this->createCalenderNotes($calender_notes, $calender_dates, $doctrine);
 
         return $this->render('unitary_note/views_calender_monthly.html.twig', [
             'form_name' => '',
             'tags' => $tags,
-            'thisTag' => $tagName != "" ? $doctrine->getRepository(NoteTags::class)->findOneBy(["name" => $tagName]) : null,
+            'thisTag' => $thisTag,
             'calender_notes' => $notes,
             'this_month' => $month,
             'previous_month' => date('Y-m', strtotime($month . '-01 -1 month')),

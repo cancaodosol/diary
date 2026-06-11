@@ -72,10 +72,10 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-    public function findInTermWithTagName(\DateTimeInterface $startdate, \DateTimeInterface $enddate, string $tagName)
+    public function findInTermWithTagName(\DateTimeInterface $startdate, \DateTimeInterface $enddate, array $tagIds)
     {
-        if($tagName == "") return $this->findInTerm($startdate, $enddate);
-        if($startdate > $enddate) return $this->findInTermWithTagName($enddate, $startdate, $tagName);
+        if($tagIds == []) return $this->findInTerm($startdate, $enddate);
+        if($startdate > $enddate) return $this->findInTermWithTagName($enddate, $startdate, $tagIds);
 
         $entityManager = $this->getEntityManager();
 
@@ -84,11 +84,11 @@ class UnitaryNoteRepository extends ServiceEntityRepository
                 'SELECT u
                 FROM App\Entity\UnitaryNote u
                 JOIN u.tags t
-                WHERE u.date >= :startdate and u.date <= :enddate and t.name = :tagName
+                WHERE u.date >= :startdate and u.date <= :enddate and t.id in (:tagIds)
                 ORDER BY u.date DESC, u.title ASC'
             )->setParameter('startdate', $startdate)
             ->setParameter('enddate', $enddate)
-            ->setParameter('tagName', $tagName);
+            ->setParameter('tagIds', $tagIds);
 
         // returns an array of Product objects
         return $query->getResult();
