@@ -1,0 +1,201 @@
+{% extends 'base_view.html.twig' %}
+
+{% block plugins %}
+    {{ parent() }}
+    <script src="{{ asset("assets/unitarynote.js") }}"></script>
+{% endblock %}
+
+{% set youbis = ['月', '火', '水', '木', '金', '土', '日'] %}
+
+{% block contents_wide %}
+    <h2>{{ form_name }}</h2>
+    <div class="mt-4">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_monthly', { tagName: thisTag.name ?? '', month: previous_month }) }}">
+                << 
+            </a>
+            <div>{{ this_month | date('Y年m月') }}</div>
+            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_monthly', { tagName: thisTag.name ?? '', month: next_month }) }}">
+                >>
+            </a>
+        </div>
+    </div>
+    <div class="calender-cards-box">
+    {% for youbi in youbis %}
+        <div class="calender-card youbi">
+            <span class="calender-youbi">{{ youbi }}</span>
+        </div>
+    {% endfor %}
+    {% for calender_note in calender_notes %}
+        <div class="calender-card">
+            <div class="note-card" style="opacity: {{ calender_note.month != this_month ? '0.2' : '1' }};">
+                <div class="calender-title-row">
+                    <a href="{{ path('new_unitary_with_compact', { date: calender_note.date.getDateString() }) }}" style="text-decoration: none;">
+                        <div class="calender-title"
+                            {% if calender_note.date.getYoubi() == '土' %}
+                                style="color: blue;"
+                            {% elseif calender_note.date.getYoubi() == '日' %}
+                                style="color: red;"
+                            {% endif %}
+                        >
+                            {{ calender_note.date.format('d') }}
+                        </div>
+                    </a>
+                    <div class="overflow-hidden" style="white-space: nowrap; text-overflow: ellipsis;">{{ calender_note.title | raw }}</div>
+                </div>
+                <div class="note-content js-calender-note-content" unit-date="{{ calender_note.date.getDateString() }}">
+                    {% for note in calender_note.notes %}
+                        {{ note.textHtml | raw }}
+                    {% endfor %}
+                </div>
+                <div style="height: 15px;">
+                    📝
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% if(thisTag) %}
+    <div class="mb-5 p-3">
+        <div class="text-dark">＜ {{ thisTag.name }} ＞ <a href="{{ path('edit_note_tags', { id: thisTag.id }) }}">編集</a></div>
+        <div class="mt-1">{{ thisTag.description | raw }}</div>
+        <div class="mt-1">{{ thisTag.textHtml | raw }}</div>
+    </div>
+    <div>
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: '' }) }}">
+            << 一覧形式で表示
+        </a>
+        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: 'card' }) }}">
+            >> カード形式で表示
+        </a>
+    </div>
+    {% endif %}
+    <script>
+        initDrawTimeline = function(){
+            const calender = document.querySelectorAll(".note-content");
+            [...calender].reverse().forEach((c) => {
+                const unitDate = c.getAttribute("unit-date");
+                const list = c.querySelectorAll("li");
+                const events = [];
+                list.forEach((li) => {
+                    const event = noteTitleToEvent(li);
+                    if(event){
+                        events.push(event);
+                    }
+                });
+                if(events.length > 0){
+                    const timelineDiv = document.createElement("div");
+                    c.classList.add("timeline");
+                    c.innerHTML = "";
+                    drawTimeline(c, unitDate, events);
+                }
+            });
+
+        }
+
+        initCalenderNormalNoteButtons = function() {
+            const buttons = document.querySelectorAll('.js-show-normal-notes');
+            if(!buttons.length) return;
+
+            buttons.forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    const date = btn.dataset.date;
+                    if(!date) return;
+
+                    const noteCard = btn.closest('.note-card');
+                    if(!noteCard) return;
+
+                    const targetEle = noteCard.querySelector('.js-calender-note-content');
+                    if(!targetEle) return;
+
+                    targetEle.classList.remove("timeline");
+                    targetEle.classList.add("calender-normal-view");
+
+                    btn.disabled = true;
+                    try {
+                        const service = new unitaryNoteService();
+                        const units = await service.getUnits(date, "1day");
+                        targetEle.innerHTML = "";
+                        const uNote = new unitaryNote();
+                        uNote.displayNormalNotes(targetEle, units, true);
+                    } catch (err) {
+                        console.error('取得エラー', err);
+                        btn.disabled = false;
+                    }
+                });
+            });
+        }
+
+        window.addEventListener("load", () => {
+        });
+    </script>
+{% endblock %}
+
+{% block style %}
+    .calender-title {
+        font-size:0.8rem;
+        font-weight:bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #003399;
+        text-decoration: none;
+    }
+    .calender-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+    }
+    .calender-normal-view {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    .calender-normal-view > div {
+        margin-bottom: 20px;
+    }
+    .calender-normal-view .unitary-title .text-dark {
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+    .calender-toggle-btn {
+        padding: 2px 6px;
+        font-size: 0.65rem;
+        line-height: 1.1;
+    }
+    .calender-tags {
+        text-decoration: none;
+    }
+    .calender-cards-box {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 1100px;
+        margin: 10px auto;
+    }
+    .calender-card {
+        width: 14.2%;
+        padding: 1px;
+        border: 0.5px solid #8eb0d1;
+    }
+    .calender-card.youbi {
+        display: flex;
+        justify-content: center;
+    }
+    .note-card {
+        height: 100%;
+        font-size:0.7rem;
+        padding: 5px;
+        color: #003399;
+    }
+    .note-content {
+        height: 90px;
+        overflow: hidden;
+    }
+    @media screen and (max-width: 480px) {
+        /* 480px以下に適用されるCSS（スマホ用） */
+        .calender-card {
+            width: 95%;
+        }
+    }
+{% endblock %}

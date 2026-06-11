@@ -13,9 +13,15 @@
         <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name ?? 'All', mode: 'card' }) }}">
             >> カード形式で表示
         </a>
-        <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name ?? 'All', mode: 'calender' }) }}">
-            >> カレンダー形式で表示
-        </a>
+        {% if(thisTag) %}
+            <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary_monthly', { tagName: thisTag.name }) }}">
+                >> カレンダー形式で表示
+            </a>
+        {% else %}
+            <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: thisTag.name, mode: 'calender' }) }}">
+                >> カレンダー形式で表示
+            </a>
+        {% endif %}
     </div>
     {% for note in notes %}
         <hr>

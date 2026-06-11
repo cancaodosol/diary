@@ -90,8 +90,52 @@ class UnitaryNoteController extends BaseController
             ]);
         }
     }
+    /**
+     * @Route("/unitary/monthly", name="app_unitary_monthly")
+     */
+    public function index_monthly(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $tags = $this->getTags($doctrine);
+
+        $tagName = $request->query->get("tagName", "");
+        $month = $request->query->get("month", date('Y-m'));
+
+        $startdate = DateTime::createFromFormat('Y-m-d', $month . "-01");
+        $enddate = (clone $startdate)->modify('last day of this month');
+
+        $dateHelper = new DateHelper();
+        $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, 5);
+        $calender_notes = $doctrine->getRepository(UnitaryNote::class)
+            ->findInTermWithTagName($calender_dates[0]->getValue(), $calender_dates[count($calender_dates)-1]->getValue(), $tagName);
+        
+        $notes = $this->createCalenderNotes($calender_notes, $calender_dates, $doctrine);
+
+        return $this->render('unitary_note/views_calender_monthly.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'thisTag' => $tagName != "" ? $doctrine->getRepository(NoteTags::class)->findOneBy(["name" => $tagName]) : null,
+            'calender_notes' => $notes,
+            'this_month' => $month,
+            'previous_month' => date('Y-m', strtotime($month . '-01 -1 month')),
+            'next_month' => date('Y-m', strtotime($month . '-01 +1 month'))
+        ]);
+        return $this->viewNotesByCalenderFormat($tags, null, $calender_notes, $calender_dates, $doctrine);
+    }
 
     private function viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates, $doctrine): Response
+    {
+        $calender_notes = $this->createCalenderNotes($notes, $calender_dates, $doctrine);
+
+        return $this->render('unitary_note/views_calender.html.twig', [
+            'form_name' => '',
+            'tags' => $tags,
+            'thisTag' => $tag,
+            'notes' => $notes,
+            'calender_notes' => $calender_notes,
+        ]);
+    }
+
+    private function createCalenderNotes($notes, $calender_dates, $doctrine): array
     {
         $calender_notes = [];
 
@@ -118,21 +162,14 @@ class UnitaryNoteController extends BaseController
                 $calender_date_notes[] = $note;
             }
             $calender_notes[] = [
+                "month" => $calender_date->format('Y-m'),
                 "date" => $calender_date,
                 "title" => $titles[$calender_date->getDateString()] ?? "",
                 "notes" => $calender_date_notes,
             ];
         }
 
-        $calender_notes = array_reverse($calender_notes);
-
-        return $this->render('unitary_note/views_calender.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'thisTag' => $tag,
-            'notes' => $notes,
-            'calender_notes' => $calender_notes,
-        ]);
+        return array_reverse($calender_notes);
     }
 
     /**

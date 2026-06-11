@@ -131,7 +131,7 @@
             </div>
             <div class="btn-bar mt-3 mb-3">
                 {% for tag in tags %}
-                    <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary', { tagName: tag.name, mode: 'card' }) }}">
+                    <a class="btn btn-outline-warning btn-sm" href="{{ path('app_unitary_monthly', { tagName: tag.name }) }}">
                         {{ tag.name }}
                     </a>
                 {% endfor %}
