@@ -5,5 +5,6 @@ fos_js_routing:
         - 'edit_unitary_with_compact'
         - 'app_unitary'
         - 'app_unitary_date'
+        - 'app_unitary_monthly'
         - 'api_edit_unitary'
         - 'api_get_unitary_by_tag'

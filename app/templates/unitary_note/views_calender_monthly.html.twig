@@ -123,7 +123,7 @@
                         document.getElementById("note-view").style.height = height + "px";
                         document.getElementById("note-view").style.overflowY = "scroll";
                         document.getElementById("note-view-title-date").innerText = data.note.titleDate;
-                        document.getElementById("note-view-title").innerText = data.note.titleWithoutDate;
+                        document.getElementById("note-view-title").innerHTML = `${data.note.titleWithoutDate}<a href="${Routing.generate('edit_unitary_with_compact', { id: data.note.id })}">📝</a>`;
                         document.getElementById("note-view-tags").innerHTML = data.note.tags.map(tag => `<span>#${tag.name}</span>`).join(' ');
                         document.getElementById("note-text").innerHTML = data.note.textHtml;
                         document.getElementById("note-text-for-edit").value = data.note.text;
