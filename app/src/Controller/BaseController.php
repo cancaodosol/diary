@@ -18,7 +18,7 @@ class BaseController extends AbstractController
 {
     public function getTags(ManagerRegistry $doctrine)
     {
-        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["parentTagId" => "ASC"]);
+        $tags = $doctrine->getRepository(NoteTags::class)->findBy([], ["sortOrder" => "ASC"]);
         $parentTags = [];
         foreach ($tags as $tag) {
             if(!$tag->getParentTagId()){
