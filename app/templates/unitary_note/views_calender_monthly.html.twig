@@ -14,7 +14,7 @@
             <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_monthly', { tagName: thisTag.name ?? '', month: previous_month }) }}">
                 << 
             </a>
-            <div>{{ this_month | date('Y年m月') }}</div>
+            <div>{{ this_month | date('Y年m月') }} [ {{ thisTag.name ?? '' }} ]</div>
             <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_monthly', { tagName: thisTag.name ?? '', month: next_month }) }}">
                 >>
             </a>
