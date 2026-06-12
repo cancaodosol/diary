@@ -9,7 +9,7 @@
 
 {% block contents_wide %}
     <h2>{{ form_name }}</h2>
-    <div class="mt-4">
+    <div class="mt-4 calender-box-header">
         <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
             <a class="btn btn-outline-primary btn-sm" href="{{ path('app_unitary_monthly', { tagName: thisTag.name ?? '', month: previous_month }) }}">
                 << 
@@ -226,6 +226,9 @@
     }
     .calender-tags {
         text-decoration: none;
+    }
+    .calender-box-header {
+        width: 1100px;
     }
     .calender-cards-box {
         display: flex;
