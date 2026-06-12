@@ -105,7 +105,6 @@ class NoteTagsController extends BaseController
         $tag->setName($name);
         $tag->setDisplayColor($this->resolveDisplayColor($request->request->get('displayColor', '')));
         $tag->setDisplayType($this->resolveDisplayType($request->request->get('displayType', '')));
-        $tag->setDescription($request->request->get('description') ?: null);
         $tag->setSortOrder((int) $request->request->get('sortOrder', 0));
         $tag->setParentTagId($parentTagId);
 
