@@ -51,7 +51,14 @@
                     <div class="note-content js-calender-note-content" unit-date="{{ calender_note.date.getDateString() }}">
                         {% for note in calender_note.notes %}
                             {% if thisTag.displayType == 'image' %}
-                            {{ note.textHtml | raw }}
+                                {% set imageSrcs = note.getImageSrcs() %}
+                                {% if imageSrcs is not empty %}
+                                    <div style="white-space: nowrap; text-overflow: ellipsis; margin-bottom: 5px;">
+                                        <a type="button" class="btn-show-note-view" note_id="{{ note.id }}" style="text-decoration: none;">
+                                            <img src="{{ imageSrcs[0] }}" alt="Note Image" style="max-width: 100%; max-height: 100px; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                {% endif %}
                             {% else %}
                             <div style="white-space: nowrap; text-overflow: ellipsis;">
                                 {% set fontColor = note.tags[0].displayColor %}

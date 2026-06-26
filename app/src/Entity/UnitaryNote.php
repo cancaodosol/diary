@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\ValueObject\HtmlText;
 use App\ValueObject\JapaneseDate;
+use DOMDocument;
 
 /**
  * @ORM\Entity(repositoryClass=UnitaryNoteRepository::class)
@@ -232,6 +233,21 @@ class UnitaryNote
     public function getKeyword(): ?string
     {
         return $this->keyword;
+    }
+
+    public function getImageSrcs(): array
+    {
+        $html = $this->getTextHtml();
+        $imageSrcs = [];
+        $dom = new DOMDocument();
+        $dom->loadHTML($html);
+
+        $images = $dom->getElementsByTagName('img');
+        foreach ($images as $image) {
+            $imageSrcs[] = $image->getAttribute('src');
+        }
+
+        return $imageSrcs;
     }
 
     public function getStartedAt(): ?string
