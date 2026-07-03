@@ -50,7 +50,7 @@ class UnitaryNoteType extends AbstractType
                     'class' => NoteTags::class,
                     'query_builder' => function (NoteTagsRepository $er): QueryBuilder {
                         return $er->createQueryBuilder('u')
-                            ->orderBy('u.name', 'ASC');
+                            ->orderBy('u.sortOrder', 'ASC');
                     },
                     'multiple' => true,
                     'expanded' => true,
