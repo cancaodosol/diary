@@ -27,6 +27,9 @@ class BaseController extends AbstractController
         }
         foreach ($tags as $tag) {
             if($tag->getParentTagId()){
+                if(!isset($parentTags[$tag->getParentTagId()])){
+                    continue;
+                }
                 $parentTags[$tag->getParentTagId()]->appendChildrenTag($tag);
             }
         }
