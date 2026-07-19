@@ -240,7 +240,7 @@ class UnitaryNote
         $html = $this->getTextHtml();
         $imageSrcs = [];
         $dom = new DOMDocument();
-        $dom->loadHTML($html);
+        @$dom->loadHTML($html);
 
         $images = $dom->getElementsByTagName('img');
         foreach ($images as $image) {
