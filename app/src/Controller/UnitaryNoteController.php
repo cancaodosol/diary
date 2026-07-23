@@ -337,15 +337,7 @@ class UnitaryNoteController extends BaseController
     {
         $tag = $doctrine->getRepository(NoteTags::class)
             ->findOneBy(["name" => $tagName]);
-        $notesInterator = $tag->getUnitaryNotes()->getIterator();
-        $notesInterator->uasort(function($pA , $pB){
-                if($pA->getDate() < $pB->getDate()) return 1;
-                if($pA->getDate() > $pB->getDate()) return -1;
-                if($pA->getTitle() < $pB->getTitle()) return 1;
-                if($pA->getTitle() > $pB->getTitle()) return -1;
-                return 0;
-            });
-        $notes = iterator_to_array($notesInterator, false);
+        $notes = $doctrine->getRepository(UnitaryNote::class)->findInNumberWithTagName([$tag->getId()]);
 
         $units = $this->createNoteUnits($notes, $doctrine);
         

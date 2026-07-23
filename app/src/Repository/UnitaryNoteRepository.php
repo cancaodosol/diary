@@ -94,6 +94,25 @@ class UnitaryNoteRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function findInNumberWithTagName(array $tagIds)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = 
+            $entityManager->createQuery(
+                'SELECT u
+                FROM App\Entity\UnitaryNote u
+                JOIN u.tags t
+                WHERE t.id in (:tagIds)
+                ORDER BY u.date DESC, u.title ASC'
+            )
+            ->setParameter('tagIds', $tagIds)
+            ->setMaxResults(300);
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
+
     public function findByKeyword(string $keyword)
     {
         $entityManager = $this->getEntityManager();
