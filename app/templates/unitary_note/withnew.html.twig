@@ -44,8 +44,8 @@
             <div class="d-flex mb-4 gap-4">
                 <input type="file" name="image" id="image-input">
                 <div>
-                    <input type="checkbox" name="isCompress" id="image-is-compress" checked>
-                    <span for="isCompress">圧縮して保存</span>
+                    <input type="checkbox" name="isNotCompress" id="image-is-not-compress">
+                    <span for="isNotCompress">圧縮せず保存</span>
                 </div>
                 {{ form_row(form.isRawHtmlText) }}
             </div>
@@ -238,7 +238,7 @@
         document.getElementById('image-input').onchange = async (e) => {
             let file = e.target.files[0];
             if (file) {
-                if(document.getElementById('image-is-compress').checked){
+                if(!document.getElementById('image-is-not-compress').checked){
                     const options = {
                         maxSizeMB: 0.5,
                         useWebWorker: true
