@@ -70,6 +70,14 @@ class UnitaryNoteType extends AbstractType
                 ]
             )
             ->add(
+                'isRawHtmlText',
+                CheckboxType::class,
+                [
+                    'label' => '生のHTMLで記入',
+                    'required' => false
+                ]
+            )
+            ->add(
                 'startedAt',
                 TextType::class,
                 [

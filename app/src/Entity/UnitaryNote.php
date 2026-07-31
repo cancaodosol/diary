@@ -69,6 +69,11 @@ class UnitaryNote
 
     private $finishedAt;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isRawHtmlText;
+
     public function __construct()
     {
         $this->setUserId(1);
@@ -212,8 +217,9 @@ class UnitaryNote
 
     public function getTextHtml(): ?string
     {
-        $textHtml = $this->keyword ? str_replace($this->keyword, '<span style="background-color: yellow;">'.$this->keyword.'</span>', $this->text) : $this->text;
-        return (new HtmlText($textHtml))->getTextHtml();
+        $text = $this->text;
+        $textHtml = $this->keyword ? str_replace($this->keyword, '<span style="background-color: yellow;">'.$this->keyword.'</span>', $text) : $text;
+        return $this->isRawHtmlText() ? $textHtml : (new HtmlText($textHtml))->getTextHtml();
     }
 
     public function setText(?string $text): self
@@ -343,6 +349,18 @@ class UnitaryNote
     public function removeTag(NoteTags $tag): self
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function isRawHtmlText(): ?bool
+    {
+        return $this->isRawHtmlText;
+    }
+
+    public function setIsRawHtmlText(bool $isRawHtmlText): self
+    {
+        $this->isRawHtmlText = $isRawHtmlText;
 
         return $this;
     }
