@@ -111,9 +111,10 @@ class UnitaryNoteController extends BaseController
 
         $startdate = DateTime::createFromFormat('Y-m-d', $month . "-01");
         $enddate = (clone $startdate)->modify('last day of this month');
+        $weeks = (int)ceil(($enddate->diff($startdate)->days + 1 + $startdate->format("w")) / 7);
 
         $dateHelper = new DateHelper();
-        $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, 5);
+        $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, $weeks);
         $calender_notes = $doctrine->getRepository(UnitaryNote::class)
             ->findInTermWithTagName($calender_dates[0]->getValue(), $calender_dates[count($calender_dates)-1]->getValue(), $tagIds);
         
