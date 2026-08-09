@@ -6,6 +6,8 @@ use App\ValueObject\JapaneseDate;
 
 class DateHelper
 {
+    protected string $weekend_yobi;
+
     public function __construct(){
         $this->weekend_yobi = "日";
     }
