@@ -111,7 +111,7 @@ class UnitaryNoteController extends BaseController
 
         $startdate = DateTime::createFromFormat('Y-m-d', $month . "-01");
         $enddate = (clone $startdate)->modify('last day of this month');
-        $weeks = (int)ceil(($enddate->diff($startdate)->days + 1 + $startdate->format("w")) / 7);
+        $weeks = $this->calcWeeksInMonth($month);
 
         $dateHelper = new DateHelper();
         $calender_dates = $dateHelper->getDatesInTheLastWeeks($enddate, $weeks);
@@ -130,6 +130,14 @@ class UnitaryNoteController extends BaseController
             'next_month' => date('Y-m', strtotime($month . '-01 +1 month'))
         ]);
         return $this->viewNotesByCalenderFormat($tags, null, $calender_notes, $calender_dates, $doctrine);
+    }
+
+    private function calcWeeksInMonth(string $month): int
+    {
+        $startdate = DateTime::createFromFormat('Y-m-d', $month . "-01");
+        $enddate = (clone $startdate)->modify('last day of this month');
+        $preMonthDaysInFirstWeek = (int)$startdate->format("w") == 0 ? 6 : (int)$startdate->format("w") - 1;
+        return (int)ceil(($enddate->diff($startdate)->days + 1 + $preMonthDaysInFirstWeek) / 7);
     }
 
     private function viewNotesByCalenderFormat($tags, $tag, $notes, $calender_dates, $doctrine): Response
