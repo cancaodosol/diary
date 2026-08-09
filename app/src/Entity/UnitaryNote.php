@@ -244,6 +244,10 @@ class UnitaryNote
     public function getImageSrcs(): array
     {
         $html = $this->getTextHtml();
+        if(!$html)
+        {
+            return [];
+        }
         $imageSrcs = [];
         $dom = new DOMDocument();
         @$dom->loadHTML($html);
