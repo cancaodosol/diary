@@ -50,6 +50,7 @@
                     </div>
                     <div class="note-content js-calender-note-content" unit-date="{{ calender_note.date.getDateString() }}">
                         {% for note in calender_note.notes %}
+                            {{ note.getTitleWithoutDate() }}
                             {% if thisTag.displayType == 'image' %}
                                 {% set imageSrcs = note.getImageSrcs() %}
                                 {% if imageSrcs is not empty %}
