@@ -41,16 +41,18 @@
             </div>
             {{ form_row(form.title) }}
             {{ form_row(form.tags) }}
-            <div class="d-flex mb-4 gap-4">
+            <div class="d-flex mb-4 gap-4 align-items-end">
                 <input type="file" name="image" id="image-input">
                 <div>
                     <input type="checkbox" name="isNotCompress" id="image-is-not-compress">
                     <span for="isNotCompress">圧縮せず保存</span>
                 </div>
-                {{ form_row(form.isRawHtmlText) }}
             </div>
             {{ form_row(form.text) }}
-            {{ form_row(form.save) }}
+            <div class="d-flex mb-4 gap-4 justify-content-end">
+                {{ form_row(form.isRawHtmlText) }}
+                {{ form_row(form.save) }}
+            </div>
             {{ form_end(form) }}
         </div>
     </div>
