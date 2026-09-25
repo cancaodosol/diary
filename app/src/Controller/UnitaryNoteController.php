@@ -690,6 +690,7 @@ class UnitaryNoteController extends BaseController
         $requestRows = $request->request->all('household_records');
 
         return [
+            $requestRows['id'] ?? [],
             $requestRows['itemName'] ?? [],
             $requestRows['amount'] ?? [],
             $requestRows['journalCategoryId'] ?? [],
@@ -709,10 +710,10 @@ class UnitaryNoteController extends BaseController
         ManagerRegistry $doctrine,
         FormInterface $form
     ): array {
-        [$itemNames, $amounts, $journalCategoryIds, $types] = $this->extractHouseholdRecordRequestArrays($request);
+        [$ids, $itemNames, $amounts, $journalCategoryIds, $types] = $this->extractHouseholdRecordRequestArrays($request);
 
         $parser = new HouseholdAccountRecordRowParser();
-        $result = $parser->parse($itemNames, $amounts, $journalCategoryIds, $types);
+        $result = $parser->parse($ids, $itemNames, $amounts, $journalCategoryIds, $types);
 
         $records = [];
         foreach ($result['rows'] as $row) {
@@ -722,7 +723,7 @@ class UnitaryNoteController extends BaseController
                 continue;
             }
 
-            $record = new HouseholdAccountRecord();
+            $record = $row->getId() != null ? $doctrine->getRepository(HouseholdAccountRecord::class)->find($row->getId()) :new HouseholdAccountRecord(); 
             $record->setItemName($row->getItemName());
             $record->setAmount($row->getAmount());
             $record->setJournalCategory($category);
@@ -767,6 +768,7 @@ class UnitaryNoteController extends BaseController
         $rows = [];
         foreach ($note->getHouseholdAccountRecords() as $record) {
             $rows[] = [
+                'id' => $record->getId(),
                 'itemName' => $record->getItemName(),
                 'amount' => (string) $record->getAmount(),
                 'journalCategoryId' => (string) $record->getJournalCategory()->getId(),
@@ -775,7 +777,7 @@ class UnitaryNoteController extends BaseController
         }
 
         if ($rows === []) {
-            $rows[] = ['itemName' => '', 'amount' => '', 'journalCategoryId' => '', 'type' => HouseholdAccountRecord::TYPE_EXPENSE];
+            $rows[] = ['id' => '', 'itemName' => '', 'amount' => '', 'journalCategoryId' => '', 'type' => HouseholdAccountRecord::TYPE_EXPENSE];
         }
 
         return $rows;

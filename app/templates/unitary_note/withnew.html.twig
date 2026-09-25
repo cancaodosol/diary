@@ -72,6 +72,7 @@
                                 </select>
                             </td>
                             <td>
+                                <input type="hidden" name="household_records[id][]" value="{{ row.id }}">
                                 <input type="text" name="household_records[itemName][]" value="{{ row.itemName }}" class="form-control form-control-sm" placeholder="品名">
                             </td>
                             <td>
@@ -100,6 +101,7 @@
                             </select>
                         </td>
                         <td>
+                            <input type="hidden" name="household_records[id][]" value="">
                             <input type="text" name="household_records[itemName][]" value="" class="form-control form-control-sm" placeholder="品名">
                         </td>
                         <td>

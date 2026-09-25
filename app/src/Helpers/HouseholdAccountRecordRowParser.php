@@ -22,20 +22,21 @@ class HouseholdAccountRecordRowParser
      * @param string[] $types
      * @return array{rows: HouseholdAccountRecordRow[], errors: string[]}
      */
-    public function parse(array $itemNames, array $amounts, array $journalCategoryIds, array $types): array
+    public function parse(array $ids, array $itemNames, array $amounts, array $journalCategoryIds, array $types): array
     {
-        $rowCount = max(count($itemNames), count($amounts), count($journalCategoryIds));
+        $rowCount = max(count($ids), count($itemNames), count($amounts), count($journalCategoryIds));
 
         $rows = [];
         $errors = [];
 
         for ($i = 0; $i < $rowCount; $i++) {
+            $id = (int) $ids[$i] ?? null;
             $itemName = trim((string) ($itemNames[$i] ?? ''));
             $amountRaw = trim((string) ($amounts[$i] ?? ''));
             $journalCategoryIdRaw = trim((string) ($journalCategoryIds[$i] ?? ''));
             $typeRaw = trim((string) ($types[$i] ?? ''));
 
-            if ($itemName === '' && $amountRaw === '' && $journalCategoryIdRaw === '') {
+            if ($id === '' && $itemName === '' && $amountRaw === '' && $journalCategoryIdRaw === '') {
                 // 全項目未入力の行は保存対象外として無視する（区分のみの入力は無視）
                 continue;
             }
@@ -48,7 +49,7 @@ class HouseholdAccountRecordRowParser
                 continue;
             }
 
-            $rows[] = new HouseholdAccountRecordRow($itemName, (int) $amountRaw, (int) $journalCategoryIdRaw, $type);
+            $rows[] = new HouseholdAccountRecordRow($id, $itemName, (int) $amountRaw, (int) $journalCategoryIdRaw, $type);
         }
 
         return ['rows' => $rows, 'errors' => $errors];
