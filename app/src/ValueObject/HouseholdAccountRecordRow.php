@@ -7,7 +7,7 @@ namespace App\ValueObject;
  */
 class HouseholdAccountRecordRow
 {
-    private int $id;
+    private $id;
 
     private string $itemName;
 
@@ -17,7 +17,7 @@ class HouseholdAccountRecordRow
 
     private string $type;
 
-    public function __construct(int $id, string $itemName, int $amount, int $journalCategoryId, string $type)
+    public function __construct($id, string $itemName, int $amount, int $journalCategoryId, string $type)
     {
         $this->id = $id;
         $this->itemName = $itemName;
@@ -26,7 +26,7 @@ class HouseholdAccountRecordRow
         $this->type = $type;
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }

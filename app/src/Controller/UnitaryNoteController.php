@@ -723,7 +723,7 @@ class UnitaryNoteController extends BaseController
                 continue;
             }
 
-            $record = $row->getId() != null ? $doctrine->getRepository(HouseholdAccountRecord::class)->find($row->getId()) :new HouseholdAccountRecord(); 
+            $record = $row->getId() !== null ? $doctrine->getRepository(HouseholdAccountRecord::class)->find($row->getId()) :new HouseholdAccountRecord(); 
             $record->setItemName($row->getItemName());
             $record->setAmount($row->getAmount());
             $record->setJournalCategory($category);
@@ -755,6 +755,7 @@ class UnitaryNoteController extends BaseController
             $rows = [];
             for ($i = 0; $i < $rowCount; $i++) {
                 $rows[] = [
+                    'id' => $ids[$i] ?? '',
                     'itemName' => $itemNames[$i] ?? '',
                     'amount' => $amounts[$i] ?? '',
                     'journalCategoryId' => $journalCategoryIds[$i] ?? '',

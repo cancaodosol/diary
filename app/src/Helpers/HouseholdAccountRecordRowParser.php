@@ -30,13 +30,13 @@ class HouseholdAccountRecordRowParser
         $errors = [];
 
         for ($i = 0; $i < $rowCount; $i++) {
-            $id = (int) $ids[$i] ?? null;
+            $id = $ids[$i] ? (int) $ids[$i] : null;
             $itemName = trim((string) ($itemNames[$i] ?? ''));
             $amountRaw = trim((string) ($amounts[$i] ?? ''));
             $journalCategoryIdRaw = trim((string) ($journalCategoryIds[$i] ?? ''));
             $typeRaw = trim((string) ($types[$i] ?? ''));
 
-            if ($id === '' && $itemName === '' && $amountRaw === '' && $journalCategoryIdRaw === '') {
+            if ($id === null && $itemName === '' && $amountRaw === '' && $journalCategoryIdRaw === '') {
                 // 全項目未入力の行は保存対象外として無視する（区分のみの入力は無視）
                 continue;
             }
