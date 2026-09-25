@@ -34,7 +34,7 @@
             </div>
             <div class="pb-4 px-2">{{ note_unit.title | raw }}</div>
             {% for note in note_unit.notes %}
-                <div class="unitary-title">
+                <div class="unitary-title {% if note.textHtml is empty %} text-is-empty {% endif %}">
                     ・<a class="text-dark" href="{{ path('edit_unitary_with_compact',{ id: note.id }) }}">{{ note.title }}</a>
                     {% for tag in note.tags %}
                         <a class="badge bg-primary note-tags" href="{{ path('app_unitary',
@@ -121,6 +121,12 @@
         font-size:0.9rem;
         font-weight:bold;
         margin-bottom:5px;
+    }
+    .unitary-title.text-is-empty {
+        font-weight:normal;
+    }
+    .unitary-title.text-is-empty a {
+        text-decoration:none;
     }
     .unitary-text {
         overflow-wrap: break-word;
