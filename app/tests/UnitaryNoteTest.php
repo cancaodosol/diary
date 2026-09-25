@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 use App\Entity\UnitaryNote;
 use App\Entity\Diary;
+use App\Entity\HouseholdAccountRecord;
 
 class UnitaryNoteTest extends TestCase
 {
@@ -165,5 +166,57 @@ class UnitaryNoteTest extends TestCase
 
         $this->assertEquals($note1->getStartedAt(),'27:04');
         $this->assertEquals($note1->getDateString(),'2023-6-23');
+    }
+
+    public function testHouseholdAccountRecordsIsEmptyByDefault(): void
+    {
+        // Given: 新規 UnitaryNote
+        $note = new UnitaryNote();
+
+        // Then: 家計簿レコードは空
+        $this->assertCount(0, $note->getHouseholdAccountRecords());
+    }
+
+    public function testAddHouseholdAccountRecordLinksBothSides(): void
+    {
+        // Given: 新規 UnitaryNote と HouseholdAccountRecord
+        $note = new UnitaryNote();
+        $record = new HouseholdAccountRecord();
+
+        // When: UnitaryNote に家計簿レコードを追加する
+        $note->addHouseholdAccountRecord($record);
+
+        // Then: UnitaryNote 側からも HouseholdAccountRecord 側からも双方向に参照できる
+        $this->assertCount(1, $note->getHouseholdAccountRecords());
+        $this->assertTrue($note->getHouseholdAccountRecords()->contains($record));
+        $this->assertSame($note, $record->getUnitaryNote());
+    }
+
+    public function testAddHouseholdAccountRecordDoesNotDuplicate(): void
+    {
+        // Given: すでに追加済みの HouseholdAccountRecord
+        $note = new UnitaryNote();
+        $record = new HouseholdAccountRecord();
+        $note->addHouseholdAccountRecord($record);
+
+        // When: 同じレコードを再度追加する
+        $note->addHouseholdAccountRecord($record);
+
+        // Then: 重複して追加されない
+        $this->assertCount(1, $note->getHouseholdAccountRecords());
+    }
+
+    public function testRemoveHouseholdAccountRecord(): void
+    {
+        // Given: 家計簿レコードが追加済みの UnitaryNote
+        $note = new UnitaryNote();
+        $record = new HouseholdAccountRecord();
+        $note->addHouseholdAccountRecord($record);
+
+        // When: レコードを削除する
+        $note->removeHouseholdAccountRecord($record);
+
+        // Then: 家計簿レコードが空になる
+        $this->assertCount(0, $note->getHouseholdAccountRecords());
     }
 }

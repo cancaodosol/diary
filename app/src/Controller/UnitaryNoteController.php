@@ -5,10 +5,15 @@ namespace App\Controller;
 use App\Entity\NoteTags;
 use App\Entity\UnitaryNote;
 use App\Entity\Diary;
+use App\Entity\HouseholdAccountRecord;
+use App\Entity\JournalCategory;
 use App\Helpers\DateHelper;
+use App\Helpers\HouseholdAccountRecordRowParser;
 
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -429,12 +434,23 @@ class UnitaryNoteController extends BaseController
 
         $form = $this->createForm(UnitaryNoteType::class, $note);
         $form->handleRequest($request);
+
+        $householdAccountRecords = [];
+        if($form->isSubmitted())
+        {
+            $householdAccountRecords = $this->buildHouseholdAccountRecordsFromRequest($request, $note, $doctrine, $form);
+        }
+
         if($form->isSubmitted() && $form->isValid())
         {
             $note = $form->getData();
             $title = $note->getStartedAndFinishedAt()."　".$note->getTitle();
             $note->setTitle($title);
             $tagName = count($note->getTags()) ? $note->getTags()[0]->getName() : "";
+
+            foreach ($householdAccountRecords as $record) {
+                $note->addHouseholdAccountRecord($record);
+            }
 
             // 更新処理
             $entityManager = $doctrine->getManager();
@@ -460,6 +476,10 @@ class UnitaryNoteController extends BaseController
             'tags' => $tags,
             'form' => $form,
             'note_units' => $this->createNoteUnits($notes, $doctrine),
+            'journal_categories' => $this->getJournalCategories($doctrine),
+            'household_rows' => $this->buildHouseholdRowsViewData($request, $note),
+            'household_account_record_types' => HouseholdAccountRecord::TYPES,
+            'household_account_record_default_type' => HouseholdAccountRecord::TYPE_EXPENSE,
         ]);
     }
 
@@ -478,9 +498,21 @@ class UnitaryNoteController extends BaseController
 
         $form = $this->createForm(UnitaryNoteType::class, $note);
         $form->handleRequest($request);
+
+        $householdAccountRecords = [];
+        if($form->isSubmitted())
+        {
+            $householdAccountRecords = $this->buildHouseholdAccountRecordsFromRequest($request, $note, $doctrine, $form);
+        }
+
         if($form->isSubmitted() && $form->isValid())
         {
             $note = $form->getData();
+
+            foreach ($householdAccountRecords as $record) {
+                $note->addHouseholdAccountRecord($record);
+            }
+
             $entityManager = $doctrine->getManager();
             $entityManager->persist($note);
             $entityManager->flush();
@@ -502,14 +534,10 @@ class UnitaryNoteController extends BaseController
             'tags' => $tags,
             'form' => $form,
             'note_units' => $this->createNoteUnits($notes, $doctrine),
-        ]);
-
-        $tags = $this->getTags($doctrine);
-
-        return $this->renderForm('./new.html.twig', [
-            'form_name' => '',
-            'tags' => $tags,
-            'form' => $form,
+            'journal_categories' => $this->getJournalCategories($doctrine),
+            'household_rows' => $this->buildHouseholdRowsViewData($request, $note),
+            'household_account_record_types' => HouseholdAccountRecord::TYPES,
+            'household_account_record_default_type' => HouseholdAccountRecord::TYPE_EXPENSE,
         ]);
     }
 
@@ -645,6 +673,112 @@ class UnitaryNoteController extends BaseController
                 return $date;
                 break;
             }
+    }
+
+    private function getJournalCategories(ManagerRegistry $doctrine): array
+    {
+        return $doctrine->getRepository(JournalCategory::class)->findBy([], ['name' => 'ASC']);
+    }
+
+    /**
+     * リクエストの household_records[itemName|amount|journalCategoryId|type][] を取り出す。
+     *
+     * @return array{0: string[], 1: string[], 2: string[], 3: string[]}
+     */
+    private function extractHouseholdRecordRequestArrays(Request $request): array
+    {
+        $requestRows = $request->request->all('household_records');
+
+        return [
+            $requestRows['itemName'] ?? [],
+            $requestRows['amount'] ?? [],
+            $requestRows['journalCategoryId'] ?? [],
+            $requestRows['type'] ?? [],
+        ];
+    }
+
+    /**
+     * 家計簿入力欄のリクエスト値を検証し、保存可能な HouseholdAccountRecord の配列を返す。
+     * 検証エラーがあれば $form にエラーとして追加し、対象行は結果から除外する。
+     *
+     * @return HouseholdAccountRecord[]
+     */
+    private function buildHouseholdAccountRecordsFromRequest(
+        Request $request,
+        UnitaryNote $note,
+        ManagerRegistry $doctrine,
+        FormInterface $form
+    ): array {
+        [$itemNames, $amounts, $journalCategoryIds, $types] = $this->extractHouseholdRecordRequestArrays($request);
+
+        $parser = new HouseholdAccountRecordRowParser();
+        $result = $parser->parse($itemNames, $amounts, $journalCategoryIds, $types);
+
+        $records = [];
+        foreach ($result['rows'] as $row) {
+            $category = $doctrine->getRepository(JournalCategory::class)->find($row->getJournalCategoryId());
+            if (!$category) {
+                $result['errors'][] = '指定された仕訳分類が見つかりません。';
+                continue;
+            }
+
+            $record = new HouseholdAccountRecord();
+            $record->setItemName($row->getItemName());
+            $record->setAmount($row->getAmount());
+            $record->setJournalCategory($category);
+            $record->setDate($note->getDate());
+            $record->setType($row->getType());
+            $records[] = $record;
+        }
+
+        foreach ($result['errors'] as $error) {
+            $form->addError(new FormError($error));
+        }
+
+        return $records;
+    }
+
+    /**
+     * 家計簿入力欄の画面表示用データを組み立てる。
+     * POST 済みなら入力途中の値を保持し、GET（初期表示・編集画面表示）なら
+     * 既存レコードを表示し、レコードが無ければ空の1行を表示する。
+     *
+     * @return array<int, array{itemName: string, amount: string, journalCategoryId: string, type: string}>
+     */
+    private function buildHouseholdRowsViewData(Request $request, UnitaryNote $note): array
+    {
+        if ($request->isMethod('POST')) {
+            [$itemNames, $amounts, $journalCategoryIds, $types] = $this->extractHouseholdRecordRequestArrays($request);
+            $rowCount = max(count($itemNames), count($amounts), count($journalCategoryIds), 1);
+
+            $rows = [];
+            for ($i = 0; $i < $rowCount; $i++) {
+                $rows[] = [
+                    'itemName' => $itemNames[$i] ?? '',
+                    'amount' => $amounts[$i] ?? '',
+                    'journalCategoryId' => $journalCategoryIds[$i] ?? '',
+                    'type' => $types[$i] ?? '',
+                ];
+            }
+
+            return $rows;
+        }
+
+        $rows = [];
+        foreach ($note->getHouseholdAccountRecords() as $record) {
+            $rows[] = [
+                'itemName' => $record->getItemName(),
+                'amount' => (string) $record->getAmount(),
+                'journalCategoryId' => (string) $record->getJournalCategory()->getId(),
+                'type' => $record->getType(),
+            ];
+        }
+
+        if ($rows === []) {
+            $rows[] = ['itemName' => '', 'amount' => '', 'journalCategoryId' => '', 'type' => HouseholdAccountRecord::TYPE_EXPENSE];
+        }
+
+        return $rows;
     }
 
     private function createNoteUnits($notes, ManagerRegistry $doctrine)

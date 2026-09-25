@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}仕訳分類管理{% endblock %}
+
+{% block body %}
+<div class="container mt-3">
+    <h2>仕訳分類管理</h2>
+
+    <div class="mb-3 text-end">
+        <a class="btn btn-success btn-sm" href="{{ path('new_journal_category') }}">新規登録</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">分類名</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>{{ category.id }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="{{ path('edit_journal_category', { id: category.id }) }}">編集</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">仕訳分類が登録されていません</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

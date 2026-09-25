@@ -63,6 +63,11 @@ class UnitaryNote
      */
     private $tags;
 
+    /**
+     * @ORM\OneToMany(targetEntity=HouseholdAccountRecord::class, mappedBy="unitaryNote", cascade={"persist"})
+     */
+    private $householdAccountRecords;
+
     private $keyword;
 
     private $startedAt;
@@ -82,6 +87,7 @@ class UnitaryNote
         $this->setText('');
         $this->setModifiedOn();
         $this->tags = new ArrayCollection();
+        $this->householdAccountRecords = new ArrayCollection();
     }
 
     public function toArray()
@@ -353,6 +359,31 @@ class UnitaryNote
     public function removeTag(NoteTags $tag): self
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HouseholdAccountRecord>
+     */
+    public function getHouseholdAccountRecords(): Collection
+    {
+        return $this->householdAccountRecords;
+    }
+
+    public function addHouseholdAccountRecord(HouseholdAccountRecord $record): self
+    {
+        if (!$this->householdAccountRecords->contains($record)) {
+            $this->householdAccountRecords[] = $record;
+            $record->setUnitaryNote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHouseholdAccountRecord(HouseholdAccountRecord $record): self
+    {
+        $this->householdAccountRecords->removeElement($record);
 
         return $this;
     }

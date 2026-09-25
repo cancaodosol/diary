@@ -11,6 +11,7 @@
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
     <script src="{{ asset("assets/unitarynote.js") }}"></script>
     <script src="{{ asset("assets/timeline.js") }}"></script>
+    <script src="{{ asset("assets/kakeibo.js") }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -49,6 +50,72 @@
                 </div>
             </div>
             {{ form_row(form.text) }}
+            <div class="mb-4">
+                <label class="form-label fw-bold">家計簿</label>
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>品名</th>
+                            <th>金額</th>
+                            <th>仕訳分類</th>
+                            <th>区分</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kakeibo-rows">
+                        {% for row in household_rows %}
+                        <tr class="kakeibo-row">
+                            <td>
+                                <input type="text" name="household_records[itemName][]" value="{{ row.itemName }}" class="form-control form-control-sm" placeholder="品名">
+                            </td>
+                            <td>
+                                <input type="number" name="household_records[amount][]" value="{{ row.amount }}" class="form-control form-control-sm" placeholder="金額" min="1">
+                            </td>
+                            <td>
+                                <select name="household_records[journalCategoryId][]" class="form-select form-select-sm">
+                                    <option value="">選択してください</option>
+                                    {% for category in journal_categories %}
+                                    <option value="{{ category.id }}" {{ row.journalCategoryId == category.id ? 'selected' : '' }}>{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="household_records[type][]" class="form-select form-select-sm">
+                                    {% for type in household_account_record_types %}
+                                    <option value="{{ type }}" {{ (row.type ?: household_account_record_default_type) == type ? 'selected' : '' }}>{{ type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="button" id="btn-add-kakeibo-row" class="btn btn-outline-secondary btn-sm">＋</button>
+                <template id="kakeibo-row-template">
+                    <tr class="kakeibo-row">
+                        <td>
+                            <input type="text" name="household_records[itemName][]" value="" class="form-control form-control-sm" placeholder="品名">
+                        </td>
+                        <td>
+                            <input type="number" name="household_records[amount][]" value="" class="form-control form-control-sm" placeholder="金額" min="1">
+                        </td>
+                        <td>
+                            <select name="household_records[journalCategoryId][]" class="form-select form-select-sm">
+                                <option value="">選択してください</option>
+                                {% for category in journal_categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select name="household_records[type][]" class="form-select form-select-sm">
+                                {% for type in household_account_record_types %}
+                                <option value="{{ type }}" {{ household_account_record_default_type == type ? 'selected' : '' }}>{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                </template>
+            </div>
             <div class="d-flex mb-4 gap-4 justify-content-end">
                 {{ form_row(form.isRawHtmlText) }}
                 {{ form_row(form.save) }}
@@ -223,6 +290,7 @@
     async function onload() {
         settingShortCuts();
         initModeSelect();
+        initKakeiboRows();
 
         const thisDateEle = document.getElementById("unitary_note_date");
         document.getElementById("unitary_note_date").onchange = (e) => {
