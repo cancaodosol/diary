@@ -17,9 +17,9 @@
                 <tr>
                     <th scope="col">日付</th>
                     <th scope="col">区分</th>
-                    <th scope="col">金額</th>
-                    <th scope="col">品名</th>
                     <th scope="col">仕訳分類</th>
+                    <th scope="col">品名</th>
+                    <th scope="col">金額</th>
                     <th scope="col">一元記録</th>
                 </tr>
             </thead>
@@ -28,9 +28,9 @@
                 <tr>
                     <td>{{ record.date ? record.date|date('Y-m-d') : '' }}</td>
                     <td>{{ record.type }}</td>
-                    <td class="text-end">{{ record.amount|number_format }}</td>
-                    <td>{{ record.itemName }}</td>
                     <td>{{ record.journalCategory.name }}</td>
+                    <td>{{ record.itemName }}</td>
+                    <td class="text-end">{{ record.amount|number_format }}</td>
                     <td>
                         <a class="" href="{{ path('edit_unitary_with_compact', { id: record.unitaryNote.id }) }}">{{ record.unitaryNote.title }}</a>
                     </td>
